@@ -1,0 +1,5 @@
+{
+  "source": "https://github.com/yt-dlp/yt-dlp",
+  "destination": "Vendor/HDR/yt-dlp_macos",
+  "sha256": "a6fb86dd493344d43c84e9bd6a2593af6368714e6ef874e38c3c8365d79e7931"
+}

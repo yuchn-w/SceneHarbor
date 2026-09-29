@@ -1,0 +1,15 @@
+{
+  "source": "https://github.com/yuchn-w/DynamicWallpaper",
+  "head": "bc48e80f0ff9d8aacf53a57c65098b1e2dbb4848",
+  "note": "Copied current working-tree files, including uncommitted upstream AutoHDRController changes; not claimed to be an exact commit export.",
+  "files": {
+    "Sources/DynamicWallpaper/DynamicWallpaperApp.swift": "105b97fb3d6cb4856531285a616918e7b5db93c3a10afe7f55fe917c27b201ed",
+    "Sources/DynamicWallpaper/AutoHDRController.swift": "e0b004bfe04729ab9da26bb66d582879f370044427af7a0c245dc7c88aad4457",
+    "Sources/DynamicWallpaper/DisplayHDRController.swift": "eeeb25290da3fa360fe10b1536499e113bc047e9b10ec06e0d5ef4156582c096",
+    "Sources/DynamicWallpaper/YouTubeBrowserMonitor.swift": "fe3c3aac137d4912cef35ea19f5391ca91ac2a5a55ae40f91c9a56fd801c08ef",
+    "Sources/DynamicWallpaper/YouTubeHDRMetadataProvider.swift": "543161d641ed787b84a0a1cc09169d9297214d47f48779ac17b4d54a17619eaa",
+    "Sources/GlassBridge/DWGlassBridge.m": "293f0f31445f0d90b89d4e7213e19de5e53fea3caf9a8fc354c78ba2a2e932a1",
+    "Tests/AutoHDRTests/AutoHDRTests.swift": "6baee723309aef82fa7a5277c199b6bc75ae1669ea2ac7386a11f7eb117009ea",
+    "Tests/AutoHDRTests/ytdlp-fixture.sh": "33a07198b08518b605032c2e0158a59e0babf4a8f17075ec53b825d4ce5c416b"
+  }
+}

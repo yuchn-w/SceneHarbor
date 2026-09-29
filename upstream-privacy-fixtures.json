@@ -1,0 +1,3093 @@
+{
+  "schema": 1,
+  "note": "Exact files retained from verified upstream releases: test keys, fictitious cookies, public CI paths, and published service constants. Personal comparison patterns are never exempted.",
+  "entries": [
+    {
+      "archive": "Vendor/MirageBaseline/source.tar.gz",
+      "archive_sha256": "8f8232be6d95d955459aa120e6ee7626f27758caf30b1840452112eaa4e0c6a5",
+      "path": "SceneRenderer/Vendor/eigen/.gitlab-ci.yml",
+      "sha256": "1b7c0e643c20bb6a5810034b49184b149a996bd17e05afa2fcd490edd75c83cc",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/SVT-AV1-4.2.0.tar.bz2",
+      "archive_sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "path": "SVT-AV1-v4.2.0/.gitlab-ci.yml",
+      "sha256": "73efb9c2d91e167bb34e0a9404d6d3e57daee7a6831e46577db8d1b54f8eca3a",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/SVT-AV1-4.2.0.tar.bz2",
+      "archive_sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "path": "SVT-AV1-v4.2.0/.gitlab/workflows/bsd/.gitlab-ci.yml",
+      "sha256": "970dd0625f195acfb96404e95bbd8587c07390d3ab9220f604d400069b94726b",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/SVT-AV1-4.2.0.tar.bz2",
+      "archive_sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "path": "SVT-AV1-v4.2.0/.gitlab/workflows/common/.gitlab-ci.yml",
+      "sha256": "55b9efed15c8fddc1a6f62f7d635b21fd48d9eec9c217cbc55ea77cb973a9247",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/SVT-AV1-4.2.0.tar.bz2",
+      "archive_sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "path": "SVT-AV1-v4.2.0/.gitlab/workflows/linux/.gitlab-ci.yml",
+      "sha256": "43085e9b2a11b4bb6f346896ad2073447a08864f56180f0ebf66ff6f8cf61ccd",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/SVT-AV1-4.2.0.tar.bz2",
+      "archive_sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "path": "SVT-AV1-v4.2.0/.gitlab/workflows/macos/.gitlab-ci.yml",
+      "sha256": "4d3ba33e9a59ce01bea325f90fb2f1331618102d1b2088ae7cc4e2a79bc346a6",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/SVT-AV1-4.2.0.tar.bz2",
+      "archive_sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "path": "SVT-AV1-v4.2.0/.gitlab/workflows/nightly/.gitlab-ci.yml",
+      "sha256": "dca80e5f9262bfe5913ddcf4703e6bbd8bf90b3d310abc432b349e1cb73e4de7",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/SVT-AV1-4.2.0.tar.bz2",
+      "archive_sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "path": "SVT-AV1-v4.2.0/.gitlab/workflows/standard/.gitlab-ci.yml",
+      "sha256": "ca8a1b6f147520b64fa32cc2b3e70e3b58dbfbd72b613613d717ad76d3344532",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/SVT-AV1-4.2.0.tar.bz2",
+      "archive_sha256": "512f2ea5649e3e76c2dddcc25c2556fb67a9582baaab207c9c96161c94659dad",
+      "path": "SVT-AV1-v4.2.0/.gitlab/workflows/windows/.gitlab-ci.yml",
+      "sha256": "d7a4523f4c029a19d346393c87436355f2534e357682f645a85dfd6fcc4d5e2a",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/dav1d-1.5.4.tar.bz2",
+      "archive_sha256": "2abfb0c89212e6e4733a54e0ae509ec00a5b845a6360946f918806e14aedb011",
+      "path": "dav1d-1.5.4/.gitlab-ci.yml",
+      "sha256": "de73bc9789c1f38a211860687abe9a3336ba24b73c070b2f5985b46244c6a182",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/ffmpeg-9.0.1.tar.xz",
+      "archive_sha256": "cf38e0e28c7e5605942c4a77755349b0145804a397af37eb1fb4c77cb237f635",
+      "path": "ffmpeg-9.0.1/libavformat/tls_openssl.c",
+      "sha256": "0567d5c8204c80a61074065a5044abea1f972694d41b60cbcd03dd89d05b677f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/ffmpeg-9.0.1.tar.xz",
+      "archive_sha256": "cf38e0e28c7e5605942c4a77755349b0145804a397af37eb1fb4c77cb237f635",
+      "path": "ffmpeg-9.0.1/tests/ref/fate/mxf-probe-dnxhd",
+      "sha256": "81450516787402623fd44344f6dab7c9f8ac80cedcc127ec72bd7fb9688b5a85",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/ca-key.pem",
+      "sha256": "3490491a6a38d202a29ba250f717b8e3065eb1ee3e16d9e5e9171d3f8f2bf8b5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/client.pem",
+      "sha256": "5517423efa9a5cd7ede4604399d1572f271260d2b7214ac4218f499387b18c99",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/dsa-ca.pem",
+      "sha256": "840ab42f5a6754f9ddd6df488410a689e6c10ed37059a9f3ea2f7199458aab15",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/dsa-pca.pem",
+      "sha256": "6551544012b1e3c4c58f0b64200b75f03b2a39eb69681872f41e6793b0d524be",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/pca-key.pem",
+      "sha256": "6eba0a092a01ee003a4bf101491de540e4ee03b94075578a67084292581f0430",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/privkey.pem",
+      "sha256": "64795d8b4aac68c76ba833da4cfb54e739b7a90161ab3866d441ae0205da6fa9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/rsa8192.pem",
+      "sha256": "24f69b9f93919a7cc85159762f269b3b3a7e807dec24ebf90ccf166e1d63fe6b",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/s1024key.pem",
+      "sha256": "dd647f2b3d59c7450bd0693d215355ce93919b0462f4f57c35e4ce292e671a61",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/s512-key.pem",
+      "sha256": "eabd97ef4ae742dc493633e69d55c477561662ca63a9d914da1cce76d70f562a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/server.pem",
+      "sha256": "ffdc8d77eb82b815de5235d93d1b733bf7a6934a8276862cd3b0d842b7dcc53d",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/apps/server2.pem",
+      "sha256": "315a1d925c484b57b5f6b154318c241f49803a627d5dd97a1add7eb5759a16fd",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/bio/server-ec.pem",
+      "sha256": "ceaf699619734a8696d669b0b5534a63a416f9cf0b7da1def7a71b45f5f252e2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/bio/server.pem",
+      "sha256": "57d7d62587cb493806f09fee4f8da1b0a9ea7b6e77aa43879a5fdcc85ff63a4e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/certs/apps/ckey.pem",
+      "sha256": "c261be75344e362cacc629218eadcfbdd96823c869685959a3ba7af79fc3f6b5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/certs/apps/intkey.pem",
+      "sha256": "cba3a56ebf13674fef79721d16fbd3404b991107884b1aa628a43b6538c00429",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/certs/apps/rootkey.pem",
+      "sha256": "49c67aac894bac4cacf8891fefc5dc99126ecec6948c5c51ed31443c9cf5cf12",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/certs/apps/skey.pem",
+      "sha256": "d0bcbe9a9ff18061856a684670a40e82d5fbd57d3c95f35d886c392ce1bc4929",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/certs/apps/skey2.pem",
+      "sha256": "48f1d94844d0d276e8c41fc9ce9e37485bc5551e939f57ba7a4893d0d8d98971",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/cms/cakey.pem",
+      "sha256": "c7ed282861c32151a60a9aa62b860d81ed7c906532b6eaa6606b77af241703ed",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/cms/signer.pem",
+      "sha256": "3a2a367baf036df9f8cae8f6abf59818a6695a513b6c453e86b0c5b2cec5d246",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/cms/signer2.pem",
+      "sha256": "adcb64407c7a6aa0b027b584197d7ca2c6606a12fc638a0c6ba532c54b80d65e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/guide/rootkey.pem",
+      "sha256": "793703dc4c12f4e65e084a9eaadf062e9e63373482bd498a5a76fac30fee15e2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/guide/serverkey.pem",
+      "sha256": "fe79cace7b42585511ab629db3a8fa2e1f5e5377942629f9aab4c47b6f23e28c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/quic/server/server.c",
+      "sha256": "3d9606a4fd6995d6d2b27ccbe4cb1772376f0f5f8d304d0c120ea6a63d56a5b8",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/smime/cakey.pem",
+      "sha256": "c7ed282861c32151a60a9aa62b860d81ed7c906532b6eaa6606b77af241703ed",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/smime/signer.pem",
+      "sha256": "3a2a367baf036df9f8cae8f6abf59818a6695a513b6c453e86b0c5b2cec5d246",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/smime/signer2.pem",
+      "sha256": "adcb64407c7a6aa0b027b584197d7ca2c6606a12fc638a0c6ba532c54b80d65e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/demos/sslecho/key.pem",
+      "sha256": "7a8021a459d89ec2defbe612bb99f1b36349731778e70978895c7baaeb001283",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/doc/man3/PEM_read.pod",
+      "sha256": "46c0c181b8882eae8ea608f10c2a2e0e93897101354aabb8d4077fb9b62a498e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/doc/man3/PEM_read_bio_PrivateKey.pod",
+      "sha256": "ebb7e9772391f43542c08a8c0f8f5e487580f60c0fc8049dff557f44986ae765",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/doc/man7/openssl-glossary.pod",
+      "sha256": "8437c819231db56ff64d831be97e9f717e0c1e84c46357ae8d6d6d377dfe7445",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/fuzz/dtlsserver.c",
+      "sha256": "f9b0bac983505aeed29c8e5ff4b1c2c7ccbcb76c90f55a173c22a5181972fb14",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/fuzz/server.c",
+      "sha256": "f0111362015a4d20ce00c944508adeea7b64bdd0c91badc0654b1696a1fb6dc5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/alt1-key.pem",
+      "sha256": "e27a5fc526e96bbac88fd3fcc7aae265c6f68e26743730ffbfb4cf9d3fde5d4a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/alt2-key.pem",
+      "sha256": "70fe6e839204e2796100695a231931713cf524508b52727a63aeb721bf82f1b1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/alt3-key.pem",
+      "sha256": "9b035957b577b798000fcba7ebca68915257aaf7d888f25d44fb23641aa51e4f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/bad-othername-namec-key.pem",
+      "sha256": "1c6623046296ca15e96c12bfbfbd71005dd3f25adcce8be5b3ffe4c739b15d97",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/bad-pc3-key.pem",
+      "sha256": "32fada1041bf3a3f85f634572df4f3b2882e77c53e10891e43e4914aa5203920",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/bad-pc4-key.pem",
+      "sha256": "e31fbffae3ae256b2e1210d5ae581b8b8b70da54a8da5274083f9166c12f0fe8",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/bad-pc6-key.pem",
+      "sha256": "e931b0fb603d7ab5d08fcd28db4fb91a7fe62d0c7b770d0438ab767e1a6f9b52",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/bad.key",
+      "sha256": "b68b90f7f429de9bc3408450cb854b4e999a733690727eb56f623732228fb274",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt1-key.pem",
+      "sha256": "471809338278ea0d49cc9f5ff39df3b049e2f859720e56b5877b71ddd75e892a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt10-key.pem",
+      "sha256": "8ced0e5910a66bbf707d92af5efb7ee7b82b50f1bf146696f9d461f183770320",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt2-key.pem",
+      "sha256": "7aaa121ea825f888c6cd92028b701a64c09923276c677b0d0c6542efa36a9c83",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt3-key.pem",
+      "sha256": "c34128a4b3f43fc0439189cb25471bcc0d1d57b550caff6ca58636a7444f6508",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt4-key.pem",
+      "sha256": "e7e916fc958fe00d00b8b340a42fb340f8dcf681d7cb1c9797562397dfcabbb2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt5-key.pem",
+      "sha256": "e7a6e7bf4d8ab85b1ed48a8966261606c0103268e30fc3c863d8aaade3a46fd4",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt6-key.pem",
+      "sha256": "4d904092012531d2b864270747c546c0ab9f1ee3bdab354572be3737f5d961cc",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt7-key.pem",
+      "sha256": "ed98e350f493420a1ba24dab524152d3dbdb92c3b807d05a482baa3d853f66f3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt8-key.pem",
+      "sha256": "836ecd4f03de6fc1f327b5dc845efaa0e23166fd236f87d71d04ae654cc30916",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badalt9-key.pem",
+      "sha256": "320eca208d9eed07ba92a1fdc2bf226e6d952cb3131a354377c23c354d8e5add",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/badcn1-key.pem",
+      "sha256": "a7b1f559ee757009c6b79400548526e5e7fa27b15df586b38a142677a8549be3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ca-key-768.pem",
+      "sha256": "8eb536beb70e02fe229ee9a29d08e255b93fbdb27c8fc0e50a32bd2b097f3695",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ca-key-ec-explicit.pem",
+      "sha256": "4bd28bfe7864d3ea6d403f53ddf09be33dea84321a5725f986310a6b8fa12a3a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ca-key-ec-named.pem",
+      "sha256": "2d7d92c6a6ba7cf75d79177b8216ec1b1f0c36647019d4521a5e95a2e79a09f6",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ca-key.pem",
+      "sha256": "92a47fb08a0585b019f35815b9667535b48b41562e61ea9cb5a5ef465901cfb5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ca-key2.pem",
+      "sha256": "904b45c0c534b29906a335a96e458815644654733947acfc467c1a243ab98e86",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ca-pss-key.pem",
+      "sha256": "af0bac141c0b84c3d012592e51fbb0330793eece0bd8c169406afea40adddb19",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/cert-key-cert.pem",
+      "sha256": "d752dc61d5deb2475b1cac94cd47b00e98dc87db3aecae47f3d2a0da605c9a4e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/client-ed25519-key.pem",
+      "sha256": "54a69dcf7169928f08c6c07a74510677c6fbc2fc560b46be31fc3923d869e831",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/client-ed448-key.pem",
+      "sha256": "e4affa395830a3b20f18bb16c5cc14432b75cdc5f0efa0a23ef60e8f57bb403f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/client-pss-restrict-key.pem",
+      "sha256": "c4431abd5f7dd33eb168d484d0470ed2add2239e06316a83e51c9c879acc966e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/cross-key.pem",
+      "sha256": "83da61d46029b84f46b0b0a48650c825214f6685125dfdc892188eab09f1c555",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ct-server-key.pem",
+      "sha256": "af48ba7434275bb5313bc99ec63a7e4009b56fbc27f70e699f89fa3a09280d8c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/dhk2048.pem",
+      "sha256": "29f8a67e5854e496615d58547b555d520ca98411914c9150d54dd57165f6e1da",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ec_privkey_with_chain.pem",
+      "sha256": "d997f26e5990a8bdc5e15d5a8b0540fecd106a65c027d6dd129801a906d429af",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-ecdsa-key.pem",
+      "sha256": "b309e4b736208f0ff0ffdf89db70f9584bcb23fcf04fbd54d816ad8492be6eb8",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key-1024.pem",
+      "sha256": "079bddc04f399aad95ee5fd0595a085ec5bd9a047fbde3f2e6fd8fea442e55db",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key-3072.pem",
+      "sha256": "bc049863dc0e8cb3dc48181d87143dba2372ce2ecfba841869793f46d23280b5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key-4096.pem",
+      "sha256": "f57f1bfa31f2ee2a77c590fa9277fdf3ebc1a51d5878cd636292dc3a40797cc1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key-768.pem",
+      "sha256": "1129008513ca091d780fd31541c4f67b286e3475d5bd7af57a71bd3b95470fb7",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key-8192.pem",
+      "sha256": "7d02a539f9b49a82a66f4468a8168f4a550a2e69d3c10387850305eb5a728088",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key-ec-explicit.pem",
+      "sha256": "1a808d6517c6c5bbf9fceec7bd980ebb2e7f918b7fffea1d0f7e2f7acd0186e1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key-ec-named-explicit.pem",
+      "sha256": "d7c733e544d0de97f85f1313155dc1baab31f887f67a72e27a00d35c544addce",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key-ec-named-named.pem",
+      "sha256": "a87600cf047b37d5e2fcb89e9f9da1472b958a951fb89088b07988229cb19c85",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ee-key.pem",
+      "sha256": "da972fe61f793c4b2b71ae3526dd2157bc52d1310df4d333894fc2e934d8cac7",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/embeddedSCTs1-key.pem",
+      "sha256": "fb8cee1e7c1cca1f03dbee2728ec8a3bbeea5868fa202553cadfd1295495fe74",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/embeddedSCTs1_issuer-key.pem",
+      "sha256": "025e2876845388b85e518f6d968bc395fd0482fb56422906a70d55deab9cd5ae",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/goodcn1-key.pem",
+      "sha256": "702ef215de9e7019482db6a0f37626984de1107501247b3bb87496e0d1cf40c4",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/goodcn2-key.pem",
+      "sha256": "8346461942300f53722246df7f39dcc648aa8d78b023ad657b16701873789def",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/interCA.key",
+      "sha256": "b76c6eadcd2aab336a92ff4dd820c70787a29417de7f6597d41967b824b40db8",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/key-pass-12345.pem",
+      "sha256": "fc8ccd0034c92c6fe970582549cec2ab84fa8fac95c85ead2a5981578d5da86e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/leaf-encrypted.key",
+      "sha256": "52a2162334f5fbf09e0ffd65105d692f02f78188e79fea7cd1d801f20163e90a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/leaf.key",
+      "sha256": "66d21d966a7dde3100abc32fd83efb18f89b961b7dd8a6bce7b8d8b158012989",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ncca-key.pem",
+      "sha256": "045409cc24a17bede92d82ad1322f77b4f3a67b21e017460d75fef3076d57616",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ncca1-key.pem",
+      "sha256": "f01361a3cfa43fdd1aa410911009faab48e693b94e4eb7386bb15030fabfc4e1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ncca2-key.pem",
+      "sha256": "c5d609ec3479b4072e83a17e48e0e5921f80f4949bb12ecd6b54aa11cda61343",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ncca3-key.pem",
+      "sha256": "5ad71cfbf914be8938b2d550971e5ac416bf99725438516964a856aa61ced3a3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/ncca4-key.pem",
+      "sha256": "cc16b5263d1d1cd9006363d46c13d68cda8f69d9f9103bcc0a93c76f22362436",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/nccaothername-key.pem",
+      "sha256": "06859d5c3a4d66ae1b4d0d731544e80f9ea6b5c7b30ea2c242bc848daf3691c9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/p256-ee-rsa-ca-key.pem",
+      "sha256": "d6f4dec6ce2c60e98abdc5c42919ffa7756dd35980f273333fa69f2161063cc6",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/p256-server-key.pem",
+      "sha256": "dd9eb4da7daa41a264d9352123a1ea2879882ecb170a2905aa4261b8941f0040",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/p384-root-key.pem",
+      "sha256": "425dbbf3e76f6589e7922b82adf25f38ea74c84501cc8d23893a8ac3258f1b56",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/p384-server-key.pem",
+      "sha256": "f9cce1336fe249613c15dd0f758ff6778da14fb3dba2626f4f9b9dd8a76576e0",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/pc1-key.pem",
+      "sha256": "22a3925db64874c1b12645b17cc2f37fef1a38ed136bc6f726148e1dd0a2f625",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/pc2-key.pem",
+      "sha256": "c6c85428c710124d91cce509fcd8e65bda98bf3b6fc417fe037104dc19568788",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/pc5-key.pem",
+      "sha256": "3aad523329292be4d0019cc2ce34e6760443f54ad520a61f1ff1fe32ee2e052c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/root-ed25519.privkey.pem",
+      "sha256": "4b4fc44435f8d20dd4e915752db1019d3936877152b95d5f39414f422b1110cd",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/root-ed448-key.pem",
+      "sha256": "01affa3ed3ac84e4e853c730e73aa099fd6b6719d96bdf09802c53c2d62e2f65",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/root-key-768.pem",
+      "sha256": "418956dcdd5cd0fb91e35e60d04719a6babb1b3b2c49946e9ef7c0993b8b859a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/root-key.pem",
+      "sha256": "d655de9f9b9ca51240f0fea2e157946d3610f6c7f3e01dd026c8eedde0d15509",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/root-key2.pem",
+      "sha256": "25170ca65b2d2b66fc5aff6902dff410ea755d7eca89c7a8c347c111ff9a5257",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/root-ml-dsa-44-key.pem",
+      "sha256": "2c6a72c6e69734f80b50dd4905daa9f61f4c52cbc0f3a1587f9a8975642319e9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/rootCA.key",
+      "sha256": "4456c6d7b1f469f2d83a51702ee3c4a21f70d1949ca777c65d0374eabaf19ab3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/rootkey.pem",
+      "sha256": "793703dc4c12f4e65e084a9eaadf062e9e63373482bd498a5a76fac30fee15e2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-cecdsa-key.pem",
+      "sha256": "6f326428a3bde95dcc9f7a0ede95380ee819953b230f4196702385957928f78f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-dsa-key.pem",
+      "sha256": "c1087d28d279317127a1dcb487eef227e01ba81cb13a2137919009fd73dbcc78",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-ec-compressed-key.pem",
+      "sha256": "73054638f92aaa831631d2882856eca862f7a273a0705d8aa1017bdb4f1cb259",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-ecdsa-brainpoolP256r1-key.pem",
+      "sha256": "ec39a5edb401b443439a41d9cb61f32f22a16467ea66c4132a620a60640d74ac",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-ecdsa-key.pem",
+      "sha256": "a9d22a20cd7249108d0230677e6db3626104d0723cd21a43fbbd350c15b9f5c4",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-ed25519-key.pem",
+      "sha256": "442878092df2fbcc3998e06f7348fce9f7a934d2af04a91236bd4a825b1976aa",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-ed448-key.pem",
+      "sha256": "380e4b376c2852e789853a51f9ca84c6e89f0633227df9edbf443e070e89da6b",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-ml-dsa-44-key.pem",
+      "sha256": "ce9eb6cce75afadfdb035d016e2f65f388da04b2c262db305fc460159746526e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-pss-key.pem",
+      "sha256": "596b4fa16cbb1878c9effd11bb72b3d89b2de995a5adf231ee51f4e3cbae795b",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/server-pss-restrict-key.pem",
+      "sha256": "89889cbfb7028d27ecbda25e5eed3372fd5f288c5eb5ba282411f82ac87050d5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/serverkey.pem",
+      "sha256": "3ebf0386cca98f92ae4212060b89101ba737c1ea800da45577bc059a9dd4467e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/sm2-root.key",
+      "sha256": "46bc1a91e14f02aea0641102efa8a45683c1dbe913302c5fbdae4db678e81890",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/sm2.key",
+      "sha256": "eaaa3646ab6ea081bea284f41b82a8fafb675229e44e58ed29fecbb3bb57c991",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/subinterCA.key",
+      "sha256": "751b68e77c88e27650a858d29a31a9e8511069c7bbede4bb8f7b14dee8e953f6",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/timing-key.pem",
+      "sha256": "2b3891b1b3aa63a8267842adcce059c9dd4817fefde628308767c908f3701821",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/v3-certs-RC2.p12",
+      "sha256": "256b253deda40a5b7fdc25516675879ecba95e0a60baebda65c3cf0e820d846e",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/v3-certs-TDES.p12",
+      "sha256": "0e8abdb7bb893639631bdde642b93036a51df8f754664664948223be9600cdcb",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/wrongkey.pem",
+      "sha256": "7449156738a02669eb7c6e1cd07fd5fb59b515bcc9c8830dae02247b5cb296f5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/certs/x509-check-key.pem",
+      "sha256": "bd1dbf25c85185e7f1fdc89e9e9d2de6ed9bd41db4460eccabbe35ce7f89c94e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/insta.priv.pem",
+      "sha256": "e3fdf57353a5963f422293210b767b330302a40fc8a3e4559287e74e8ebc44aa",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/ocsp-tests/intermediate-key.pem",
+      "sha256": "8f58d8bc039ea4c55a7906226f5edde885f29e79bc7f80dcf2a7a44092553f4f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/ocsp-tests/ocsp.pem",
+      "sha256": "cdb820bb5f46ceca4bca2325baf219ca6e82cff22a8ca0c25ab4b372f38a19ff",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/ocsp-tests/root-key.pem",
+      "sha256": "2539f4cd02604a3bd5dbb67802390ab39fc3f21ebc20b631883194c02e6e6217",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/ocsp-tests/server-key.pem",
+      "sha256": "c76253ca733a00f812a636cf3c891eaed04d507376617d21c6cf62c6ef64efed",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/ocsp-tests/server.pem",
+      "sha256": "86660f50980466d6f173c5441d4355d2947deaede468413990eb60b17fac8012",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/pemtest.c",
+      "sha256": "27eb47adf14b4c7a0e45610604b87cf97ef9bf828dac91081e322871c85ff025",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/provider_pkey_test.c",
+      "sha256": "732c69f7ea39ccea7c0c71812ff9178c1f0a125323a59788589f848bae7e3c8c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_read_depr_data/dhparams.pem",
+      "sha256": "24422a90f3436bc0a8082c7179213a999c7b5ecab14ac03c0eaf56bc3a97d5a9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_read_depr_data/dsaprivatekey.pem",
+      "sha256": "3b77ebd03fc23f96f724d59c3cd9f4ba6d96750759b82bf9d881c09ff32a0c70",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_read_depr_data/rsaprivatekey.pem",
+      "sha256": "0bd30e9d085c46c0280c73c623f850b72697fe81ca1229a63c7dad5bb2728d00",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/beermug.pem",
+      "sha256": "0e462b4857fff0ee7629d1349d7868641d8ed326cbd10684c8b67cde54fb64b8",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-1023line.pem",
+      "sha256": "86a84b9d9a115e713d0329f7229e2539d921d9604da37da477f4b29cc345464b",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-1024line.pem",
+      "sha256": "b916fd56ea467f5a5c48568125200dc038bb31664b5515bad70092b72b47b80a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-1025line.pem",
+      "sha256": "f8384acfbc6d764651b8b779783c3177974af98c0de2ece081250235701d8bf3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-255line.pem",
+      "sha256": "da42ebabe328c6d8d3199b7fefb4dc2ed53f42a174666dfcd4cde484b2cfef6f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-256line.pem",
+      "sha256": "89ff66bbd376329bf66b6a3e1dab6976eec5b115d46ee073f45d646822f0da49",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-257line.pem",
+      "sha256": "4da1d2c2481367ed4c5b7c5d23b6283ff3c7499a97b82a54118a20150bce1e57",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-blankline.pem",
+      "sha256": "b0ae63e0103c4ab0070471a2277f9c1eb9e988d7d8264e5834102fa985c354c5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-comment.pem",
+      "sha256": "120b03431d05c79132921ecb64511219f33990b20cfdfc99d3e03ca10fefa90c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-corruptedheader.pem",
+      "sha256": "d08fd9a7c2f415e26e18e2d5a7d817efd3827bcc5496c9cab488a842f46f9293",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-corruptiv.pem",
+      "sha256": "2c33d450c2d18afc33cc1c158ac645ffd5d420f75b5b522e36039fdd85105865",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-earlypad.pem",
+      "sha256": "fe6ddf9af4359226877392504e5686ac27c0ebd42f58cb2425b2e13f906b2f96",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-extrapad.pem",
+      "sha256": "9b20b4d3fc3f8565d0619dac3305646e78dbb0938cef97b2ef148b1aed814755",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-infixwhitespace.pem",
+      "sha256": "2da049e48f0a26cafaf736bc777b7de6ee85a626def559e7195c2f84bf1016d3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-junk.pem",
+      "sha256": "247fcc128dac8319f060166b58392f92c36a3c6e74d3fa20e9c6c76d4e322e84",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-leadingwhitespace.pem",
+      "sha256": "aef7de8d5ee7e2afdf0b2117d0511179dab6ff5592c4a9063e006ea8e7b84e57",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-longline.pem",
+      "sha256": "bfe430d9cde396fb8823a391bdea412d185fd8c5c5a8350e5ba95a5b63f5ec8b",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-misalignedpad.pem",
+      "sha256": "9527f82566eec2ec8b7de3d8fbbbd71d47ba13587c732c5329cce3bbc393d1a1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-onecolumn.pem",
+      "sha256": "f9a54c395473a05b2b4363142399351da39c476fc2285f5b019f5ba58a045980",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-oneline.pem",
+      "sha256": "25d363362f72be64f2adac2c61cf2a211737dde9dcea0908af13498c5c1ae359",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-onelineheader.pem",
+      "sha256": "1c847d834994d231ff9afe47c23d001e6a16f6750ce4bb49815b2156dacc4116",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-shortandlongline.pem",
+      "sha256": "c41bb10d8db7c0bb6e3df56c134d5020ff39ebc3f45ad1f669bb1f7ba8c4b94a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-shortline.pem",
+      "sha256": "2d39a10f855192251c09ed3d3e0583800abd05554f8a6ddef38b7dda7a2dcf43",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-threecolumn.pem",
+      "sha256": "f334ab7b7d665ac631bb5167f7463d497ca4ccf1ea1923ba7a4427dccd6f1426",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa-trailingwhitespace.pem",
+      "sha256": "23bcc7db93121381ee9504952d008826ad5d6dece2c0051168a2921ff8471afd",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/dsa.pem",
+      "sha256": "5ff0c641c2feff5475e0c917a9f2a9e4f9400f301db1659f4b7db6c3928575fe",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/04-test_pem_reading_data/key.pem",
+      "sha256": "ebdd18f7829a82404ca54be4177f1ba38b4e211e06f6cef3a584e22f864559b9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-44-bare-priv.pem",
+      "sha256": "6a38c809ee7ba543e2b24d8dcf7d66d087a6d5a78ad0e8be08be1130b83eeb14",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-44-bare-seed.pem",
+      "sha256": "dec658e06122bf4b1564b43105a7acfc5ba0f3256df793ee9983680735ae5ca6",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-44-oqskeypair.pem",
+      "sha256": "0a40d65d1d0ee60c9ac8a5208b7d4a1ada99b3b25fbcb8bceb0dd38306e806c5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-44-priv-only.pem",
+      "sha256": "0ce3ae87683cfd06578e710a9367514bf94c33b2b87627b90ccbb8e6386125f6",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-44-seed-only.pem",
+      "sha256": "1f3d0545ff888b8558127fa4a86e866a450b074e0850d9c0471b46a2a2c8a2a7",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-44-seed-priv.pem",
+      "sha256": "cc7c31b85621c07d78eafcab49df4ca8209469c4da3cbc1695ab801ac07709d4",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-65-bare-priv.pem",
+      "sha256": "f9ebde51e6118371416b1a0df0379aaa4cfd8df5cc7eab707ab8f9e2deb4d3fe",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-65-bare-seed.pem",
+      "sha256": "72607cbf06f5801e62be0d408cf1df54efffd8535ebd6960453ecb49ed43eb13",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-65-oqskeypair.pem",
+      "sha256": "af7902a574b48d59400753ccc3d4639324fe445897fc3b5325f09de714e7574e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-65-priv-only.pem",
+      "sha256": "38c6267319c0ae486da4f946fd0c4f3994a192071235acbf5b4e2e501a721419",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-65-seed-only.pem",
+      "sha256": "3022c858985bc5e8284cff673c06d78d55e88152fcf9a6f5e61ad9f63e5f0e0c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-65-seed-priv.pem",
+      "sha256": "ff89c392f89a5bfd452e22b1144e6e1b75906604ee71d51bfb56bdd2d2b272ec",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-87-bare-priv.pem",
+      "sha256": "70dc7427bf6c0b44cf709fd5e5820ca0108f7197c87975c437f328283c9bd651",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-87-bare-seed.pem",
+      "sha256": "17b04c9de5c8911d4a7508da79b6885e4b9ad40f97313b316c0830962db70367",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-87-oqskeypair.pem",
+      "sha256": "951187d25a6419151027f934b0c3b643d7d1e210492ecab402419b77cbcf0d49",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-87-priv-only.pem",
+      "sha256": "6def3bb0330c418d93f942cd74d889a5ee4a4a86151e967903abd78dfeb4e778",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-87-seed-only.pem",
+      "sha256": "855cdfe5bea4a003e5a2d5f58fb78e7d96ed019f68812f41a6be1125b796a846",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_dsa_codecs_data/prv-87-seed-priv.pem",
+      "sha256": "fd9a70388607943b6f1921f3545fe4d7aa8a55447e98da7e11496a099bebd053",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-1024-bare-priv.pem",
+      "sha256": "c11193c028bc6db281a48e05e6b6f1f05925848405747a4929555afe7ea269b5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-1024-bare-seed.pem",
+      "sha256": "e6765af13f905028e61db095612c981bc70208eedb7ce871a929b3e9fa12e1d9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-1024-oqskeypair.pem",
+      "sha256": "9511a4a4107222fb19ef5a7534ba64ac0a3f82f9857cf9877393c78d7250ea20",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-1024-priv-only.pem",
+      "sha256": "6c7a985370c8ce7f327eae9675edcede0d7ca832a59245b50c3cb8745fb7451c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-1024-seed-only.pem",
+      "sha256": "3ae21ecd3f5731a0e6b311931cf9970e908827cd7c76d9401d1415578622170b",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-1024-seed-priv.pem",
+      "sha256": "405ec1368fe36c5f8350557b20217eb1a5be3c283ee3d4cf670cbd7bc19a9a7a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-512-bare-priv.pem",
+      "sha256": "bd3eee6bc6477e72e4b0a68fd341e9ef8c0c86bb08acfc67666fb5b84062f847",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-512-bare-seed.pem",
+      "sha256": "f9f762e7d08acbf443aee9aeb116e8a51d89eded25b80ec8b0d643013de1b78d",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-512-oqskeypair.pem",
+      "sha256": "0681318bd6f4844780daeb76e4b1330dc0609a1f17acacb3272048f08a7cc159",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-512-priv-only.pem",
+      "sha256": "a426c00bab6aa0c1d89be72caabcd5cc5ae6b75d41d39c44ad7e2cd4e65d8147",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-512-seed-only.pem",
+      "sha256": "1f823c67ac65aab4b3010be697e1717ea3b5f9cbdaa90e7b440b8f1ba86354d6",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-512-seed-priv.pem",
+      "sha256": "9cfa48b5169b3f3050a5b8230e8f9d026874649057ba9bc4e229b5a12a4f097b",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-768-bare-priv.pem",
+      "sha256": "ee23adf9ad9da9eb954f9ad8918c470de9d05d96c18af0f6ef2acdec085ecde2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-768-bare-seed.pem",
+      "sha256": "0b3edeaf1dfd8dce4e71abdb8a92c759979c23e901bc4839000bb54b07692906",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-768-oqskeypair.pem",
+      "sha256": "2035d3e52c17d1d8b2a6413f7287d15c61be6bcb145eebf779018184782b6944",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-768-priv-only.pem",
+      "sha256": "8feff5989a7facc392c3e3bb35a6eb921b63f5a3e204480c4cccc237df21400c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-768-seed-only.pem",
+      "sha256": "5b4016f2b947e79469ea8bf06011d2d5404d16aa723ea6f2c4b29da8e40cdf5f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_ml_kem_codecs_data/prv-768-seed-priv.pem",
+      "sha256": "4e8c07f6ea2f70f5c8f866be1f9aaf35bf148f0ff45ed79768dabea2a4c5ba99",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_mp_rsa_data/rsamplcm.pem",
+      "sha256": "31dbec7f2d9190711efa4d517d1a4548f537c529037a6823e4f93f029527333c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/15-test_rsapss_data/negativesaltlen.pem",
+      "sha256": "d8de80f8b6481fdbe99e50eed7eb76604fa0280960915779913e955f4746864d",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/25-test_req.t",
+      "sha256": "053a4045a9897654776e745073332cf3bf12cbf2cd9fe13c39786d9baf851b77",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_brainpool.txt",
+      "sha256": "b132c90566db7d970cad9c11facbe4c17fc82e2372df98e65c0cf4919dfdf7cd",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_dh.txt",
+      "sha256": "3b2ab30400a91c364c21721ad27c95e17fa2f8b8d6547bc96b52a528041ee2ba",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_dsa.txt",
+      "sha256": "fa7e8586e096f5fca7740bcf3d2b64602d31c2c15ef899983a5d39a306528184",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_dsa_rfc6979.txt",
+      "sha256": "7d694678368d61235b598320d26bc3cac736837df86f28124ced74c5705e67b0",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_dsa_sigalg.txt",
+      "sha256": "99cddf1b44f07d2e013810b35412b489dace0ea2544885afdd2164f634c516c2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_ecc.txt",
+      "sha256": "5d8e27a11b2cf098b145fa0b304f38fe61f97524eb44fac0eebaf45532aafe6a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_ecdh.txt",
+      "sha256": "a881f81200ae7c01b08e3e1b520c7dbaf161c137e8de09acb53f8816629853bd",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_ecdsa.txt",
+      "sha256": "ac707c2bfaabf1267d7fd9bb481b52de8c072a63190de33a86f563257acf04a3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_ecdsa_rfc6979.txt",
+      "sha256": "dcafa7272349c5fc9cd6da8a2b3712a37b7a2fb512cbffd7d1a73e68750fca97",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_ecdsa_sigalg.txt",
+      "sha256": "3741822cff789a8c9f21bd182855e325f231d3134f0610c882703a36dc2ca9d7",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_ecx.txt",
+      "sha256": "e2073638c30705ead8fee4bdf33ebcc5a7dadc09809c4f62d417f15ce065babe",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_ecx_sigalg.txt",
+      "sha256": "75edd1197b9d7819a0397d70903f30ab8389eef2c48587b71a8e877b083882fe",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_ffdhe.txt",
+      "sha256": "13acc8a91789f127d1674430a82972421819126a39c2a3e90dadfc8cf33d13c3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_kas.txt",
+      "sha256": "9c9cae96fcc2dac5615ca710a91561290cd2b9f51f2d359e4849005f99f1e0e9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_mismatch.txt",
+      "sha256": "fe5113ec3ca888a14677a4d470a207943e8ddb14001df6d75191c8ea2015803b",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_mismatch_ecx.txt",
+      "sha256": "8501e115fbf7e1164d38f7953d8ccd611bf4cf94f70c1dd482a9e90a8c791e6f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_rsa.txt",
+      "sha256": "8845dd2c78ed74daf57f206f757d445465fdfc3cf72372b315e009f512bae1af",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_rsa_common.txt",
+      "sha256": "f58b21a5a384c799e963acdacc67ccc95047f5043a7902158682bdc3e57471a2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_rsa_kem.txt",
+      "sha256": "a5bea425e3693c35469cc60636f6ce99ce239bc51ffa925128755942e6bb80bd",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_rsa_sigalg.txt",
+      "sha256": "59940730a5f554cd61581d17dd5ffb1205a9f00ad9f799dece2dda1fa6a17f32",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_data/evppkey_sm2.txt",
+      "sha256": "eab87355040faad51d9246326b43e27dc94e88f96b1155da28b72acd47885703",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_pkey_provided/DH.priv.pem",
+      "sha256": "8365682b056b53ef74b7991d5e51e0316cc6b650d7fab348f17d8e8d23c73397",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_pkey_provided/DSA.priv.pem",
+      "sha256": "6bf9aebe0a6248639234218d7eab0d54f896ede5ac4932fa686d7f830d310e60",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_pkey_provided/EC.priv.pem",
+      "sha256": "0e5ba131d7655491c6a34b0f43abd614b851eed6d46ab3843296a728aa8c5dcf",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_pkey_provided/ED25519.priv.pem",
+      "sha256": "c4932a9b6b97423b249a53e58d706f820185467464699038ed7ca5b29815ba03",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_pkey_provided/ED448.priv.pem",
+      "sha256": "7d80d12d8f866e70d92e80433feacf9d51493d6743685861438c908d91e95405",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_pkey_provided/RSA.priv.pem",
+      "sha256": "7b23fdc1a6fb5d9df5c65b5c841a55f302917593471248e5f0e488950332bec1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_pkey_provided/X25519.priv.pem",
+      "sha256": "e0d11e8b607bd1e45a7d0c10ea36f3587afa32ba8ce3a55f032aad51fa2edd7c",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/30-test_evp_pkey_provided/X448.priv.pem",
+      "sha256": "42c03331dd25a8b9c18a47c218f9ec600c6357db528b39c5795a79307e4061d1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/61-test_bio_pw_callback_data/private_key.pem",
+      "sha256": "eadb9ced71a3c36e60feba3e3566dce79c15dd8a37092161e4113aa8af924463",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/65-test_cmp_client_data/client.key",
+      "sha256": "16c3a92de79665b3517e31498aaec24031217ddd24c44ca902c8439c314b2865",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/65-test_cmp_client_data/server.key",
+      "sha256": "bfaf84a22c38b0bb23d763616fdeba2d04800821fc302f50480df74b59214aff",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/65-test_cmp_msg_data/new.key",
+      "sha256": "25170ca65b2d2b66fc5aff6902dff410ea755d7eca89c7a8c347c111ff9a5257",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/65-test_cmp_protect_data/prot_Ed.pem",
+      "sha256": "4b4fc44435f8d20dd4e915752db1019d3936877152b95d5f39414f422b1110cd",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/65-test_cmp_protect_data/prot_RSA.pem",
+      "sha256": "bfaf84a22c38b0bb23d763616fdeba2d04800821fc302f50480df74b59214aff",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/65-test_cmp_protect_data/server.pem",
+      "sha256": "bfaf84a22c38b0bb23d763616fdeba2d04800821fc302f50480df74b59214aff",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/65-test_cmp_vfy_data/insta.priv.pem",
+      "sha256": "e3fdf57353a5963f422293210b767b330302a40fc8a3e4559287e74e8ebc44aa",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/65-test_cmp_vfy_data/server.key",
+      "sha256": "bfaf84a22c38b0bb23d763616fdeba2d04800821fc302f50480df74b59214aff",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_ca_data/revoked.key",
+      "sha256": "d277e4427d2e192b6d05b665212c9549738b6fbcc0e9180fcfcf97c323b462b8",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cmp_http_data/Mock/new.RSA2048.key",
+      "sha256": "e289ca59a8c4366452bf08b7cd873362564b64d5921e0049d5e1bae8a241db29",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cmp_http_data/Mock/new.key",
+      "sha256": "66d21d966a7dde3100abc32fd83efb18f89b961b7dd8a6bce7b8d8b158012989",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cmp_http_data/Mock/newWithNew.pem",
+      "sha256": "037785791a67945ba8f4395699ed67484f99bef4c47c579f915a381be10be573",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cmp_http_data/Mock/new_pass_12345.key",
+      "sha256": "fc8ccd0034c92c6fe970582549cec2ab84fa8fac95c85ead2a5981578d5da86e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cmp_http_data/Mock/oldWithOld.pem",
+      "sha256": "5e31469070a0dca9d210731c97a7fdfab6add141d48baf21a915559e337068f3",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cmp_http_data/Mock/server.key",
+      "sha256": "3ebf0386cca98f92ae4212060b89101ba737c1ea800da45577bc059a9dd4467e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cmp_http_data/Mock/signer.key",
+      "sha256": "66d21d966a7dde3100abc32fd83efb18f89b961b7dd8a6bce7b8d8b158012989",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cmp_http_data/Mock/signer.p12",
+      "sha256": "11ca9bc9bba8026be17633116d0fadb5305b2a0ea5fde9920ac7c0970fc4adef",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cms_data/dh-key.pem",
+      "sha256": "27ffbf9be1dea1f007292439edbf245c11b8fb2be14735303db2c330e6c96416",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_cms_data/ecdh-key.pem",
+      "sha256": "7a26d1de5b3b3f0ed43c515eaa1232aac5d5b16f57a9bd1f99564ac444570f6a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_ocsp_data/key.pem",
+      "sha256": "e13487b3f6e90117643a1144e037d4fecdf87d700dde7038bcf70d708a365e69",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/bad1.p12",
+      "sha256": "6d12825e21db9a98c004a6e737ad6465a6edb3cc58dea5b3dfafc01a87a40817",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/bad2.p12",
+      "sha256": "336ed34dfd763608ae8028c63aa643fe59e62d83b272a165fd4d109bf5a5e304",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/bad3.p12",
+      "sha256": "170e14f3d34ce21b358d44319955c331e4e3c9036c84ea6c226621af48a90059",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/nomac_parse.p12",
+      "sha256": "e6e993b0206c393e0390b5b8d7a025a500a7b6e2f02951d2a0c049c6e38c9357",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.bad-iter.p12",
+      "sha256": "cc6c9709db9a96e5e04dfd740d5a739decb4a9b6605694cda1c4958179d58b0f",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.bad-key-len.p12",
+      "sha256": "e95ff3b0299e1ad2aacb685ccd7b52452ebc617dd9451c6e583992e1ca7ba03b",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.bad-len.p12",
+      "sha256": "beb4d6a6674a823935d59c548a7dd4e06395243a9a2dd1279cc5a973b52b839c",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.bad-salt-type.p12",
+      "sha256": "4d2f18b1f17ae61a2cd9cb915d0160c57adcb1b59ea226b8ab58d9196c36ada4",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.bad-salt.p12",
+      "sha256": "b03af0abd2075652ed4f17fb014a1b2f7d4f61f3071931dba45e43b13c9a7ffd",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.good-shorter-key-len.p12",
+      "sha256": "e888bcc7ab9a2dd87bde8acad4c6b169e32b5a3e17adb0f8cb638396371f5f7e",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.good.p12",
+      "sha256": "a5aa952ca788f945834c9edb40f0b94b2d845b86d0c80856adc9578d05e9de43",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.negative-len.p12",
+      "sha256": "483bd1fa8dfbfc58b4ac04f0c5923156093f0b066fb2a88f2c527ba0e5b3ac2f",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.no-len.p12",
+      "sha256": "d2925861db528cbb14d99d8b0073b203ae1577912430058516b70033c0edc9d0",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.no-salt.p12",
+      "sha256": "f80ad408b51b70a7011f240e029a355703dd71c79a4154a66bb818da63f3411e",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.very-big-len.p12",
+      "sha256": "c581060cf8fb9370cc60206507624cc0ad4a9f5877e3730539fd42c296e45004",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_256_256.zero-len.p12",
+      "sha256": "6a4244404e7c6fb5b20551bf4713df567589e017dc6c2a9d08856863a9560dee",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_512_256.good.p12",
+      "sha256": "da385cc443abb3bb1872fda6c02a74c1f619c2e6f6abb9dce7793d56388e61d0",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_512_512.good.p12",
+      "sha256": "c3e2845fcb7f78ea188286448669875474009dd29d299ab234bf6f14f1065a53",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/80-test_pkcs12_data/pbmac1_sha1_hmac_and_prf.p12",
+      "sha256": "20cfcceb9b704167211b1815c2d0820e6772990afc47e78f4e7826692f9ddad0",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/90-test_gost_data/server-key2001.pem",
+      "sha256": "50011042e2fbe0a4352246057f8b27f7765a35bd9d8805ddf66fc304de3aba18",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/90-test_gost_data/server-key2012.pem",
+      "sha256": "b0f32100011b828faa40c746a25bf04d65398145619dcc7c53261ce7df404b22",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/90-test_sslapi_data/dhparams.pem",
+      "sha256": "7d1ae11ba3ec9eaefbcea8cb14bc34db91b352cf899d5b454e5757d8ff8c035d",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/90-test_store.t",
+      "sha256": "508f089842d7cb708029f07fd63d55237c7c18063b8fede17b46a624fb3a4f82",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/90-test_store_cases_data/garbage-pkcs12.p12",
+      "sha256": "2f94bff263a00c6495a54795ffe3ae69d7f320221c455b7f8ada0af45ca04a7b",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/90-test_store_cases_data/test-BER.p12",
+      "sha256": "abd4075be40dfe6cb8b8fb9cc11d3da66c9fb700a97c9d3cf287c1aaed8ba29b",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/90-test_store_data/rsa-key-2432.pem",
+      "sha256": "9bd605fc01173c5aa7728164a28f09f4e323f6af2375cf48a88bf8d3510fb4c7",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/90-test_threads_data/rsakey.pem",
+      "sha256": "3ebf0386cca98f92ae4212060b89101ba737c1ea800da45577bc059a9dd4467e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/91-test_pkey_check_data/dhpkey.pem",
+      "sha256": "bb92a13de2fd3bc0ff995743b4ab96d932f26a9afe689e1b5edc61c26022f5ef",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/91-test_pkey_check_data/ec_p256_bad_0.pem",
+      "sha256": "2eb739b47d6028cafe41e8cb2d9b7c7e8022cf00184f326ff66eee98417ff786",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/91-test_pkey_check_data/ec_p256_bad_1.pem",
+      "sha256": "566de227eff2a0660d05bb59fdcdfead77a8126f45dee2fbb4bc8ac94b6228ab",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/91-test_pkey_check_data/sm2_bad_0.pem",
+      "sha256": "faac7f124f0aac4f762517fe192d3e1248232e207193a8483d420561f23b5131",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/91-test_pkey_check_data/sm2_bad_1.pem",
+      "sha256": "7838c2899112e681d5bfff9527c5b3ff2caee2da175a1ee2c511644a990e5fec",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/recipes/91-test_pkey_check_data/sm2_bad_neg1.pem",
+      "sha256": "e989816b33f913b3b707303042e0b992e541a8d3b9d6cef3740c64ddb5d73326",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/csrsa1.pem",
+      "sha256": "f6b5d442faac9720cebd3b990f38497fca27f283cec95e39a3a1289e180e3bcf",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/sm_mldsa44.pem",
+      "sha256": "640c60cffeda17071e20da90a858ecd3d9345aaa4aaf644ef1b4b2e10b652d02",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/sm_mlkem512.pem",
+      "sha256": "193e10b71ebc5b9c007e767fa2749e796d040890f189eee7ce5f2e26336d5aa1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/sm_mlkem768.pem",
+      "sha256": "b8e118ac87d412ac555b05329369caa340d80cb2ad2ea8a3f1ed1761271d9bc5",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/sm_slhdsa_sha2_128s.pem",
+      "sha256": "71473f399d61ba4d645b5d9ae1df15ec04f8f1f100fdc3ced639e856d631f0a8",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/sm_slhdsa_shake_128s.pem",
+      "sha256": "d6e47b87b1e56936b1eb442ba7389161293fd165e9a724d489e186543996e991",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/sm_slhdsa_shake_256s.pem",
+      "sha256": "1663e23a975609d69a4a3dc9e8fd9226d7286ccd22300f8c01b8465b18362c07",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smdh.pem",
+      "sha256": "749ccec1e5f240f1780b597aa2435c8458b1a03da1420bdca2dd16df8971faed",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smdsa1.pem",
+      "sha256": "74ced592ae62b11b395c459f4513a787db37e39c096a8c8b5164df7b22f28743",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smdsa2.pem",
+      "sha256": "d8f89c0981f06f84fc3c1d489e775f5676085d74cc244bc18255eadcc4b27eaa",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smdsa3.pem",
+      "sha256": "e23a199a8861bbb3bbf8bfa00cecdb58e3efdb8e4f110ab45195be244abadd94",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smec1.pem",
+      "sha256": "733c9fb4eceb581df2bcdfd86946e8a1b019daa432606ae941cfc94f2286d2a6",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smec2.pem",
+      "sha256": "d2a6d74c17d4547568a11cc88411d55dbae6d3d90bd13a8e2d00aa8ca25cf2c1",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smec3.pem",
+      "sha256": "d940ac0bb1e4880c2679e48a0527d38cab19d4a712d42f402b65ecff3c2e26be",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smroot.pem",
+      "sha256": "322cae84b8307d5f61bbde15e9f90f458844bd8ce8de6ef57cc6ee8f26da5381",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smrsa1.pem",
+      "sha256": "bbf734e62d5e22338a3ad178b6a8f7f251ee44b37b992b5837f77283a30bb843",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smrsa1024.pem",
+      "sha256": "e794a7d802ce13a105c07b503aba3bd7120571c4ac30237c850add80406c50f9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smrsa2.pem",
+      "sha256": "1d01d8dac710c1b729632c97ceee749278e2ce3036d879d0dd8b7d814cb1b9c8",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smrsa3-key.pem",
+      "sha256": "55a13bd1e768d508f8082c6c8e7067d78f0744fbd83a261e14c35566d3085885",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/smime-certs/smrsa3.pem",
+      "sha256": "f9071a185a0ae21e6eccfef7b9421124f7462a3d4f0da2c0ad5a5277e9adf711",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testdsa.pem",
+      "sha256": "7146685c894fbbac2435ed117b674d7bd2ef46f3d7aa8fa637bb1b05d32ba341",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testec-p112r1.pem",
+      "sha256": "8347b49f8fd7810146eb24003402fc310fcb7efd4a715f233896dea923c2df19",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testec-p256.pem",
+      "sha256": "102cae373d1814656f4672c6c5b8ed048873bf202220231a5a776ffdf1398fd2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testec-sm2.pem",
+      "sha256": "b7b71b23b2ce563dad83e1ec74290ec4e8b23caaa2e092d90784f522cee1d04a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/tested25519.pem",
+      "sha256": "4b4fc44435f8d20dd4e915752db1019d3936877152b95d5f39414f422b1110cd",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/tested448.pem",
+      "sha256": "7d80d12d8f866e70d92e80433feacf9d51493d6743685861438c908d91e95405",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testmldsa44.pem",
+      "sha256": "e6eb29b8946afefd23e3db9a55d6107022bb5ed6dd5e12dc30a30200686c01f9",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testmldsa65.pem",
+      "sha256": "b7685c6d1e651993627e25f101fc411a3ec22d02fc97e4a719a41d3d5df52791",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testmldsa87.pem",
+      "sha256": "46434617081299642b47e25bacb956c53db65dfa6eb27ecfed60313a157d3d35",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testrsa.pem",
+      "sha256": "8afe3364339809561aeedd1200efded7344afc41e185838c637238ac76eed11f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testrsa2048.pem",
+      "sha256": "930d2215f1b9fbc0343546fcc64ca06e5fab04e9cd63f34197e2a4fb4f43aa18",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testrsa_withattrs.pem",
+      "sha256": "a72f814c8edd5c09ccb989f8dfa84343cf92591b2f521e91c04ea7f186cf3a7f",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testrsapss.pem",
+      "sha256": "ed2e7796ca5642b77221497de727068ad2b93328c2fccd5824d0680f30bc2360",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/testrsapssmandatory.pem",
+      "sha256": "3420bde446444f8fb9ab23ae5a4bcd647f2575654041e64d9ae199eaaf8c879e",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/openssl-3.6.4.tar.gz",
+      "archive_sha256": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+      "path": "openssl-3.6.4/test/threadstest.c",
+      "sha256": "afbb1064fffb4acb8ddef4d471c6e69e23336cee4ff0fc0808dc797ddf693962",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/vulkan-loader-1.4.357.0.tar.gz",
+      "archive_sha256": "54f2537df22313768da0317dda2abdaaab7711b4081c48c869a79db343d0ae70",
+      "path": "Vulkan-Loader-vulkan-sdk-1.4.357.0/docs/LoaderDriverInterface.md",
+      "sha256": "6d30a1cf7c154932ac8356eef1d0c36c157cf2cba0f351c9116fee5a543eff54",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/vulkan-loader-1.4.357.0.tar.gz",
+      "archive_sha256": "54f2537df22313768da0317dda2abdaaab7711b4081c48c869a79db343d0ae70",
+      "path": "Vulkan-Loader-vulkan-sdk-1.4.357.0/docs/LoaderLayerInterface.md",
+      "sha256": "aeeb96c4c48107d63a9cf8115fa0b4d005563001df2b1bbd1c689d993d96928e",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/x264-b35605ace3ddf7c1a5d67a2eb553f034aef41d55.tar.gz",
+      "archive_sha256": "cd71a7515b0e9a012e1ac9b1f8415bebcaf6fc97d4db32286642ac4c0fbe24f9",
+      "path": "x264-b35605ace3ddf7c1a5d67a2eb553f034aef41d55/.gitlab-ci.yml",
+      "sha256": "545c26fdd0e9f8ab5d43456e98badc40283c9681a4c096533a9d9cc48097be04",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/test/test_config.py",
+      "sha256": "4bdef19a45294b65000a13aa81878e96d21ebf9dfe028f7e43f5f459bd995a97",
+      "categories": [
+        "user-home-path"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/test/testcert.pem",
+      "sha256": "da12d5e2736cb46402541450bc54bf28823410dbf014936a5f15b932b9dd0c31",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/test/testdata/certificate/ca.key",
+      "sha256": "07c055e6d502171db5ef582b7cfa8f119694e946ad6a7c40db85e19f8d210888",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/test/testdata/certificate/client.key",
+      "sha256": "bfc441dc993e73d34146833d41c535a1e11cb3d198db9ef6d537765e3923ee39",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/test/testdata/certificate/clientencrypted.key",
+      "sha256": "204de34beeaf8eef57d8816ba9665bbad9f9ae6eaaf3414d23720c3ae39bc54a",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/test/testdata/certificate/clientwithencryptedkey.crt",
+      "sha256": "e6cb99655bd9ed9eb6d83850cc4889fc3e472f57344dfa91fc187bc6f26cb4a2",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/test/testdata/certificate/clientwithkey.crt",
+      "sha256": "815cfd63fcb864ffd3f7f84ff8b69b381eb55893a59653f28fe73b910436c070",
+      "categories": [
+        "private-key"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/test/testdata/cookies/session_cookies.txt",
+      "sha256": "002fad5e712b8f0669dcf447683c2a14b4181903c7cef8e977b79b84706def7a",
+      "categories": [
+        "banned-private-filename"
+      ]
+    },
+    {
+      "archive": "Vendor/PortableRuntime/sources/yt-dlp-2026.08.19.tar.gz",
+      "archive_sha256": "a0779c45179a846986a852bce31bddbe9259b594574f75c0ec146d0567058f7e",
+      "path": "yt-dlp-2026.08.19/yt_dlp/extractor/shahid.py",
+      "sha256": "f82c1f065f6aa3dd5ce8ee3491d4c49f245d1e7ba921b8cc0cc9c8658a634fbd",
+      "categories": [
+        "aws-access-key"
+      ]
+    }
+  ]
+}

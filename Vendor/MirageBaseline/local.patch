@@ -1,0 +1,654 @@
+diff --git a/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.h b/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.h
+index f72a1d0..8607645 100644
+--- a/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.h
++++ b/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.h
+@@ -45,6 +45,7 @@ void  SceneRendererMacDesktopStop(void* handle);
+ void  SceneRendererMacDesktopWake(void* handle);
+ void  SceneRendererMacDesktopActivate(void* handle);
+ void  SceneRendererMacDesktopDeactivate(void* handle);
++void  SceneRendererMacDesktopSetHorizontalFlip(void* handle, bool enabled);
+ bool  SceneRendererMacDesktopPrepareMetalFX(void* handle);
+ void  SceneRendererMacDesktopPresentMetalFrame(void* handle, void* texture,
+                                                void* command_queue,
+diff --git a/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.mm b/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.mm
+--- a/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.mm
++++ b/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.mm
+@@ -21,6 +21,18 @@
+ // not own the wallpaper instance; app-level code that observes macOS
+ // now-playing state should construct `sr::MediaStatus` and call that runtime
+ // entry point directly.
++
++// The wallpaper host is display-only. AppKit can finish launching again
++// inside run(), so preserve the no-activation policy on every launch pass.
++@interface SRBackgroundApplication : NSApplication
++@end
++@implementation SRBackgroundApplication
++- (void)finishLaunching {
++    [self setActivationPolicy:NSApplicationActivationPolicyProhibited];
++    [super finishLaunching];
++    [self setActivationPolicy:NSApplicationActivationPolicyProhibited];
++}
++@end
+ 
+ @interface SceneRendererWallpaperWindow : NSWindow
+ @end
+@@ -69,6 +81,7 @@
+     std::atomic<bool>                deactivation_requested { false };
+     std::atomic<bool>                deactivation_confirmed { false };
+     std::atomic<bool>                metal_presenter_enabled { false };
++    std::atomic<bool>                horizontal_flip { false };
+     std::mutex                       present_mutex;
+     id<MTLDevice>                    presenter_device { nil };
+     id<MTLCommandQueue>              fallback_queue { nil };
+@@ -92,6 +105,7 @@
+     return @"#include <metal_stdlib>\n"
+             "using namespace metal;\n"
+             "struct VSOut { float4 position [[position]]; float2 uv; };\n"
++            "struct PresenterOptions { uint horizontal_flip; };\n"
+             "vertex VSOut vs_main(uint vid [[vertex_id]]) {\n"
+             "    float2 pos[3] = { float2(-1.0, -1.0), float2(3.0, -1.0), float2(-1.0, 3.0) };\n"
+             "    float2 uv[3] = { float2(0.0, 1.0), float2(2.0, 1.0), float2(0.0, -1.0) };\n"
+@@ -100,8 +114,10 @@
+             "    value.uv = uv[vid];\n"
+             "    return value;\n"
+             "}\n"
+-            "fragment float4 fs_main(VSOut value [[stage_in]], texture2d<float> texture [[texture(0)]], sampler texture_sampler [[sampler(0)]]) {\n"
+-            "    return texture.sample(texture_sampler, value.uv);\n"
++            "fragment float4 fs_main(VSOut value [[stage_in]], texture2d<float> texture [[texture(0)]], sampler texture_sampler [[sampler(0)]], constant PresenterOptions& options [[buffer(0)]]) {\n"
++            "    float2 uv = value.uv;\n"
++            "    if (options.horizontal_flip != 0) uv.x = 1.0 - uv.x;\n"
++            "    return texture.sample(texture_sampler, uv);\n"
+             "}\n";
+ }
+ 
+@@ -273,6 +289,10 @@
+     [encoder setRenderPipelineState:host->present_pipeline];
+     [encoder setFragmentTexture:source atIndex:0];
+     [encoder setFragmentSamplerState:host->present_sampler atIndex:0];
++    struct PresenterOptions {
++        std::uint32_t horizontal_flip;
++    } options { host->horizontal_flip.load(std::memory_order_relaxed) ? 1u : 0u };
++    [encoder setFragmentBytes:&options length:sizeof(options) atIndex:0];
+     [encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+     [encoder endEncoding];
+ }
+@@ -549,7 +569,10 @@
+     EmitMouseEnter(host, inside);
+ 
+     if (inside && host->callbacks.mouse_move != nullptr) {
+-        const double x = Clamp01((mouse.x - NSMinX(frame)) / NSWidth(frame));
++        double x = Clamp01((mouse.x - NSMinX(frame)) / NSWidth(frame));
++        if (host->horizontal_flip.load(std::memory_order_relaxed)) {
++            x = 1.0 - x;
++        }
+         const double y = Clamp01(1.0 - ((mouse.y - NSMinY(frame)) / NSHeight(frame)));
+         host->callbacks.mouse_move(x, y, host->callbacks.userdata);
+     }
+@@ -588,8 +611,11 @@
+ extern "C" void* SceneRendererMacDesktopCreate(const SceneRendererMacDesktopConfig* config,
+                                                SceneRendererMacDesktopCallbacks callbacks) {
+     @autoreleasepool {
+-        NSApplication* app = NSApplication.sharedApplication;
+-        [app setActivationPolicy:NSApplicationActivationPolicyAccessory];
++        NSApplication* app = [SRBackgroundApplication sharedApplication];
++        // This process only renders desktop/preview surfaces and must never
++        // become the active application. Accessory helpers deactivate an active
++        // accessory host during AppKit startup, sending its catalog behind apps.
++        [app setActivationPolicy:NSApplicationActivationPolicyProhibited];
+         [app finishLaunching];
+ 
+         NSScreen* screen = nil;
+@@ -795,6 +821,21 @@
+     }
+ }
+ 
++extern "C" void SceneRendererMacDesktopSetHorizontalFlip(void* handle, bool enabled) {
++    auto* host = static_cast<MacDesktopHost*>(handle);
++    if (host == nullptr) return;
++    auto apply = ^{
++      if (host->surface_layer == nil) return;
++      host->horizontal_flip.store(enabled, std::memory_order_relaxed);
++      [CATransaction flush];
++    };
++    if (NSThread.isMainThread) {
++        apply();
++    } else {
++        dispatch_sync(dispatch_get_main_queue(), apply);
++    }
++}
++
+ extern "C" bool SceneRendererMacDesktopPrepareMetalFX(void* handle) {
+     auto* host = static_cast<MacDesktopHost*>(handle);
+     if (host == nullptr || host->surface_layer == nil || host->surface_layer.device == nil)
+@@ -839,15 +880,19 @@
+         const NSUInteger content_height =
+             std::min<NSUInteger>(source_height == 0 ? source.height : source_height, source.height);
+         bool used_metalfx = false;
++        // Keep the presenter (including live horizontal flip), but do not
++        // allocate an upscaler and its textures for a native-size frame.
+         if (content_width > 0 && content_height > 0 &&
+             drawable.texture.width >= content_width &&
+             drawable.texture.height >= content_height &&
++            (drawable.texture.width > content_width || drawable.texture.height > content_height) &&
+             EnsureSpatialScaler(host, source, drawable.texture)) {
+             const MTLTextureUsage input_usage = host->spatial_scaler.colorTextureUsage;
+             const MTLTextureUsage output_usage = host->spatial_scaler.outputTextureUsage;
+             const bool valid_input = (source.usage & input_usage) == input_usage;
+             id<MTLTexture> output = nil;
+-            if ((drawable.texture.usage & output_usage) == output_usage &&
++            if (!host->horizontal_flip.load(std::memory_order_relaxed) &&
++                (drawable.texture.usage & output_usage) == output_usage &&
+                 drawable.texture.storageMode == MTLStorageModePrivate) {
+                 output = drawable.texture;
+             } else {
+@@ -878,7 +923,7 @@
+                   drawable.texture.height);
+         } else if (! used_metalfx && ! host->logged_linear) {
+             host->logged_linear = true;
+-            NSLog(@"SceneRenderer MetalFX Spatial unavailable for this frame; using linear fallback");
++            NSLog(@"SceneRenderer direct presentation (native size or spatial scaling unavailable)");
+         }
+ 
+         SRHostRef* ref = host->hostRef;
+diff --git a/SceneRenderer/Tools/SceneWallpaper/ControlChannel.cpp b/SceneRenderer/Tools/SceneWallpaper/ControlChannel.cpp
+index ace3142..842891d 100644
+--- a/SceneRenderer/Tools/SceneWallpaper/ControlChannel.cpp
++++ b/SceneRenderer/Tools/SceneWallpaper/ControlChannel.cpp
+@@ -171,6 +171,11 @@ void SceneControlChannel::dispatchLine(const char* line) {
+         m_wallpaper.setMuted(true);
+         m_wallpaper.pause();
+         if (m_on_deactivate) m_on_deactivate();
++    } else if (cmd == "flip") {
++        auto value = msg.get("value");
++        if (value.is_some() && (*value)->is_boolean() && m_on_flip) {
++            m_on_flip(*(*value)->as_bool());
++        }
+     } else if (cmd == "quit") {
+         m_running.store(false);
+         if (m_on_quit) m_on_quit();
+diff --git a/SceneRenderer/Tools/SceneWallpaper/ControlChannel.h b/SceneRenderer/Tools/SceneWallpaper/ControlChannel.h
+index a6854e8..2f4b993 100644
+--- a/SceneRenderer/Tools/SceneWallpaper/ControlChannel.h
++++ b/SceneRenderer/Tools/SceneWallpaper/ControlChannel.h
+@@ -14,6 +14,7 @@
+ //   {"cmd":"fillmode","value":"cover"|"contain"|"stretch"}
+ //   {"cmd":"speed","value":1.0}
+ //   {"cmd":"activate"}              // reveal a deferred-show window
++//   {"cmd":"flip","value":true}    // mirror the desktop surface horizontally
+ //   {"cmd":"snapshot","path":"…","token":"…"}  // still frame for the desktop picture
+ //   {"cmd":"quit"}
+ //
+@@ -48,6 +49,9 @@ public:
+     // on_quit is invoked (from the reader thread) when a {"cmd":"quit"} arrives
+     // or stdin hits EOF. It should stop the desktop run loop.
+     //
++    // on_flip receives the requested horizontal mirror state for {"cmd":"flip"}.
++    // The host applies it to the desktop surface without restarting the scene.
++    //
+     // on_snapshot receives (path, token) for {"cmd":"snapshot"} and is expected
+     // to write a still of the live frame and report the outcome back on stdout.
+     // It runs on the reader thread and blocks it while waiting for a frame,
+@@ -55,12 +59,14 @@ public:
+     SceneControlChannel(sr::SceneWallpaper& wallpaper, std::function<void()> on_quit,
+                         std::function<void()> on_activate = {},
+                         std::function<void()> on_deactivate = {},
++                        std::function<void(bool)> on_flip = {},
+                         std::function<void(const std::string&, const std::string&)>
+                             on_snapshot = {})
+         : m_wallpaper(wallpaper),
+           m_on_quit(std::move(on_quit)),
+           m_on_activate(std::move(on_activate)),
+           m_on_deactivate(std::move(on_deactivate)),
++          m_on_flip(std::move(on_flip)),
+           m_on_snapshot(std::move(on_snapshot)) {}
+ 
+     ~SceneControlChannel() { stop(); }
+@@ -91,6 +97,7 @@ private:
+     std::function<void()> m_on_quit;
+     std::function<void()> m_on_activate;
+     std::function<void()> m_on_deactivate;
++    std::function<void(bool)> m_on_flip;
+     std::function<void(const std::string&, const std::string&)> m_on_snapshot;
+     std::atomic<bool>     m_running { false };
+     std::thread           m_thread;
+diff --git a/SceneRenderer/Tools/SceneWallpaper/WallpaperApp.cpp b/SceneRenderer/Tools/SceneWallpaper/WallpaperApp.cpp
+index 728e18e..d89677f 100644
+--- a/SceneRenderer/Tools/SceneWallpaper/WallpaperApp.cpp
++++ b/SceneRenderer/Tools/SceneWallpaper/WallpaperApp.cpp
+@@ -646,6 +646,7 @@ int main(int argc, char** argv) {
+             [desktop]() { SceneRendererMacDesktopStop(desktop); },
+             [desktop]() { SceneRendererMacDesktopActivate(desktop); },
+             [desktop]() { SceneRendererMacDesktopDeactivate(desktop); },
++            [desktop](bool enabled) { SceneRendererMacDesktopSetHorizontalFlip(desktop, enabled); },
+             [](const std::string& path, const std::string& token) {
+                 const bool ok = ! path.empty() && mirage::WriteSceneSnapshot(path);
+                 EmitSnapshotDone(token, ok);
+diff --git a/WebRenderer/CMakeLists.txt b/WebRenderer/CMakeLists.txt
+index 731945a..1fc4cbc 100644
+--- a/WebRenderer/CMakeLists.txt
++++ b/WebRenderer/CMakeLists.txt
+@@ -31,6 +31,7 @@ add_link_options($<$<LINK_LANGUAGE:OBJCXX>:-fobjc-arc>)
+ find_library(COCOA_FRAMEWORK        Cocoa            REQUIRED)
+ find_library(WEBKIT_FRAMEWORK       WebKit           REQUIRED)
+ find_library(COREGRAPHICS_FRAMEWORK CoreGraphics     REQUIRED)
++find_library(QUARTZCORE_FRAMEWORK  QuartzCore       REQUIRED)
+ find_library(COREAUDIO_FRAMEWORK    CoreAudio        REQUIRED)
+ find_library(AUDIOTOOLBOX_FRAMEWORK AudioToolbox     REQUIRED)
+ find_library(AUDIOUNIT_FRAMEWORK    AudioUnit        REQUIRED)
+@@ -44,6 +45,7 @@ set(WR_FRAMEWORKS
+     ${COCOA_FRAMEWORK}
+     ${WEBKIT_FRAMEWORK}
+     ${COREGRAPHICS_FRAMEWORK}
++    ${QUARTZCORE_FRAMEWORK}
+     ${COREAUDIO_FRAMEWORK}
+     ${AUDIOTOOLBOX_FRAMEWORK}
+     ${AUDIOUNIT_FRAMEWORK}
+diff --git a/WebRenderer/Sources/WebRenderer/WRDesktopInputForwarder.h b/WebRenderer/Sources/WebRenderer/WRDesktopInputForwarder.h
+index 86700f1..ef0da04 100644
+--- a/WebRenderer/Sources/WebRenderer/WRDesktopInputForwarder.h
++++ b/WebRenderer/Sources/WebRenderer/WRDesktopInputForwarder.h
+@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
+ // All forwarded coordinates are normalized against this screen's frame, so it
+ // has to be re-resolved whenever the display configuration changes.
+ - (void)updateScreen:(NSScreen *)screen;
++- (void)setHorizontalFlipEnabled:(BOOL)enabled;
+ 
+ @end
+ 
+diff --git a/WebRenderer/Sources/WebRenderer/WRDesktopInputForwarder.mm b/WebRenderer/Sources/WebRenderer/WRDesktopInputForwarder.mm
+index 46bc4f4..c570e30 100644
+--- a/WebRenderer/Sources/WebRenderer/WRDesktopInputForwarder.mm
++++ b/WebRenderer/Sources/WebRenderer/WRDesktopInputForwarder.mm
+@@ -18,6 +18,7 @@ @implementation WRDesktopInputForwarder {
+     CFTimeInterval _windowSnapshotTime;
+     BOOL _moveScheduled;
+     BOOL _movePending;
++    BOOL _horizontalFlipEnabled;
+     NSPoint _pendingMovePoint;
+     int _pendingMoveButtons;
+ }
+@@ -85,6 +86,10 @@ - (void)updateScreen:(NSScreen *)screen {
+     _lastMovePos = NSMakePoint(-1, -1);
+ }
+ 
++- (void)setHorizontalFlipEnabled:(BOOL)enabled {
++    _horizontalFlipEnabled = enabled;
++}
++
+ #pragma mark - Desktop hit detection
+ 
+ - (BOOL)pointIsOnDesktop:(NSPoint)p {
+@@ -144,6 +149,7 @@ - (void)dispatchMouseType:(NSString *)type atPoint:(NSPoint)p buttons:(int)butto
+     double ny = 1.0 - (p.y - sf.origin.y) / NSHeight(sf);
+     if (nx < 0) nx = 0; if (nx > 1) nx = 1;
+     if (ny < 0) ny = 0; if (ny > 1) ny = 1;
++    if (_horizontalFlipEnabled) nx = 1.0 - nx;
+     // Constant body, structured arguments. This runs on every mouse move (up to
+     // 60/s); building a fresh source string each time meant WebKit re-parsed and
+     // re-compiled a one-off script for every single event.
+diff --git a/WebRenderer/Tools/WebWallpaper/WebWallpaper.mm b/WebRenderer/Tools/WebWallpaper/WebWallpaper.mm
+--- a/WebRenderer/Tools/WebWallpaper/WebWallpaper.mm
++++ b/WebRenderer/Tools/WebWallpaper/WebWallpaper.mm
+@@ -25,6 +25,7 @@
+ 
+ #import <AppKit/AppKit.h>
+ #import <CoreGraphics/CGWindowLevel.h>
++#import <QuartzCore/QuartzCore.h>
+ 
+ #import "ControlChannel.h"
+ #import "WallpaperManifest.h"
+@@ -41,6 +42,18 @@
+ #include <sys/types.h>
+ #include <unistd.h>
+ #include <vector>
++
++// AppKit may finish launching again when run() starts. Enforce the
++// display-only policy on every launch pass, including the one after setup.
++@interface WRBackgroundApplication : NSApplication
++@end
++@implementation WRBackgroundApplication
++- (void)finishLaunching {
++    [self setActivationPolicy:NSApplicationActivationPolicyProhibited];
++    [super finishLaunching];
++    [self setActivationPolicy:NSApplicationActivationPolicyProhibited];
++}
++@end
+ 
+ struct WallpaperArgs {
+     const char *workshop = nullptr;
+@@ -54,6 +67,7 @@
+     BOOL  diag = NO;
+     BOOL  controlStdin = NO;
+     BOOL  deferredShow = NO;
++    BOOL  previewOnly = NO;
+     BOOL  loadFromMemory = NO;
+     WRNetworkPolicy networkPolicy = WRNetworkPolicyObserve;
+     std::vector<std::string> assetOverlays;
+@@ -191,6 +205,7 @@
+         "Options:\n"
+         "  --fps N                target frame rate (default 60)\n"
+         "  --volume 0..1          master volume (default 1.0)\n"
++        "  --preview-only         hidden, silent animation preview (no audio capture)\n"
+         "  --no-spectrum          disable audio-spectrum capture\n"
+         "  --external-spectrum    receive spectrum from the control channel\n"
+         "  --screen N             screen index to cover (default 0 = main)\n"
+@@ -247,6 +262,8 @@
+             out.diag = YES;
+         } else if (strcmp(arg, "--control-stdin") == 0) {
+             out.controlStdin = YES;
++        } else if (strcmp(arg, "--preview-only") == 0) {
++            out.previewOnly = YES;
+         } else if (strcmp(arg, "--deferred-show") == 0) {
+             out.deferredShow = YES;
+         } else if (strcmp(arg, "--load-from-memory") == 0) {
+@@ -259,6 +276,13 @@
+         }
+     }
+     if (out.workshop == nullptr) { PrintUsage(argv[0]); return false; }
++    if (out.previewOnly) {
++        out.deferredShow = YES;
++        out.spectrum = NO;
++        out.externalSpectrum = NO;
++        out.volume = 0.0f;
++        out.networkPolicy = WRNetworkPolicyBlock;
++    }
+     if (out.fps < 0) out.fps = 0;
+     if (out.volume < 0.0f) out.volume = 0.0f;
+     if (out.volume > 1.0f) out.volume = 1.0f;
+@@ -268,8 +292,15 @@
+ 
+ // Non-key (no focus stealing), non-main. Mirrors SceneRendererWallpaperWindow.
+ @interface WebWallpaperWindow : NSWindow
++@property (nonatomic, assign) BOOL previewOnly;
+ @end
+ @implementation WebWallpaperWindow
++// WebKit otherwise freezes CSS/rAF in the transparent snapshot host.
++// Only preview hosts report visibility; the window remains transparent and
++// activation/input/audio capture are disabled by the preview-only contract.
++- (NSWindowOcclusionState)occlusionState {
++    return self.previewOnly ? NSWindowOcclusionStateVisible : [super occlusionState];
++}
+ - (BOOL)canBecomeKeyWindow { return NO; }
+ - (BOOL)canBecomeMainWindow { return NO; }
+ - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen *)screen { return frameRect; }
+@@ -282,11 +313,13 @@
+ @property (nonatomic, strong) MirageControlChannel *control;
+ @property (nonatomic, assign) CGDirectDisplayID displayID;
+ @property (nonatomic, assign) BOOL deferredShow;
++@property (nonatomic, assign) BOOL previewOnly;
+ @property (nonatomic, assign) BOOL prepared;
+ @property (nonatomic, assign) BOOL windowActivated;
+ @property (nonatomic, assign) float playbackVolume;
+ @property (nonatomic, assign) BOOL playbackMuted;
+ @property (nonatomic, assign) BOOL playbackPaused;
++@property (nonatomic, assign) BOOL horizontalFlip;
+ @property (nonatomic, assign) NSUInteger visibilityEpoch;
+ - (void)observeScreenParameterChanges;
+ - (void)contentDidBecomeReady;
+@@ -297,6 +330,7 @@
+ - (void)confirmActivationFailureForEpoch:(NSUInteger)epoch attempts:(NSInteger)attempts;
+ - (void)syncInputForwarder;
+ - (void)applyPlaybackState;
++- (void)applyHorizontalFlip;
+ @end
+ @implementation WebWallpaperAppDelegate
+ 
+@@ -356,6 +390,7 @@
+     NSView *content = self.window.contentView;
+     if (content == nil) return NO;
+     content.frame = NSMakeRect(0, 0, NSWidth(screen.frame), NSHeight(screen.frame));
++    [self applyHorizontalFlip];
+     [content layoutSubtreeIfNeeded];
+     [self.inputForwarder updateScreen:screen];
+     CGRect bounds = CGRectZero;
+@@ -364,6 +399,20 @@
+     return MirageNSRectMatches(self.window.frame, screen.frame) &&
+            MirageWindowServerState(self.window, &bounds, &onscreen, &alpha) &&
+            MirageRectMatches(bounds, CGDisplayBounds(self.displayID));
++}
++
++- (void)applyHorizontalFlip {
++    NSView *content = self.window.contentView;
++    if (content == nil) return;
++    content.wantsLayer = YES;
++    // Keep the window/content geometry unchanged and mirror only descendants.
++    // Transforming the WKWebView's root layer can move its backing surface out
++    // of the drawable region on some external-display arrangements and result
++    // in a black wallpaper. A sublayer transform preserves the root layer's
++    // frame while mirroring the rendered page around its centre.
++    content.layer.sublayerTransform = self.horizontalFlip
++        ? CATransform3DMakeScale(-1.0, 1.0, 1.0)
++        : CATransform3DIdentity;
+ }
+ 
+ - (BOOL)visibleStateMatches:(BOOL)visible {
+@@ -459,10 +508,12 @@
+ - (void)contentDidBecomeReady {
+     if (self.prepared) return;
+     self.prepared = YES;
++    if (self.previewOnly) [self applyPlaybackState];
+     MirageEmitEvent(@{ @"event": @"prepared" });
+ }
+ 
+ - (void)activateWindow {
++    if (self.previewOnly) return;
+     if (!self.prepared) {
+         self.visibilityEpoch += 1;
+         [self beginActivationFailureForEpoch:self.visibilityEpoch];
+@@ -514,7 +565,7 @@
+     BOOL hidden = self.deferredShow && !self.windowActivated;
+     [self.engine setPlaybackVolume:self.playbackVolume
+                              muted:hidden || self.playbackMuted
+-                            paused:hidden || self.playbackPaused];
++                            paused:(hidden && !self.previewOnly) || self.playbackPaused];
+ }
+ 
+ // Resolution changes, display rearrangement and unplug/replug all leave the
+@@ -566,8 +617,11 @@
+             return 2;
+         }
+ 
+-        NSApplication *app = [NSApplication sharedApplication];
+-        [app setActivationPolicy:NSApplicationActivationPolicyAccessory];
++        NSApplication *app = [WRBackgroundApplication sharedApplication];
++        // This process only renders desktop/preview surfaces and must never
++        // become the active application. Accessory helpers deactivate an active
++        // accessory host during AppKit startup, sending its catalog behind apps.
++        [app setActivationPolicy:NSApplicationActivationPolicyProhibited];
+         WebWallpaperAppDelegate *delegate = [WebWallpaperAppDelegate new];
+         [app setDelegate:delegate];
+         [app finishLaunching];
+@@ -602,6 +656,7 @@
+         delegate.engine = engine;
+         delegate.displayID = displayID;
+         delegate.deferredShow = args.deferredShow;
++        delegate.previewOnly = args.previewOnly;
+         delegate.windowActivated = !args.deferredShow;
+         delegate.playbackVolume = args.volume;
+         delegate.playbackMuted = NO;
+@@ -620,6 +675,7 @@
+                         backing:NSBackingStoreBuffered
+                           defer:NO
+                          screen:screen];
++        window.previewOnly = args.previewOnly;
+         window.title = manifest.title.length ? manifest.title : @"WebWallpaper";
+         window.level = CGWindowLevelForKey(kCGDesktopIconWindowLevelKey) - 1;
+         window.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces |
+@@ -651,6 +707,7 @@
+         // Forward desktop mouse clicks/moves to the page (icons + app windows
+         // stay fully interactive with Finder / their owner).
+         delegate.inputForwarder = [[WRDesktopInputForwarder alloc] initWithWebView:engine.webView screen:screen];
++        [delegate.inputForwarder setHorizontalFlipEnabled:delegate.horizontalFlip];
+         if (!args.deferredShow) [delegate.inputForwarder start];
+ 
+         [delegate observeScreenParameterChanges];
+@@ -666,6 +723,13 @@
+                         [delegate activateWindow];
+                     } else if ([name isEqualToString:@"deactivate"]) {
+                         [delegate deactivateWindow];
++                    } else if ([name isEqualToString:@"flip"]) {
++                        NSNumber *enabled = [cmd[@"value"] isKindOfClass:[NSNumber class]] ? cmd[@"value"] : nil;
++                        if (enabled != nil) {
++                            delegate.horizontalFlip = enabled.boolValue;
++                            [delegate.inputForwarder setHorizontalFlipEnabled:delegate.horizontalFlip];
++                            [delegate applyHorizontalFlip];
++                        }
+                     } else if ([name isEqualToString:@"setProperty"]) {
+                         NSString *key = cmd[@"key"];
+                         if ([key isKindOfClass:[NSString class]] && value != nil) {
+--- a/SceneRenderer/Vendor/wavsen/src/audio/sound_manager.cpp
++++ b/SceneRenderer/Vendor/wavsen/src/audio/sound_manager.cpp
+@@ -32,6 +32,7 @@
+ class SoundManager::Impl {
+ public:
+     AudioDevice device;
++    bool playback_requested { false };
+ };
+ 
+ SoundManager::SoundManager() : impl_(std::make_unique<Impl>()) {}
+@@ -54,8 +55,14 @@
+ 
+ bool SoundManager::is_inited() const { return impl_->device.is_inited(); }
+ 
+-void SoundManager::play()  { impl_->device.start(); }
+-void SoundManager::pause() { impl_->device.stop(); }
++void SoundManager::play() {
++    impl_->playback_requested = true;
++    if (!muted()) impl_->device.start();
++}
++void SoundManager::pause() {
++    impl_->playback_requested = false;
++    impl_->device.stop();
++}
+ 
+ float SoundManager::volume() const     { return impl_->device.volume(); }
+ bool  SoundManager::muted() const      { return impl_->device.muted(); }
+@@ -70,7 +77,7 @@
+     impl_->device.set_muted(m);
+     if (!m) {
+         // re-init the device if previously muted-uninited
+-        impl_->device.init();
++        if (impl_->device.init() && impl_->playback_requested) impl_->device.start();
+     } else {
+         impl_->device.uninit();
+     }
+--- a/SceneRenderer/Sources/SceneRenderer/AppRuntime/Controller/WallpaperEngineRuntime.cpp
++++ b/SceneRenderer/Sources/SceneRenderer/AppRuntime/Controller/WallpaperEngineRuntime.cpp
+@@ -1742,7 +1742,7 @@
+         // been inited earlier by set_muted(false), so gating on the init
+         // branch above would skip start and silence all BGM. start() is a
+         // no-op if the device isn't inited (e.g. muted) or already running.
+-        if (! m_config.muted) m_sound_manager->play();
++        m_sound_manager->play();
+         // Apply initial bindings while the parsed Scene is still private to
+         // this preparation loop. The VFS must be attached first for shader
+         // combo and text asset resolution. Doing this before RenderSetScene
+
+--- a/SceneRenderer/Tools/SceneWallpaper/WallpaperApp.cpp
++++ b/SceneRenderer/Tools/SceneWallpaper/WallpaperApp.cpp
+@@ -158,6 +158,9 @@
+ struct AppState {
+     sr::SceneWallpaper* wallpaper { nullptr };
+     void*               desktop { nullptr };
++    std::chrono::steady_clock::time_point stats_started_at {};
++    std::chrono::steady_clock::time_point last_frame_at {};
++    unsigned stats_frames { 0 };
+     std::chrono::steady_clock::time_point started_at { std::chrono::steady_clock::now() };
+ };
+ 
+@@ -175,6 +178,27 @@
+     std::lock_guard lock(LifecycleOutputMutex());
+     std::cout << "{\"event\":\"" << event << "\",\"elapsed_ms\":" << elapsed << "}\n"
+               << std::flush;
++}
++
++// Called once per completed offscreen frame, never from UI redraw notifications.
++void EmitRenderStatistics(AppState* state, std::uint32_t width, std::uint32_t height) {
++    const auto now = std::chrono::steady_clock::now();
++    if (state->last_frame_at.time_since_epoch().count() == 0 ||
++        std::chrono::duration<double>(now - state->last_frame_at).count() > 3.0) {
++        state->stats_started_at = now;
++        state->stats_frames = 0;
++    }
++    state->last_frame_at = now;
++    const double elapsed = std::chrono::duration<double>(now - state->stats_started_at).count();
++    if (elapsed <= 0) return;
++    ++state->stats_frames;
++    if (elapsed < 1.0) return;
++    const double fps = state->stats_frames / elapsed;
++    state->stats_started_at = now;
++    state->stats_frames = 0;
++    std::lock_guard lock(LifecycleOutputMutex());
++    std::cout << "{\"event\":\"render-stats\",\"fps\":" << fps
++              << ",\"width\":" << width << ",\"height\":" << height << "}\n" << std::flush;
+ }
+ 
+ void EmitAudioDemand(bool needed) {
+@@ -562,6 +586,7 @@
+                                              std::uint32_t height) {
+             SceneRendererMacDesktopPresentMetalFrame(state.desktop, texture, command_queue,
+                                                       width, height);
++            EmitRenderStatistics(&state, width, height);
+         };
+     } else {
+         void* metal_layer = SceneRendererMacDesktopMetalLayer(state.desktop);
+
+--- a/WebRenderer/Tools/WebWallpaper/WebWallpaper.mm
++++ b/WebRenderer/Tools/WebWallpaper/WebWallpaper.mm
+@@ -68,6 +68,7 @@
+     BOOL  controlStdin = NO;
+     BOOL  deferredShow = NO;
+     BOOL  previewOnly = NO;
++    BOOL  previewWidescreen = NO;
+     BOOL  loadFromMemory = NO;
+     WRNetworkPolicy networkPolicy = WRNetworkPolicyObserve;
+     std::vector<std::string> assetOverlays;
+@@ -206,6 +207,7 @@
+         "  --fps N                target frame rate (default 60)\n"
+         "  --volume 0..1          master volume (default 1.0)\n"
+         "  --preview-only         hidden, silent animation preview (no audio capture)\n"
++        "  --preview-widescreen   use a 1280x720 viewport with --preview-only\n"
+         "  --no-spectrum          disable audio-spectrum capture\n"
+         "  --external-spectrum    receive spectrum from the control channel\n"
+         "  --screen N             screen index to cover (default 0 = main)\n"
+@@ -262,6 +264,8 @@
+             out.diag = YES;
+         } else if (strcmp(arg, "--control-stdin") == 0) {
+             out.controlStdin = YES;
++        } else if (strcmp(arg, "--preview-widescreen") == 0) {
++            out.previewWidescreen = YES;
+         } else if (strcmp(arg, "--preview-only") == 0) {
+             out.previewOnly = YES;
+         } else if (strcmp(arg, "--deferred-show") == 0) {
+@@ -580,6 +584,7 @@
+ 
+ - (void)screenParametersDidChange:(NSNotification *)note {
+     (void)note;
++    if (self.previewOnly) return; // Keep the preview viewport independent of display changes.
+     NSScreen *screen = MirageScreenForDisplayID(self.displayID);
+     if (screen == nil) {
+         [self.window orderOut:nil];
+@@ -635,6 +640,7 @@
+         if (screenNumber == nil) return 1;
+         CGDirectDisplayID displayID = screenNumber.unsignedIntValue;
+         NSRect screenFrame = screen.frame;
++        if (args.previewOnly && args.previewWidescreen) screenFrame.size = NSMakeSize(1280, 720);
+ 
+         WREngineConfig cfg = [WebRendererEngine defaultConfig];
+         cfg.enableInspector = NO;
+diff --git a/SceneRenderer/Sources/SceneRenderer/Gpu/Vulkan/Device.cpp b/SceneRenderer/Sources/SceneRenderer/Gpu/Vulkan/Device.cpp
+--- a/SceneRenderer/Sources/SceneRenderer/Gpu/Vulkan/Device.cpp
++++ b/SceneRenderer/Sources/SceneRenderer/Gpu/Vulkan/Device.cpp
+@@ -330,6 +330,12 @@
+         allocatorInfo.physicalDevice         = *device.m_gpu;
+         allocatorInfo.device                 = *device.m_device;
+         allocatorInfo.instance               = *inst.inst();
++#ifdef __APPLE__
++        // Apple GPUs share system RAM. Avoid retaining VMA's default 256 MiB
++        // blocks for a small wallpaper; larger individual images still get
++        // appropriately sized allocations instead of being capped.
++        allocatorInfo.preferredLargeHeapBlockSize = 32ull * 1024 * 1024;
++#endif
+         VVK_CHECK_BOOL_RE(vvk::CreateVmaAllocator(allocatorInfo, device.m_allocator));
+     }
+     device.m_tex_cache  = std::make_unique<TextureCache>(device);

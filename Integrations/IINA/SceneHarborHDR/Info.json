@@ -1,0 +1,10 @@
+{
+  "name": "SceneHarbor Auto HDR",
+  "identifier": "org.sceneharbor.SceneHarbor.AutoHDR",
+  "author": { "name": "SceneHarbor" },
+  "version": "1.0.1",
+  "entry": "main.js",
+  "description": "以本機媒體 metadata 通知 SceneHarbor，自動切換外接螢幕 HDR。只連線 127.0.0.1；檔案權限僅用於讀取本機配對設定。",
+  "permissions": ["network-request", "file-system"],
+  "allowedDomains": ["127.0.0.1"]
+}

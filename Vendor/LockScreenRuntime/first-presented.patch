@@ -1,0 +1,65 @@
+--- a/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverHost.mm
++++ b/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverHost.mm
+@@ -24,6 +24,7 @@
+     std::atomic<std::uint32_t> width { 0 };
+     std::atomic<std::uint32_t> height { 0 };
+     std::atomic<bool> scheduled { false };
++    std::atomic<bool> presented { false };
+     MirageSaverHostReference* reference { nil };
+ };
+ }
+@@ -50,6 +51,19 @@
+     return result;
+ }
+ 
++static void SceneHarborFirstPresented(void* userdata) {
++    MirageSaverHostReference* reference = (__bridge MirageSaverHostReference*)userdata;
++    dispatch_async(dispatch_get_main_queue(), ^{
++        auto* host = static_cast<SaverHost*>(reference.host);
++        if (host != nullptr) host->presented.store(true);
++    });
++}
++
++extern "C" int MirageSceneSaverHostHasPresented(void* handle) {
++    auto* host = static_cast<SaverHost*>(handle);
++    return host != nullptr && host->presented.load() ? 1 : 0;
++}
++
+ extern "C" void MirageSceneSaverHostPresent(void* handle, void* texture,
+                                               std::uint32_t width, std::uint32_t height) {
+     auto* host = static_cast<SaverHost*>(handle);
+@@ -64,8 +78,8 @@
+         if (current == nullptr) return;
+         current->scheduled.store(false);
+         SceneRendererMacMetalDisplayDraw(current->display, current->texture.load(),
+-                                         current->width.load(), current->height.load(), nullptr,
+-                                         nullptr);
++                                         current->width.load(), current->height.load(),
++                                         SceneHarborFirstPresented, (__bridge void*)reference);
+     });
+ }
+ 
+--- a/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverEngine.cpp
++++ b/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverEngine.cpp
+@@ -16,6 +16,7 @@
+ extern "C" void* MirageSceneSaverHostCreate(void* ns_view, std::uint32_t drawable_width,
+                                                std::uint32_t drawable_height);
+ extern "C" void MirageSceneSaverHostDestroy(void* host);
++extern "C" int MirageSceneSaverHostHasPresented(void* host);
+ extern "C" void MirageSceneSaverHostPresent(void* host, void* texture, std::uint32_t width,
+                                                std::uint32_t height);
+ 
+@@ -125,6 +126,13 @@
+     return instance;
+ }
+ 
++extern "C" int MirageSceneSaverHasPresented(void* handle) {
++    auto* instance = static_cast<SaverInstance*>(handle);
++    std::scoped_lock lock(g_engine_mutex);
++    if (instance == nullptr || instance->engine != g_engine) return 0;
++    return MirageSceneSaverHostHasPresented(instance->host);
++}
++
+ extern "C" void MirageSceneSaverSetPaused(void* handle, int paused) {
+     auto* instance = static_cast<SaverInstance*>(handle);
+     std::scoped_lock lock(g_engine_mutex);

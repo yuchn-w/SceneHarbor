@@ -1,0 +1,15 @@
+{
+  "mirageCommit": "b03fc597950dfd2a6d84099853714218f31530ff",
+  "buildCommand": "cmake --build work/pinned-runtime-source/SceneRenderer/build/macos-arm64-clang-release --target MirageSceneSaver -j4",
+  "sdk": "MacOSX26.5.sdk",
+  "sha256": {
+    "libMoltenVK.dylib": "0cf5d42a6490beef62417799dfb0ea977d10ad084cb70349a13ce522543abfb8",
+    "libMirageSceneSaver.dylib": "698ac24e192b116875a9f0d53f003e251b3296facbd8e5caea359cd07fd60add",
+    "first-presented.patch": "f4db20b8fdfcf28e7123f8212a6cb0015bba5948423dd97980d3892a0248cccc"
+  },
+  "buildHost": "macOS 27.0 arm64",
+  "minimumRuntimeOS": "26.0",
+  "sourcePatch": "first-presented.patch",
+  "sourceArchive": "Vendor/MirageBaseline/source.tar.gz",
+  "distributionNote": "Build-machine paths sanitized; anonymous ad-hoc signatures. Preserve corresponding source and patches."
+}

@@ -1,0 +1,31 @@
+{
+  "note": "Local compatibility baseline; exact Homebrew files required. Portable dependency bundling remains a later task.",
+  "files": {
+    "/opt/homebrew/Cellar/lz4/1.10.0/lib/liblz4.1.10.0.dylib": "eb5734d2edaf7e9aa64d03d0add9a9ac3656830d7acb14ff69a43b1d96ead0f5",
+    "/opt/homebrew/Cellar/ffmpeg/9.0.1/lib/libswresample.7.1.101.dylib": "8316692dab20ccdb40a8a60e81cc4758a92343d5d4c65e848b14eb50d4535a8f",
+    "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libcrypto.3.dylib": "bae675614cd791d37ec35416ea9f87edcc85407d020810504cf458119b63522c",
+    "/opt/homebrew/Cellar/openssl@3/3.6.4/lib/libssl.3.dylib": "c6ee373222087cf31bc2f3817537d268b3c23e56b7fadd44bbf5c2317caed349",
+    "/opt/homebrew/Cellar/ffmpeg/9.0.1/lib/libavutil.61.1.101.dylib": "81ca80ca9f5cc15c0768735af7d787953faabee41bb46c3b80306627782cb516",
+    "/opt/homebrew/Cellar/ffmpeg/9.0.1/lib/libswscale.10.1.101.dylib": "20a56abf43c37691af6c5d6495f1c3a8de805113abd6634f1a4d1d431aa6f753",
+    "/opt/homebrew/Cellar/ffmpeg/9.0.1/lib/libavcodec.63.1.101.dylib": "f6feb99f7abf0a926dd0de610339c8ae5907c25c17cabf9358b9df314b6a3b5f",
+    "/opt/homebrew/Cellar/x265/4.2/lib/libx265.216.dylib": "2c195f99496aca5475f5dd8d66fbd7465e50dc9e792f6e80572bf2cc03b3e789",
+    "/opt/homebrew/Cellar/x264/r3222/lib/libx264.165.dylib": "e0d737b88c67ac30e8561d9267d10495529cfede1af45838914c0b522c37a26d",
+    "/opt/homebrew/Cellar/svt-av1/4.2.0/lib/libSvtAv1Enc.4.2.0.dylib": "bac7066bcd47c31971f61e57cdd0eccabb2ec2ef3ca5aa1e08bd5ca51cd54608",
+    "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib": "435581a316f3dd41982f3101caa6be6ec974572e31765cd0e29c7cbe30198609",
+    "/opt/homebrew/Cellar/lame/4.0/lib/libmp3lame.0.dylib": "5150d16a2b09a8f6f3475dcc837fdf5435d4f97e817ca12306fec8da5614647c",
+    "/opt/homebrew/Cellar/mpg123/1.33.7/lib/libmpg123.0.dylib": "435f7bc76659569772b1a90b049a28fe17bc0d605525f1061f830c119807718a",
+    "/opt/homebrew/Cellar/dav1d/1.5.4/lib/libdav1d.7.dylib": "60c3a42a79582241ac77bbbba4c0137c2209204aecbc59e5d6392c2dc0a5b439",
+    "/opt/homebrew/Cellar/xz/5.8.3/lib/liblzma.5.dylib": "606a5184911c876c7446f932685183d8b348f5c9a95f764b01607be0e40b64ea",
+    "/opt/homebrew/Cellar/libvpx/1.16.0/lib/libvpx.12.dylib": "e7376dca3d10474e7f603c7a8cf86d5c3c7030265c5f7be3d0137755cbf997f1",
+    "/opt/homebrew/Cellar/ffmpeg/9.0.1/lib/libavformat.63.1.101.dylib": "3fd2e9e6aa3d0a13d8b6b347cf232e3d2179796057773e7ed6a0724b0c2bb233",
+    "/opt/homebrew/Cellar/fontconfig/2.18.3/lib/libfontconfig.1.dylib": "e1f5e06e8339b42f0e1af11cc77979ef6a8f48ffa7588e4dc243e4bd69ea656d",
+    "/opt/homebrew/Cellar/gettext/1.0/lib/libintl.8.dylib": "c84dabdb4ece983eded000a677040666c8496cd55c07db9816bf4a3eb216da58",
+    "/opt/homebrew/Cellar/freetype/2.14.3/lib/libfreetype.6.dylib": "3e85a7f40549dc2d42d68fcd5b18eefd5a41079d1b5a5933888c585b8e1fed9e",
+    "/opt/homebrew/Cellar/libpng/1.6.58/lib/libpng16.16.dylib": "ed50e7c1582d94c40489a37097cbb2fcea81e5450173ee9bbe2871cbfdea27eb",
+    "/opt/homebrew/Cellar/vulkan-loader/1.4.357.0/lib/libvulkan.1.4.357.dylib": "52861d3f339401cf4b1e0e8e66ce103de1a51b7eedc9a21aadd9de87040b3c5d",
+    "/opt/homebrew/Cellar/brotli/1.2.0/lib/libbrotlienc.1.2.0.dylib": "122dd455fc4419510078c302675aa31cc4eb6a16e029e0fc96bf3798388a07c9",
+    "/opt/homebrew/Cellar/brotli/1.2.0/lib/libbrotlidec.1.2.0.dylib": "d3e0c23866ac9123a56ff28b71ad5e0b9ccc4207f5ef56751898f5294e7eaa8b",
+    "/opt/homebrew/Cellar/molten-vk/1.4.2/etc/vulkan/icd.d/MoltenVK_icd.json": "b514f51690582fb783383154b7a33c7816cc47e98ee1a1f652dccd3e996f0bf1",
+    "/opt/homebrew/Cellar/molten-vk/1.4.2/lib/libMoltenVK.dylib": "05df2d2145b9ef5b86b08ed93a7a6e916815c2bbac244298a50b2d58061600d1"
+  }
+}
