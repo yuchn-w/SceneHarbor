@@ -18,7 +18,7 @@ def entitlements(bundle):
 app = Path(sys.argv[1])
 extension = app / 'Contents/Extensions/SceneHarborWallpaperExtension.appex'
 saver = app / 'Contents/Resources/SceneHarborScreenSaver.saver'
-group = 'group.org.sceneharbor.SceneHarbor'
+legacy_group = 'group.org.sceneharbor.SceneHarbor'
 
 for bundle in (extension, saver):
     info = plistlib.loads((bundle / 'Contents/Info.plist').read_bytes())
@@ -38,8 +38,8 @@ attributes = info.get('EXAppExtensionAttributes', {})
 if attributes.get('EXExtensionPointIdentifier') != 'com.apple.wallpaper':
     raise SystemExit('Wallpaper extension point is missing')
 for bundle in (app, extension):
-    if group not in entitlements(bundle).get('com.apple.security.application-groups', []):
-        raise SystemExit(f'Shared wallpaper group entitlement missing: {bundle.name}')
+    if legacy_group in entitlements(bundle).get('com.apple.security.application-groups', []):
+        raise SystemExit(f'Unprovisioned legacy group claim must be removed: {bundle.name}')
 if not entitlements(extension).get('com.apple.security.app-sandbox'):
     raise SystemExit('Wallpaper extension sandbox entitlement missing')
-print('PASS: signed wallpaper extension and saver, shared group, complete local runtime dependencies')
+print('PASS: signed wallpaper extension and saver, sandboxed extension-owned storage, complete local runtime dependencies')

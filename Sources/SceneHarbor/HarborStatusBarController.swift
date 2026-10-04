@@ -630,7 +630,7 @@ struct HarborStatusPanel: View {
         .background(Capsule().fill(.white.opacity(0.06)))
         .overlay(Capsule().strokeBorder(.white.opacity(0.12), lineWidth: 0.5))
         .disabled(hdrOwnership.otherAppRunning || hdrOwnership.isTakingOver || !hdrController.isExternalHDRAvailable)
-        .help("HDR 模式：OFF 關閉、AUTO 依 YouTube／IINA 內容判斷、ON 開啟；其他桌布程式執行時須先接管")
+        .help("HDR 模式：OFF 關閉、AUTO 依 YouTube／IINA 內容判斷、ON 開啟；動態壁紙執行時須先接管")
     }
 
     private var hdrStatus: some View {
@@ -643,10 +643,10 @@ struct HarborStatusPanel: View {
                 if let message = hdrOwnership.message { Text(message) }
                 Divider()
                 if hdrOwnership.otherAppRunning {
-                    Text("其他桌布程式正在控制 HDR")
-                    Button("關閉其他桌布程式並接管 HDR") { hdrOwnership.quitOtherAppAndTakeOver() }
+                    Text("動態壁紙正在控制 HDR")
+                    Button("關閉動態壁紙並接管 HDR") { hdrOwnership.quitOtherAppAndTakeOver() }
                         .disabled(hdrOwnership.isTakingOver)
-                    Text("關閉其他桌布程式也會停止它正在播放的桌布。")
+                    Text("關閉動態壁紙也會停止它正在播放的桌布。")
                 } else if hdrOwnership.enabled {
                     Button("暫停 SceneHarbor 的 HDR 控制") { hdrOwnership.relinquish() }
                 } else {
@@ -791,7 +791,7 @@ struct HarborStatusPanel: View {
             (playback.linkedDisplays || $0.id == playback.selectedDisplay) && playback.displayStatus($0.id) == "正在載入"
         }
         let imageOnly = currentItem?.kind == .image
-        return HStack(spacing: 8) {
+        return HStack(spacing: HarborStatusControlMetrics.controlSpacing) {
             Button { preview.apply() } label: {
                 HarborStatusControlLabel(title: imageOnly ? "圖片僅預覽" : applying ? "套用中…" : "套用桌布",
                                          symbol: imageOnly ? "photo" : "desktopcomputer")
@@ -808,30 +808,27 @@ struct HarborStatusPanel: View {
 
     @ViewBuilder private var playbackControls: some View {
         if #available(macOS 26.0, *) {
-            GlassEffectContainer(spacing: 4) {
-                playbackControlsRow
+            GlassEffectContainer(spacing: HarborStatusControlMetrics.controlSpacing) {
+                playbackControlsLayout
             }
         } else {
-            playbackControlsRow
+            playbackControlsLayout
         }
     }
 
-    private var playbackControlsRow: some View {
-        HStack(spacing: 6) {
-            HStack(spacing: 6) {
-                compactButton("chevron.left", label: "預覽上一張桌布") { moveCurrent(by: -1) }
-                compactButton("chevron.right", label: "預覽下一張桌布") { moveCurrent(by: 1) }
-            }
-            .disabled(library.harborStatusPreviewProjects.isEmpty)
-
+    private var playbackControlsLayout: some View {
+        HarborBalancedToolbarLayout(minimumSpacing: HarborStatusControlMetrics.controlSpacing) {
+            compactButton("chevron.left", label: "預覽上一張桌布") { moveCurrent(by: -1) }
+                .disabled(library.harborStatusPreviewProjects.isEmpty)
+            compactButton("chevron.right", label: "預覽下一張桌布") { moveCurrent(by: 1) }
+                .disabled(library.harborStatusPreviewProjects.isEmpty)
             flipButton
             playlistMenuButton
             speedButton
-            Spacer(minLength: 0)
             audioControlsButton
             applyControls
         }
-        .frame(height: 32)
+        .frame(maxWidth: .infinity)
     }
 
     private var speedButton: some View {
@@ -841,12 +838,13 @@ struct HarborStatusPanel: View {
         let speed = storedSpeed.isFinite ? min(4, max(0.1, storedSpeed)) : 1
         let rates = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
         let next = rates.first(where: { $0 > speed + 0.001 }) ?? rates[0]
-        let label = speed.formatted(.number.precision(.fractionLength(0...2))) + "×"
+        let label = HarborControlStyle.speedLabel(speed)
+        let nextLabel = HarborControlStyle.speedLabel(next)
         return Button {
             guard let project, supported else { return }
             playback.set("__speed", value: next, for: project)
         } label: {
-            HarborStatusControlLabel(title: label, width: 48, monospaced: true)
+            HarborStatusControlLabel(title: label, width: 76, monospaced: true)
         }
         .buttonStyle(.plain)
         .focusEffectDisabled()
@@ -855,7 +853,7 @@ struct HarborStatusPanel: View {
         .accessibilityValue(label)
         .accessibilityIdentifier("harbor-preview-speed")
         .help(supported
-              ? "播放速度 \(label)；點一下切換為 \(next.formatted())×，立即套用並記住這張桌布的速度"
+              ? "播放速度 \(label)；點一下切換為 \(nextLabel)，立即套用並記住這張桌布的速度"
               : "影片與即時場景桌布可調整播放速度")
     }
 

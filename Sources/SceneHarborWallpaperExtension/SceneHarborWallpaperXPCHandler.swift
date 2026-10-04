@@ -4,6 +4,7 @@ import Foundation
 import IOSurface
 import ImageIO
 import QuartzCore
+import OSLog
 
 private final class SceneHarborWallpaperContext {
     let id: UInt32
@@ -12,33 +13,48 @@ private final class SceneHarborWallpaperContext {
     let rootLayer: CALayer
     let displayID: UInt32
     let isPreview: Bool
+    var presentationMode: String?
     var posterImage: CGImage?
     var renderer: SceneHarborWallpaperRenderer?
 
     init(id: UInt32, wallpaperID: UUID?, context: CAContext, rootLayer: CALayer, displayID: UInt32, isPreview: Bool,
-         posterImage: CGImage?, renderer: SceneHarborWallpaperRenderer?) {
+         posterImage: CGImage?, renderer: SceneHarborWallpaperRenderer?, presentationMode: String?) {
         self.id = id
         self.wallpaperID = wallpaperID
         self.context = context
         self.rootLayer = rootLayer
         self.displayID = displayID
         self.isPreview = isPreview
+        self.presentationMode = presentationMode
         self.posterImage = posterImage
         self.renderer = renderer
     }
 }
 
 final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProtocol {
+    private let logger = Logger(subsystem: "org.sceneharbor.SceneHarbor.WallpaperExtension", category: "presentation")
     private var contexts: [UInt32: SceneHarborWallpaperContext] = [:]
     private let contextLock = NSLock()
     private var invalidated = false
     private var observer: UnsafeMutableRawPointer?
-    private var isLocked = false
+    private var isScreenLocked = false
+    private var sessionObservers: [NSObjectProtocol] = []
     private var heartbeat: Timer?
     private var reportedDisplays = Set<UInt32>()
+    var invalidateSnapshots: (() -> Void)?
+    private var snapshotConfiguration: HarborLockConfiguration?
+    private var idleDisplays = Set<UInt32>()
 
     override init() {
         super.init()
+        refreshIdleOwnership()
+        isScreenLocked = (CGSessionCopyCurrentDictionary() as? [String: Any])?["CGSSessionScreenIsLocked"] as? Bool ?? false
+        for (name, locked) in [("com.apple.screenIsLocked", true), ("com.apple.screenIsUnlocked", false)] {
+            sessionObservers.append(DistributedNotificationCenter.default().addObserver(
+                forName: Notification.Name(name), object: nil, queue: .main) { [weak self] _ in
+                    self?.setLocked(locked)
+                })
+        }
         let retained = Unmanaged.passUnretained(self).toOpaque()
         observer = retained
         let center = CFNotificationCenterGetDarwinNotifyCenter()
@@ -61,6 +77,7 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
 
     deinit {
         heartbeat?.invalidate()
+        sessionObservers.forEach { DistributedNotificationCenter.default().removeObserver($0) }
         if let observer {
             CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetDarwinNotifyCenter(), observer)
         }
@@ -70,6 +87,9 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
         let stop = { [self] in
             guard !invalidated else { return }
             invalidated = true
+            invalidateSnapshots = nil
+            sessionObservers.forEach { DistributedNotificationCenter.default().removeObserver($0) }
+            sessionObservers.removeAll()
             if let observer {
                 CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetDarwinNotifyCenter(), observer)
                 self.observer = nil
@@ -108,6 +128,8 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
                                            height: CGDisplayBounds(displayID).height)
         let scale = geometry.scale ?? 1
         let isPreview = Self.field(named: "isPreview", in: request) as? Bool ?? false
+        let presentationMode = Self.enumCase(named: "presentationMode", in: request)
+        logger.notice("acquire display=\(displayID) mode=\(presentationMode ?? "unknown", privacy: .public) preview=\(isPreview) size=\(size.width)x\(size.height) scale=\(scale)")
         let work = { [weak self] in
             guard let self, !self.invalidated else {
                 reply(nil, Self.failure("Wallpaper extension is invalidated"))
@@ -120,6 +142,7 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
             let wallpaperID = Self.uuid(from: id)
             let identifier = self.contextID(for: wallpaperID)
                 ?? Self.uint32(from: id) ?? remote.context.contextId
+            self.logger.notice("surface wallpaper=\(wallpaperID?.uuidString ?? "unknown", privacy: .public) context=\(identifier) remote=\(remote.context.contextId) display=\(displayID)")
             let renderer: SceneHarborWallpaperRenderer?
             let container = SceneHarborWallpaperSharedStore.containerURL()
             let configuration = try? SceneHarborWallpaperSharedStore.loadConfiguration()
@@ -135,7 +158,6 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
                     CGImageSourceCreateImageAtIndex($0, 0, nil)
                 }
             }
-            if !isPreview { self.isLocked = Self.enumCase(named: "presentationMode", in: request) == "locked" }
             if isPreview {
                 renderer = nil
                 self.installPreview(in: remote.rootLayer, displayID: displayID)
@@ -145,7 +167,8 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
                                                          onReady: { [weak self] in
                                                              self?.publishStatus()
                                                          })
-                renderer?.setPaused(!self.isLocked)
+                renderer?.setPaused(!SceneHarborWallpaperPlaybackPolicy.shouldPlay(
+                    mode: presentationMode, screenLocked: self.isScreenLocked, ownsIdle: self.idleDisplays.contains(displayID)))
             } else {
                 renderer = nil
                 self.installSystemFallback(in: remote.rootLayer)
@@ -153,23 +176,32 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
             let active = SceneHarborWallpaperContext(id: identifier, wallpaperID: wallpaperID,
                                                      context: remote.context,
                                                      rootLayer: remote.rootLayer, displayID: displayID,
-                                                     isPreview: isPreview, posterImage: posterImage, renderer: renderer)
+                                                     isPreview: isPreview, posterImage: posterImage, renderer: renderer,
+                                                     presentationMode: presentationMode)
             self.contextLock.lock()
             let previous = self.contexts.updateValue(active, forKey: identifier)
             self.contextLock.unlock()
             previous?.renderer?.stop()
             self.startHeartbeat()
             self.publishStatus()
+            CATransaction.flush()
             reply(remote.object, nil)
+            if let configuration { self.refreshSnapshots(for: configuration) }
         }
         if Thread.isMainThread { work() } else { DispatchQueue.main.async(execute: work) }
     }
 
     func update(withId id: Any?, request: Any?, reply: @escaping ((any Error)?) -> Void) {
         let mode = Self.enumCase(named: "presentationMode", in: request)
+        logger.notice("update mode=\(mode ?? "unchanged", privacy: .public) contextFound=\(self.contextID(from: id) != nil)")
         let work = { [self] in
             if let mode, let identifier = contextID(from: id) {
-                setLocked(mode == "locked", contextID: identifier)
+                contextLock.lock()
+                let context = contexts[identifier]
+                context?.presentationMode = mode
+                contextLock.unlock()
+                context?.renderer?.setPaused(!SceneHarborWallpaperPlaybackPolicy.shouldPlay(
+                    mode: mode, screenLocked: isScreenLocked, ownsIdle: context.map { idleDisplays.contains($0.displayID) } ?? false))
             }
             reply(nil)
         }
@@ -310,18 +342,27 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
                     size: context.rootLayer.bounds.size, scale: context.rootLayer.contentsScale,
                     display: display, container: container, onReady: { [weak self] in self?.publishStatus() })
             }
-            context.renderer?.setPaused(!isLocked)
+            context.renderer?.setPaused(!SceneHarborWallpaperPlaybackPolicy.shouldPlay(
+                mode: context.presentationMode, screenLocked: isScreenLocked, ownsIdle: idleDisplays.contains(context.displayID)))
         }
+        refreshSnapshots(for: configuration)
         publishStatus()
     }
 
-    private func setLocked(_ locked: Bool, contextID: UInt32? = nil) {
+    private func setLocked(_ locked: Bool) {
         let work = { [self] in
-            isLocked = locked
+            guard !invalidated else { return }
+            isScreenLocked = locked
             contextLock.lock()
-            let active = contextID.flatMap { contexts[$0].map { [$0] } } ?? Array(contexts.values)
+            let active = Array(contexts.values)
             contextLock.unlock()
-            active.forEach { $0.renderer?.setPaused(!locked) }
+            active.forEach {
+                // Unlock retires a possibly stale locked mode immediately.
+                if !locked && $0.presentationMode == "locked" { $0.presentationMode = "default" }
+                $0.renderer?.setPaused(!SceneHarborWallpaperPlaybackPolicy.shouldPlay(
+                    mode: $0.presentationMode, screenLocked: locked, ownsIdle: idleDisplays.contains($0.displayID)))
+            }
+            logger.notice("lock-state=\(locked) contexts=\(active.count)")
         }
         if Thread.isMainThread { work() } else { DispatchQueue.main.async(execute: work) }
     }
@@ -371,7 +412,13 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
             "bundleIdentifier": Bundle.main.bundleIdentifier ?? "",
             "pid": ProcessInfo.processInfo.processIdentifier,
             "contexts": contexts.count,
-            "locked": isLocked,
+            "locked": isScreenLocked,
+            "surfaces": active.map { ["displayID": $0.displayID,
+                                      "contextID": $0.id,
+                                      "wallpaperID": $0.wallpaperID?.uuidString ?? "",
+                                      "mode": $0.presentationMode ?? "unknown",
+                                      "preview": $0.isPreview,
+                                      "firstFrameReady": $0.renderer?.readiness ?? false] as [String: Any] },
             "updatedAt": ISO8601DateFormatter().string(from: Date())
         ], in: container)
     }
@@ -380,10 +427,37 @@ final class SceneHarborWallpaperXPCHandler: NSObject, WallpaperExtensionXPCProto
         guard heartbeat == nil else { return }
         let timer = Timer(timeInterval: 2, repeats: true) { [weak self] _ in
             guard let self, !self.invalidated else { return }
+            self.refreshIdleOwnership()
             self.publishStatus()
         }
         RunLoop.main.add(timer, forMode: .common)
         heartbeat = timer
+    }
+
+    private func refreshIdleOwnership() {
+        guard let container = SceneHarborWallpaperSharedStore.containerURL() else { return }
+        let url = SceneHarborWallpaperSharedStore.configurationURL(in: container)
+            .deletingLastPathComponent().appendingPathComponent("idle-ownership.json")
+        let next = (try? Data(contentsOf: url)).flatMap { try? JSONDecoder().decode([UInt32].self, from: $0) } ?? []
+        let selection = Set(next)
+        guard selection != idleDisplays else { return }
+        idleDisplays = selection
+        contextLock.lock()
+        let active = Array(contexts.values)
+        contextLock.unlock()
+        for context in active {
+            context.renderer?.setPaused(!SceneHarborWallpaperPlaybackPolicy.shouldPlay(
+                mode: context.presentationMode, screenLocked: isScreenLocked,
+                ownsIdle: idleDisplays.contains(context.displayID)))
+        }
+    }
+
+    private func refreshSnapshots(for configuration: HarborLockConfiguration) {
+        guard snapshotConfiguration != configuration else { return }
+        snapshotConfiguration = configuration
+        // A display keeps the same choice ID when its scheduled artwork changes.
+        // Ask loginwindow to discard that choice's old cached wallpaper poster.
+        invalidateSnapshots?()
     }
 
     private static func makeSnapshot(from image: CGImage) -> AnyObject? {

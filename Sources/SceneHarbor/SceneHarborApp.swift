@@ -11,6 +11,7 @@ struct SceneHarborApp: App {
     @StateObject private var harborPlayback = HarborPlayback()
     @StateObject private var steamService = SteamServiceBridge()
     @StateObject private var playlists = HarborPlaylistStore()
+    @StateObject private var smartPlaylists = HarborSmartPlaylistCoordinator()
     @State private var hasRestored = false
     @State private var showSettings = false
     @State private var showPlaylists = false
@@ -33,8 +34,8 @@ struct SceneHarborApp: App {
                     minHeight: 620,
                     maxHeight: .infinity
                 )
+                .background(HarborPersistentWindow { appDelegate.configurePrimaryWindow($0) })
                 .onAppear {
-                    appDelegate.configurePrimaryWindow()
                     appDelegate.configureHarborStatusBar(
                         library: library,
                         playback: harborPlayback,
@@ -48,8 +49,18 @@ struct SceneHarborApp: App {
                             showPlaylists = true
                         }
                     )
-                    appDelegate.cleanup = { harborPlayback.shutdown(); steamService.stop() }
-                    if !hasRestored { hasRestored = true; harborPlayback.restore() }
+                    appDelegate.cleanup = {
+                        smartPlaylists.shutdown()
+                        HarborAutomationCoordinator.shared.shutdown()
+                        harborPlayback.shutdown(); steamService.stop()
+                    }
+                    if !hasRestored {
+                        hasRestored = true
+                        harborPlayback.configurePlaylists(store: playlists)
+                        harborPlayback.restore()
+                        smartPlaylists.configure(library: library, playback: harborPlayback, store: playlists)
+                        HarborAutomationCoordinator.shared.configure(playback: harborPlayback, playlists: playlists)
+                    }
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     guard newPhase == .active else { return }
@@ -104,7 +115,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var bootstrapStatusItem: NSStatusItem?
     var cleanup: (() -> Void)?
 
-    func configurePrimaryWindow() { fitMainWindowToVisibleScreen() }
+    private weak var primaryWindow: NSWindow?
+    private var windowCloseObserver: NSObjectProtocol?
+
+    func configurePrimaryWindow(_ window: NSWindow) {
+        guard primaryWindow !== window else { return }
+        primaryWindow = window
+        if let windowCloseObserver { NotificationCenter.default.removeObserver(windowCloseObserver) }
+        windowCloseObserver = NotificationCenter.default.addObserver(
+            forName: NSWindow.willCloseNotification, object: window, queue: .main
+        ) { _ in
+            // Only an explicit close returns to menu-bar-only operation.
+            // Deactivation, minimization, and switching Spaces leave it alone.
+            DispatchQueue.main.async { NSApp.setActivationPolicy(.accessory) }
+        }
+        NSApp.setActivationPolicy(.regular)
+        fitMainWindowToVisibleScreen()
+    }
 
     func configureHarborStatusBar(
         library: WallpaperLibrary,
@@ -164,11 +191,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // 選單列 App 不佔用 Dock；主視窗仍能由 Finder 或狀態列開啟。
-        // 狀態項目不依賴 WindowGroup 的 onAppear，避免圖示延後或消失。
-        NSApp.setActivationPolicy(.accessory)
+        // A visible library is a normal application window, reachable through
+        // Dock/Cmd-Tab. Closing it explicitly keeps wallpaper/menu-bar playback.
+        NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         installBootstrapStatusItem()
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls { HarborAutomationCoordinator.shared.handle(url) }
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {
@@ -241,8 +272,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func showMainWindow(openWindow: @escaping () -> Void) {
-        if mainWindow() != nil {
-            fitMainWindowToVisibleScreen()
+        NSApp.setActivationPolicy(.regular)
+        if let window = mainWindow() {
+            if window.isMiniaturized { window.deminiaturize(nil) }
+            NSApp.activate(ignoringOtherApps: true)
+            window.makeKeyAndOrderFront(nil)
             return
         }
 
@@ -281,9 +315,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func mainWindow() -> NSWindow? {
         // 狀態欄 Popover 與壁紙視窗也可能回報 canBecomeMain；
         // 只有主程式的標題列視窗才是可重新開啟的 App 視窗。
-        NSApp.windows.first {
-            $0.canBecomeMain && $0.styleMask.contains(.titled)
-        }
+        primaryWindow
     }
 }
 
@@ -344,7 +376,7 @@ private final class StatusBarController: NSObject, NSPopoverDelegate {
         }
 
         let symbolName = isPlaying ? "photo.on.rectangle.fill" : "photo.on.rectangle"
-        let accessibilityDescription = isPlaying ? "動態桌布正在播放" : "動態桌布已暫停"
+        let accessibilityDescription = isPlaying ? "動態壁紙正在播放" : "動態壁紙已暫停"
         let image = NSImage(
             systemSymbolName: symbolName,
             accessibilityDescription: accessibilityDescription
@@ -353,7 +385,7 @@ private final class StatusBarController: NSObject, NSPopoverDelegate {
         button.image = image
         button.imagePosition = .imageOnly
         button.imageScaling = .scaleProportionallyDown
-        button.title = image == nil ? "動態桌布" : ""
+        button.title = image == nil ? "動態壁紙" : ""
         button.toolTip = accessibilityDescription
         statusItem.isVisible = true
     }
@@ -553,10 +585,10 @@ private struct StatusBarPlayer: View {
     }
 
     private var currentTitle: String {
-        guard let title = currentItem?.title else { return "選擇一張桌布開始播放" }
+        guard let title = currentItem?.title else { return "選擇一張壁紙開始播放" }
         let uuidPattern = "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"
         if title.range(of: uuidPattern, options: .regularExpression) != nil {
-            return "未命名動態桌布"
+            return "未命名動態壁紙"
         }
         return title
     }

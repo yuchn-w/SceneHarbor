@@ -69,6 +69,7 @@ struct HarborWorkspaceView: View {
     }
     private var local: Bool { authorID == nil && tab == .installed && collection == .all }
     private var installedIDs: Set<String> { Set(installed.items.map(\.id)) }
+    private var activeWorkshopIDs: Set<String> { steam.activeDownloadWorkshopIDs }
     private var currentInstalled: HarborInstalledItem? { installed.items.first { $0.id == selection?.id } }
     private var query: Binding<String> {
         Binding(get: { local ? localSearch : browser.searchText }, set: { if local { localSearch = $0 } else { browser.searchText = $0 } })
@@ -164,7 +165,15 @@ struct HarborWorkspaceView: View {
                 .frame(width: previewSize.width, height: previewSize.height)
         }
         .sheet(isPresented: $showLogin) { HarborLoginView(steam: steam).frame(width: 510, height: 560) }
-        .sheet(isPresented: $showSettings) { HarborSettingsView(playback: playback, dismiss: { showSettings = false }) }
+        .sheet(isPresented: $showSettings) {
+            HarborSettingsView(
+                playback: playback,
+                dismiss: { showSettings = false },
+                activeWorkshopIDs: activeWorkshopIDs,
+                activeWorkshopIDsProvider: { steam.activeDownloadWorkshopIDs },
+                resume: { steam.download(workshopID: $0) != nil }
+            )
+        }
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("SceneHarbor.openSettings"))) { _ in
             showSettings = true
         }
@@ -177,8 +186,8 @@ struct HarborWorkspaceView: View {
             showSettings = false; showLogin = false; showDownloads = false; preview = nil; showLocalLibrary = false
         }
         .sheet(item: $preview) { value in HarborPreviewView(value: value, playback: playback).frame(width: previewSize.width, height: previewSize.height) }
-        .sheet(isPresented: $showDownloads) { downloads.frame(width: 620, height: 440) }
-        .sheet(isPresented: $showPlaylists) { HarborPlaylistsView(store: playlists, playback: playback, library: library).frame(width: 850, height: 610) }
+        .sheet(isPresented: $showDownloads) { downloads.frame(width: 620, height: 600) }
+        .sheet(isPresented: $showPlaylists) { HarborPlaylistsView(store: playlists, playback: playback, library: library).frame(width: 980, height: 700) }
         .sheet(isPresented: $showLocalLibrary) {
             HarborLocalLibraryView(library: library, playback: playback, playlists: playlists)
                 .frame(width: previewSize.width, height: previewSize.height)
@@ -663,6 +672,13 @@ struct HarborWorkspaceView: View {
     private var downloads: some View {
         VStack(alignment: .leading) {
             HarborSheetHeader(title: "下載項目", symbol: "arrow.down.circle", subtitle: "下載會在背景繼續，你可以安心瀏覽桌布。", dismiss: { showDownloads = false })
+            HarborStorageMaintenanceView(
+                activeWorkshopIDs: activeWorkshopIDs,
+                activeWorkshopIDsProvider: { steam.activeDownloadWorkshopIDs },
+                resume: { steam.download(workshopID: $0) != nil }
+            )
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
             if steam.downloads.isEmpty { ContentUnavailableView("沒有下載項目", systemImage: "arrow.down.circle") }
             List(steam.downloads.values.sorted { $0.workshopID < $1.workshopID }) { item in
                 VStack(alignment: .leading, spacing: 7) {

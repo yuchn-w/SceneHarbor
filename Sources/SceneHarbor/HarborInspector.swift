@@ -95,10 +95,8 @@ struct HarborInspector: View {
                                     if #available(macOS 15, *) {
                                         HarborAuthorOptions(installed: installed, playback: playback).id(installed.id + HarborLanguage.language)
                                     } else {
-                                        ForEach(installed.properties) { property in
-                                            HarborPropertyControl(property: property, value: playback.settings(installed.id)[property.id] ?? property.initialValue,
-                                                changed: { playback.set(property.id, value: $0, for: installed.project) })
-                                        }
+                                        HarborAuthorPropertyList(properties: installed.properties, values: playback.settings(installed.id),
+                                            changed: { playback.set($0, value: $1, for: installed.project) })
                                     }
                                 }
                             }
@@ -223,13 +221,13 @@ struct HarborInspector: View {
                     Text(t("填滿", "Fill")).tag("cover"); Text(t("完整顯示", "Fit")).tag("contain"); Text(t("延展", "Stretch")).tag("stretch")
                 }
                 Picker(t("播放速度", "Playback speed"), selection: Binding(get: { playback.settings(installed.id)["__speed"] as? Double ?? 1 }, set: { playback.set("__speed", value: $0, for: installed.project) })) {
-                    Text("0.25×").tag(0.25)
-                    Text("0.5×").tag(0.5)
-                    Text("0.75×").tag(0.75)
-                    Text("1×（正常）").tag(1.0)
-                    Text("1.25×").tag(1.25)
-                    Text("1.5×").tag(1.5)
-                    Text("2×").tag(2.0)
+                    Text(HarborControlStyle.speedLabel(0.25)).tag(0.25)
+                    Text(HarborControlStyle.speedLabel(0.5)).tag(0.5)
+                    Text(HarborControlStyle.speedLabel(0.75)).tag(0.75)
+                    Text(HarborControlStyle.speedLabel(1)).tag(1.0)
+                    Text(HarborControlStyle.speedLabel(1.25)).tag(1.25)
+                    Text(HarborControlStyle.speedLabel(1.5)).tag(1.5)
+                    Text(HarborControlStyle.speedLabel(2)).tag(2.0)
                 }
             }
             HStack { Text(t("所有桌布音量", "All wallpapers volume")); Spacer(); Text("\(Int(playback.wallpaperVolume * 100))%").monospacedDigit().foregroundStyle(.secondary) }
@@ -245,42 +243,13 @@ struct HarborInspector: View {
                 Text(t("變更網路設定後請重新套用。", "Apply again after changing network access.")).font(.caption2).foregroundStyle(.secondary)
             }
             if installed.project.kind == .scene || installed.project.kind == .web {
-                DisclosureGroup(t("音訊反應進階設定", "Advanced audio reaction")) { HarborAudioReactionControls(playback: playback, audio: playback.systemAudio) }
+                Divider()
+                Text(t("音訊反應", "Audio reaction")).font(HarborControlStyle.labelFont.weight(.semibold))
+                HarborAudioReactionControls(playback: playback, audio: playback.systemAudio)
             }
-        }.font(.callout)
+        }.font(HarborControlStyle.labelFont).controlSize(.regular).toggleStyle(.switch)
     }
     private func infoCell(_ title: String, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 3) { Text(title).font(.caption2).foregroundStyle(.secondary); Text(value).font(.caption).lineLimit(2) }
-    }
-}
-
-struct HarborPropertyControl: View {
-    let property: HarborProperty
-    let value: Any
-    let changed: (Any) -> Void
-    var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            if property.type == "bool" {
-                Toggle(property.title, isOn: Binding(get: { value as? Bool ?? false }, set: { changed($0) }))
-            } else if property.type == "slider" {
-                Text(property.title).font(.caption)
-                Slider(value: Binding(get: { min(max((value as? NSNumber)?.doubleValue ?? property.minimum, property.minimum), property.maximum) },
-                                      set: { changed($0) }), in: property.minimum...property.maximum)
-            } else if property.type == "combo" {
-                Picker(property.title, selection: Binding(get: { String(describing: value) }, set: { changed($0) })) {
-                    ForEach(property.options, id: \.0) { Text($0.1).tag($0.0) }
-                }
-            } else if property.type == "color" {
-                ColorPicker(property.title, selection: Binding(get: {
-                    let parts = String(describing: value).split(separator: " ").compactMap { Double($0) }
-                    return parts.count >= 3 ? Color(red: parts[0], green: parts[1], blue: parts[2]) : .white
-                }, set: { color in
-                    guard let rgb = NSColor(color).usingColorSpace(.deviceRGB) else { return }
-                    changed("\(rgb.redComponent) \(rgb.greenComponent) \(rgb.blueComponent)")
-                }), supportsOpacity: false)
-            } else {
-                TextField(property.title, text: Binding(get: { String(describing: value) }, set: { changed($0) })).textFieldStyle(.roundedBorder)
-            }
-        }.font(.callout)
     }
 }

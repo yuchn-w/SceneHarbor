@@ -1,7 +1,63 @@
 import AppKit
 import AVFoundation
 import Combine
+import CryptoKit
 import Foundation
+
+enum WallpaperImportDuplicateMode: String, CaseIterable, Identifiable, Sendable {
+    case skip
+    case keep
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .skip: return "跳過已匯入來源"
+        case .keep: return "仍保留另一份"
+        }
+    }
+
+    var explanation: String {
+        switch self {
+        case .skip: return "依來源路徑或影片指紋比對，避免重複佔用空間。"
+        case .keep: return "即使內容相同也建立新的本機拷貝，原始檔案不受影響。"
+        }
+    }
+}
+
+struct WallpaperImportIdentity: Sendable {
+    let title: String
+    let storedPath: String
+    let sourcePath: String?
+    let sourceFingerprint: String?
+}
+
+enum WallpaperImportDuplicateMatcher {
+    /// Match only against a managed copy that still exists. A missing copy is
+    /// a repair case, even if its old library record contains the same hash.
+    static func firstDuplicate(
+        sourcePath: String,
+        sourceFingerprint: String?,
+        identities: [WallpaperImportIdentity],
+        storedFileExists: (String) -> Bool,
+        storedFingerprint: (WallpaperImportIdentity) -> String?
+    ) -> WallpaperImportIdentity? {
+        identities.first { identity in
+            guard storedFileExists(identity.storedPath) else { return false }
+            if identity.sourcePath == sourcePath {
+                // A changed file at the same source path is a new import; if
+                // either side cannot be read, conservatively retain the
+                // duplicate decision.
+                guard let sourceFingerprint,
+                      let existingFingerprint = storedFingerprint(identity) else { return true }
+                return existingFingerprint == sourceFingerprint
+            }
+            guard let sourceFingerprint,
+                  let existingFingerprint = storedFingerprint(identity) else { return false }
+            return existingFingerprint == sourceFingerprint
+        }
+    }
+}
 
 struct WallpaperLibraryIO {
     let readData: (URL) throws -> Data
@@ -124,7 +180,10 @@ final class WallpaperLibrary: ObservableObject {
         }
     }
 
-    func importVideos(_ urls: [URL]) {
+    func importVideos(
+        _ urls: [URL],
+        duplicateMode: WallpaperImportDuplicateMode = .skip
+    ) {
         guard !urls.isEmpty else { return }
         guard !isImporting else {
             message = "已有匯入工作進行中，請稍候。"
@@ -135,6 +194,7 @@ final class WallpaperLibrary: ObservableObject {
 
         let videosDirectory = videosURL
         let thumbnailsDirectory = thumbnailsURL
+        let existing = importIdentities()
 
         importTask = Task { @MainActor [weak self] in
             guard let self else { return }
@@ -142,7 +202,9 @@ final class WallpaperLibrary: ObservableObject {
                 await WallpaperImporter.importVideos(
                     urls,
                     videosDirectory: videosDirectory,
-                    thumbnailsDirectory: thumbnailsDirectory
+                    thumbnailsDirectory: thumbnailsDirectory,
+                    existing: existing,
+                    duplicateMode: duplicateMode
                 )
             }.value
             guard !Task.isCancelled else {
@@ -154,7 +216,10 @@ final class WallpaperLibrary: ObservableObject {
         }
     }
 
-    func importWallpaperEngineFolder(_ folder: URL) {
+    func importWallpaperEngineFolder(
+        _ folder: URL,
+        duplicateMode: WallpaperImportDuplicateMode = .skip
+    ) {
         guard !isImporting else {
             message = "已有匯入工作進行中，請稍候。"
             return
@@ -164,6 +229,7 @@ final class WallpaperLibrary: ObservableObject {
         message = "正在掃描 Wallpaper Engine 影片…"
         let videosDirectory = videosURL
         let thumbnailsDirectory = thumbnailsURL
+        let existing = importIdentities()
         let generation = beginScanGeneration()
         let scanner = io.scan
 
@@ -204,7 +270,9 @@ final class WallpaperLibrary: ObservableObject {
                     sources,
                     videosDirectory: videosDirectory,
                     thumbnailsDirectory: thumbnailsDirectory,
-                    titleOverrides: titleOverrides
+                    titleOverrides: titleOverrides,
+                    existing: existing,
+                    duplicateMode: duplicateMode
                 )
             }.value
             guard !Task.isCancelled, self.scanGeneration == generation else {
@@ -404,6 +472,21 @@ final class WallpaperLibrary: ObservableObject {
         }
     }
 
+    private func importIdentities() -> [WallpaperImportIdentity] {
+        items.map {
+            WallpaperImportIdentity(
+                title: $0.title,
+                storedPath: $0.videoPath,
+                sourcePath: $0.sourcePath.map(Self.canonicalPath),
+                sourceFingerprint: $0.sourceFingerprint
+            )
+        }
+    }
+
+    private static func canonicalPath(_ path: String) -> String {
+        URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath().path
+    }
+
     private func defaultWallpaperEngineWorkshopURL() -> URL? {
         let workshop = applicationSupportURL.appending(path: "Steam/steamapps/workshop/content/431960")
         guard io.fileExists(workshop) else {
@@ -574,6 +657,10 @@ final class WallpaperLibrary: ObservableObject {
         guard !report.imported.isEmpty else {
             if report.cancelled {
                 message = "匯入已取消。" + (report.failures.isEmpty ? "" : " " + report.failures.joined(separator: "；"))
+            } else if !report.duplicates.isEmpty && report.failures.isEmpty {
+                message = "已跳過 \(report.duplicates.count) 部已匯入影片；未新增檔案。"
+            } else if !report.duplicates.isEmpty {
+                message = "已跳過 \(report.duplicates.count) 部重複來源；另有失敗：" + report.failures.joined(separator: "；")
             } else if report.failures.isEmpty {
                 message = "沒有可匯入的影片"
             } else {
@@ -592,6 +679,9 @@ final class WallpaperLibrary: ObservableObject {
 
         var text = "\(summary) \(report.imported.count)\(suffix)"
         if report.cancelled { text += "；工作已取消，已保留已完成的項目" }
+        if !report.duplicates.isEmpty {
+            text += "；已跳過 \(report.duplicates.count) 部重複來源"
+        }
         if !report.failures.isEmpty {
             text += "；失敗 \(report.failures.count) 項：" + report.failures.joined(separator: "；")
         }
@@ -628,8 +718,18 @@ private struct LibraryDatabase: Codable {
 }
 
 private enum WallpaperImporter {
+    private final class FingerprintCache {
+        var values: [String: String?] = [:]
+    }
+
+    struct Duplicate: Sendable {
+        let sourceName: String
+        let existingTitle: String
+    }
+
     struct ImportReport: Sendable {
         let imported: [WallpaperItem]
+        let duplicates: [Duplicate]
         let failures: [String]
         let cancelled: Bool
     }
@@ -638,13 +738,44 @@ private enum WallpaperImporter {
         _ urls: [URL],
         videosDirectory: URL,
         thumbnailsDirectory: URL,
-        titleOverrides: [String: String] = [:]
+        titleOverrides: [String: String] = [:],
+        existing: [WallpaperImportIdentity] = [],
+        duplicateMode: WallpaperImportDuplicateMode = .skip
     ) async -> ImportReport {
         var imported: [WallpaperItem] = []
+        var duplicates: [Duplicate] = []
         var failures: [String] = []
         var cancelled = false
+        let fingerprintCache = FingerprintCache()
+        var known = existing
 
         for source in urls {
+            do {
+                try Task.checkCancellation()
+            } catch {
+                cancelled = true
+                break
+            }
+            let canonicalSource = canonicalPath(source)
+            let sourceFingerprint = fingerprint(at: source, cache: fingerprintCache)
+            if Task.isCancelled {
+                cancelled = true
+                break
+            }
+            if duplicateMode == .skip,
+               let duplicate = WallpaperImportDuplicateMatcher.firstDuplicate(
+                   sourcePath: canonicalSource,
+                   sourceFingerprint: sourceFingerprint,
+                   identities: known,
+                   storedFileExists: { FileManager.default.fileExists(atPath: $0) },
+                   storedFingerprint: { identity in
+                       identity.sourceFingerprint
+                           ?? fingerprint(at: URL(fileURLWithPath: identity.storedPath), cache: fingerprintCache)
+                   }
+               ) {
+                duplicates.append(Duplicate(sourceName: source.lastPathComponent, existingTitle: duplicate.title))
+                continue
+            }
             let id = UUID()
             let extensionName = source.pathExtension.isEmpty ? "mp4" : source.pathExtension
             let destination = videosDirectory.appendingPathComponent("\(id.uuidString).\(extensionName)")
@@ -665,7 +796,15 @@ private enum WallpaperImporter {
                     height: metadata.height,
                     fileSizeBytes: fileSize(at: destination),
                     isFavorite: false,
-                    dateAdded: Date()
+                    dateAdded: Date(),
+                    sourcePath: canonicalSource,
+                    sourceFingerprint: sourceFingerprint
+                ))
+                known.append(WallpaperImportIdentity(
+                    title: titleOverrides[source.path] ?? WallpaperNameGenerator.title(for: source),
+                    storedPath: destination.path,
+                    sourcePath: canonicalSource,
+                    sourceFingerprint: sourceFingerprint
                 ))
             } catch is CancellationError {
                 try? FileManager.default.removeItem(at: destination)
@@ -679,7 +818,33 @@ private enum WallpaperImporter {
             }
         }
 
-        return ImportReport(imported: imported, failures: failures, cancelled: cancelled)
+        return ImportReport(imported: imported, duplicates: duplicates, failures: failures, cancelled: cancelled)
+    }
+
+    private static func canonicalPath(_ url: URL) -> String {
+        url.standardizedFileURL.resolvingSymlinksInPath().path
+    }
+
+    private static func fingerprint(at url: URL, cache: FingerprintCache) -> String? {
+        let path = canonicalPath(url)
+        if let cached = cache.values[path] { return cached }
+        guard FileManager.default.fileExists(atPath: path),
+              let handle = try? FileHandle(forReadingFrom: URL(fileURLWithPath: path)) else {
+            return nil
+        }
+        defer { try? handle.close() }
+        var hasher = SHA256()
+        do {
+            while let chunk = try handle.read(upToCount: 1024 * 1024), !chunk.isEmpty {
+                if Task.isCancelled { return nil }
+                hasher.update(data: chunk)
+            }
+            let value = hasher.finalize().map { String(format: "%02x", $0) }.joined()
+            cache.values[path] = value
+            return value
+        } catch {
+            return nil
+        }
     }
 
     private static func videoMetadata(

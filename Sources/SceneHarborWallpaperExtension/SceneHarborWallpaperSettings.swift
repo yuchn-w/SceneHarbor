@@ -216,7 +216,8 @@ func sceneHarborSettingsViewModels(configuration: HarborLockConfiguration) -> An
     let models = SceneHarborSettingsViewModels(
         desktop: SceneHarborSettingsViewModel(groups: configuration.enabled ? [group] : [],
                                               refreshPolicy: .discretionary, isModificationDisabled: false),
-        screenSaver: nil)
+        screenSaver: SceneHarborSettingsViewModel(groups: configuration.enabled ? [group] : [],
+                                                 refreshPolicy: .discretionary, isModificationDisabled: false))
     guard let data = try? NSKeyedArchiver.archivedData(
         withRootObject: SceneHarborShimViewModelsXPC(value: models), requiringSecureCoding: false),
           let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data) else { return nil }

@@ -1,33 +1,21 @@
-# 0.12.8 public.1 發布檢核
+# 0.13.5 公開預覽版檢查
 
-驗證範圍：獨立的匿名簽章公開副本；原本安裝的 SceneHarbor 與私人資料沒有變更。
+檢查日期：2026-10-04。
 
-| 項目 | 結果 | 證據與限制 |
-| --- | --- | --- |
-| 原始專案、Git 歷史、App、偏好與資料的私有備份 | PASS | 本機保存可還原 checkpoint；不列入公開附件 |
-| 個人 API／Steam Key、私有信箱、裝置識別碼、使用者名稱及簽章指紋比對 | PASS | 原始碼、App、runtime／對應來源均掃描；比對值保存在公開樹外 |
-| 產品中的舊 app 名稱 | PASS | 清理使用者可見文案；保留外部整合名稱、ABI 與授權署名 |
-| 公開 App 建置 | PASS | Swift release；Apple Silicon；macOS 26 以上 |
-| 匿名簽章完整性 | PASS | `codesign --verify --deep --strict`；不使用個人憑證 |
-| 動態函式庫 | PASS | helper、saver、extension 本地依賴完整；無依賴本機 Homebrew 的載入路徑 |
-| Steam helper | PASS | 系統環境 hello／ping；未登入、未讀帳密、未下載作品 |
-| Vulkan／MoltenVK | PASS | hardened ad-hoc 煙測載入 bundle provider，成功建立 instance 並列出 1 個 GPU；未開視窗或更換桌布 |
-| Scene／Web IPC | PASS | fake renderer fixture：啟動、預覽、翻轉、暫停／恢復與舊子程序回呼隔離 |
-| App 隱私掃描 | PASS | 8,983 個檔案，沒有命中 |
-| Runtime／第三方來源掃描 | PASS | 51,165 個檔案；公開上游測試資料依精確檔案雜湊審核，個人值仍全面檢查 |
-| Runtime 附件解壓與內容比對 | PASS | 4,637 個項目逐一比對；含 SHA-256 與 symlink，下載腳本已用本機附件測試 |
-| Apple Developer ID／公證 | NOT RUN | 僅 ad-hoc 簽章，並非 Apple 公證發行版 |
-| 全新 Mac、實際 Steam 登入與下載、全部桌布效果 | NOT RUN | 本次沒有改動目前播放內容或私人 Steam 工作階段 |
-| 公開版畫面與全部互動回歸 | NOT RUN | 本次未啟動主 App；建置／協定測試不能代替畫面驗收 |
+| 檢查 | 結果 |
+| --- | --- |
+| 公開 Swift Release 編譯、arm64、最低 macOS 26 | PASS |
+| 主 App、鎖定延伸功能、螢幕保護程式的 deep strict 簽章完整性 | PASS；匿名 ad-hoc 簽章 |
+| 可攜式 Mach-O 相依函式庫 | PASS |
+| Steam helper 離線 hello/ping，不登入帳號 | PASS；一般 macOS 程序環境 |
+| 鎖定／閒置播放判斷與不同顯示器模式 | PASS |
+| 系統桌布連動、條件式回復與保留使用者後續選擇 | PASS |
+| 隱私掃描的 UTF-8、UTF-16、跳脫字串跨區段回歸 | PASS |
+| 原始碼與新 App ZIP 隱私掃描 | PASS；未發現私人比對值或未審核項目 |
+| App ZIP 完整性及額外 macOS 資源分支排除 | PASS |
+| Apple Developer ID 簽署與公證 | NOT RUN |
+| 全新 Mac 上的公開版首次授權、Steam 登入、長時間／跨機型播放 | NOT RUN |
 
-## 驗證過程修正
+runtime 與上一公開版位元組一致，已重新核對 SHA-256，沿用該附件先前 51,165 個檢查項目及零私人比對值的結果；本次未重複完整掃描未變更的第三方原始碼。附件亦重新檢查 archive 路徑與 owner metadata，並附於本次發行，由 public-runtime.json 固定 SHA-256。第三方公開測試金鑰、假資料與 CI 範例僅依 upstream-privacy-fixtures.json 的確切檔案雜湊審核，不豁免任何私人比對值。
 
-公開組裝原本遺漏 brotli 的 `@rpath` 傳遞依賴，已補齊並增加完整性檢查。測試程序曾因缺少 runtime 載入路徑、GPU 沙箱限制及 .NET 沙箱限制失敗；使用與成品相同的載入路徑，並於系統環境重測後通過。沒有為此放寬 App 的安全 entitlement。
-
-## 上游資料例外
-
-上游來源中的測試憑證與假 cookie、公開服務常數不屬於開發者的帳號資料。保留其來源、授權與精確雜湊，避免破壞相應原始碼；真正的個人值永遠不適用例外。
-
-公開前的第二輪審查另外移除了 HDR 控制器的開發機顯示器 UUID。新版改為從本機即時解析唯一的外接 HDR 顯示器；多個候選時不任意切換，並把實際裝置 UUID 納入公開樹外的私有比對清單。
-
-另已移除固定的本機媒體 UUID／名稱對照表，保留一般關鍵字命名功能。裝置 UUID 指派新增通用掃描規則，私有媒體 UUID 也納入公開樹外比對清單。
+相同功能的本機版本已驗證七個設定分類，使用者亦確認鎖定畫面可顯示目前桌布並播放。公開版使用獨立識別名稱，因此不將本機驗證擴張為公開版首次安裝或所有機型的保證。

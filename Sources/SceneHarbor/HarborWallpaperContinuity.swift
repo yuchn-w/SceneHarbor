@@ -85,7 +85,13 @@ final class HarborWallpaperContinuity: ObservableObject {
     func setEnabled(_ value: Bool) {
         refreshInstallation()
         if value {
-            guard installed else { status = "請先安裝螢幕保護程式元件。"; return }
+            guard installed else {
+                Task { @MainActor in
+                    await install(openSettings: false)
+                    if installed { setEnabled(true) }
+                }
+                return
+            }
             enabled = true
             UserDefaults.standard.set(true, forKey: "HarborScreenSaverFollowsDesktop")
             if selections.isEmpty { status = "套用一張本機影片或場景後，就會同步至螢幕保護程式。" }
@@ -149,7 +155,14 @@ final class HarborWallpaperContinuity: ObservableObject {
         installed = (try? HarborScreenSaverBridge.validateBundle(at: HarborScreenSaverBridge.userInstallationURL)) != nil
     }
 
-    func install() async {
+    func prepareIfNeeded() async {
+        guard enabled, !installing else { return }
+        let bundledVersion = Bundle(url: bundledURL)?.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        let installedVersion = Bundle(url: HarborScreenSaverBridge.userInstallationURL)?.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        if !installed || bundledVersion != installedVersion { await install(openSettings: false) }
+    }
+
+    func install(openSettings: Bool = true) async {
         guard !installing else { return }
         installing = true
         defer { installing = false }
@@ -160,7 +173,8 @@ final class HarborWallpaperContinuity: ObservableObject {
             }.value
             refreshInstallation()
             status = "元件已安裝，請在系統設定的螢幕保護程式選擇 SceneHarbor。"
-            openSystemSettings()
+            if enabled { publishSelections() }
+            if openSettings { openSystemSettings() }
         } catch { status = "安裝失敗：" + error.localizedDescription }
     }
 

@@ -159,6 +159,13 @@ final class SteamServiceBridge: ObservableObject {
         Dictionary(uniqueKeysWithValues: downloads.values.map { ($0.workshopID, $0) })
     }
 
+    /// Queued, resolving, downloading, validating, and cancelling tasks all
+    /// keep their Workshop staging directory protected. Only terminal states
+    /// (`completed`, `failed`, `cancelled`) are safe to classify as inactive.
+    var activeDownloadWorkshopIDs: Set<String> {
+        Set(downloads.values.filter { !$0.isFinished }.map(\.workshopID))
+    }
+
     private lazy var previewTransfers = HarborPreviewTransfers { [weak self] in self?.send($0) }
     func fetchPreviewContent(_ id: String, root: URL, progress: @escaping (Double) -> Void, prepare: @escaping () throws -> Void = {}) async throws -> URL {
         guard !id.isEmpty, id.allSatisfy(\.isNumber) else { throw SteamWorkshopAPIError.invalidURL }

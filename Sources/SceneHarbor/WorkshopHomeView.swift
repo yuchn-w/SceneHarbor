@@ -146,9 +146,11 @@ struct WorkshopHomeView: View {
             WorkshopAPISettingsSheet(
                 apiKey: $apiKey,
                 isConfigured: browser.hasAPIKey,
+                modeDescription: browser.searchModeTitle,
                 save: {
-                    browser.saveAPIKey(apiKey)
-                    showingAPISettings = false
+                    let result = browser.saveAPIKey(apiKey)
+                    if result.accepted { showingAPISettings = false }
+                    return result
                 }
             )
             .frame(width: 560, height: 300)
@@ -362,8 +364,10 @@ private struct WorkshopCatalog: View {
                         Text(title)
                             .font(.title2.weight(.bold))
                         Text(browser.totalItems > 0
-                             ? "\(browser.totalItems.formatted()) 部作品，挑選後可直接下載"
-                             : "從 Steam 工坊瀏覽並下載你的下一張動態桌布")
+                             ? (browser.blendedResults
+                                ? "目前已合併 \(browser.totalItems.formatted()) 部不重複作品"
+                                : "\(browser.totalItems.formatted()) 部作品，挑選後可直接下載")
+                             : "從 Steam 工坊瀏覽並下載你的下一張動態壁紙")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -697,7 +701,7 @@ private struct WorkshopInspector: View {
                     Image(systemName: "sidebar.right")
                         .font(.title2)
                         .foregroundStyle(.tertiary)
-                    Text("選取一部桌布")
+                    Text("選取一部壁紙")
                         .font(.headline)
                     Text("預覽、查看作品資訊，並從這裡直接下載。")
                         .font(.caption)
@@ -735,8 +739,10 @@ private struct WorkshopMetric: View {
 private struct WorkshopAPISettingsSheet: View {
     @Binding var apiKey: String
     let isConfigured: Bool
-    let save: () -> Void
+    let modeDescription: String
+    let save: () -> SteamAPIKeySaveResult
     @Environment(\.dismiss) private var dismiss
+    @State private var saveMessage: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -744,9 +750,9 @@ private struct WorkshopAPISettingsSheet: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Steam Web API")
                         .font(.title3.weight(.bold))
-                    Text("選填。未設定時仍可使用 Steam 公開工坊頁瀏覽。")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+            Text("選填。未設定時仍可使用 Steam 公開工坊頁瀏覽。")
+                .font(.caption)
+                .foregroundStyle(.secondary)
                 }
                 Spacer()
                 Button("完成") { dismiss() }
@@ -758,6 +764,10 @@ private struct WorkshopAPISettingsSheet: View {
             Text("自己的 32 位 API Key 只儲存在 SceneHarbor 的使用者偏好設定，不會與 Steam 密碼混用。官方 Web API 可提供較穩定的排序與分頁。")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+
+            Label(modeDescription, systemImage: isConfigured ? "checkmark.seal" : "globe")
+                .font(.caption)
+                .foregroundStyle(isConfigured ? Color.green : Color.secondary)
 
             SecureField("Steam Web API Key", text: $apiKey)
                 .textFieldStyle(.roundedBorder)
@@ -771,8 +781,15 @@ private struct WorkshopAPISettingsSheet: View {
                 Spacer()
                 Link("申請 API Key", destination: URL(string: "https://steamcommunity.com/dev/apikey")!)
                     .font(.caption)
-                Button("儲存並重新載入") { save() }
+                Button("儲存並重新載入") {
+                    saveMessage = save().message
+                }
                     .buttonStyle(.borderedProminent)
+            }
+            if let saveMessage {
+                Text(saveMessage)
+                    .font(.caption)
+                    .foregroundStyle(saveMessage.contains("不正確") ? Color.orange : Color.secondary)
             }
         }
         .padding(24)

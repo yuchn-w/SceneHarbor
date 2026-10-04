@@ -6,10 +6,10 @@
 	<string>zh_Hant</string>
 	<key>CFBundleDisplayName</key>
 	<string>SceneHarbor</string>
-	<key>CFBundleIconFile</key>
-	<string>AppIcon</string>
 	<key>CFBundleExecutable</key>
 	<string>SceneHarbor</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.sceneharbor.SceneHarbor</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -19,24 +19,37 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.12.8</string>
+	<string>0.13.5</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>org.sceneharbor.SceneHarbor.automation</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sceneharbor</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>47</string>
-	<key>LSUIElement</key>
-	<true/>
+	<string>55</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>26.0</string>
-	<key>NSHighResolutionCapable</key>
+	<key>LSUIElement</key>
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>AUTO HDR 用於辨識正在觀看的 YouTube 影片；切換 HDR 後會重新載入同一影片分頁。</string>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>SceneHarbor 在本機分析系統播放的聲音，讓桌布音波跟著音樂變化，並在其他 App 有聲音時自動暫停背景音效。不使用麥克風，不儲存或上傳錄音。</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
-	<key>NSAudioCaptureUsageDescription</key>
-	<string>SceneHarbor 在本機分析系統播放的聲音，讓桌布音波跟著音樂變化，並在其他 App 有聲音時自動暫停背景音效。不使用麥克風，不儲存或上傳錄音。</string>
 </dict>
 </plist>

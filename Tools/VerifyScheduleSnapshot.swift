@@ -43,16 +43,39 @@ struct VerifyScheduleSnapshot {
                     "DST gap boundary was treated as an elapsed minute offset")
 
         let paths = (0..<7).map { "/fixture/\($0)" }
-        var random = HarborPlaylistScheduleResolver.initialState(paths: paths, mode: .random, seed: 42)
-        var sequence = [random.currentPath!]
-        for _ in 0..<6 { sequence.append(HarborPlaylistScheduleResolver.nextPath(paths: paths, mode: .random, state: &random)!) }
-        precondition(Set(sequence).count == paths.count, "random shuffle bag repeats before one round is exhausted")
-        for _ in 0..<14 {
-            let previous = sequence.last!
-            let nextPath = HarborPlaylistScheduleResolver.nextPath(paths: paths, mode: .random, state: &random)!
-            precondition(nextPath != previous, "random schedule repeated the same wallpaper immediately")
-            sequence.append(nextPath)
+        // Exercise several bag sizes and seeds so a lucky permutation cannot
+        // hide a refill regression.
+        for seed in [UInt64(0), UInt64(1), UInt64(42), UInt64.max] {
+            for count in 2...paths.count {
+                let values = Array(paths.prefix(count))
+                var random = HarborPlaylistScheduleResolver.initialState(paths: values, mode: .random, seed: seed)
+                var previousLast: String?
+                for round in 0..<6 {
+                    var sequence = [random.currentPath!]
+                    if round > 0 { precondition(sequence[0] != previousLast, "random schedule repeated across bag boundary") }
+                    while sequence.count < values.count {
+                        sequence.append(HarborPlaylistScheduleResolver.nextPath(paths: values, mode: .random, state: &random)!)
+                    }
+                    precondition(Set(sequence) == Set(values), "random shuffle bag repeated before one round was exhausted")
+                    previousLast = sequence.last
+                    if round < 5 {
+                        _ = HarborPlaylistScheduleResolver.nextPath(paths: values, mode: .random, state: &random)
+                    }
+                }
+            }
         }
+        let started = HarborPlaylistScheduleResolver.initialState(
+            paths: paths, mode: .random, seed: 42, startingPath: paths[3]
+        )
+        precondition(started.currentPath == paths[3] && started.remainingPaths.count == paths.count - 1,
+                     "starting from an already rendered item must seed the remaining n-1 entries")
+        var malformedBag = HarborPlaylistRotationState(
+            currentPath: paths[0], remainingPaths: [paths[0], paths[1]], seed: 7
+        )
+        precondition(HarborPlaylistScheduleResolver.nextPath(
+            paths: Array(paths.prefix(2)), mode: .random, state: &malformedBag
+        ) == paths[1] && malformedBag.remainingPaths == [paths[0]],
+                     "repairing a persisted bag must keep the current item for later in the round")
         var ordered = HarborPlaylistScheduleResolver.initialState(paths: paths, mode: .ordered, seed: 99)
         precondition(HarborPlaylistScheduleResolver.nextPath(paths: paths, mode: .ordered, state: &ordered) == paths[1])
 
@@ -62,12 +85,50 @@ struct VerifyScheduleSnapshot {
                                       dayStartMinute: 22 * 60, nightStartMinute: 6 * 60)
         let snapshot = HarborScheduleSnapshot(playlist: playlist, displayID: "display-1",
                                               currentPath: paths[0], remainingPaths: [paths[1]],
-                                              shuffleSeed: 42, nextChangeAt: date(day: 26, hour: 6))
+                                              shuffleSeed: 42, nextChangeAt: date(day: 26, hour: 6),
+                                              intervalNextChangeAt: date(day: 25, hour: 23))
         let data = try JSONEncoder().encode(snapshot)
         let decoded = try JSONDecoder().decode(HarborScheduleSnapshot.self, from: data)
         precondition(decoded == snapshot)
+        precondition(snapshot.nextChangeDate(after: date(day: 25, hour: 22), calendar: calendar) == date(day: 25, hour: 23))
         precondition(snapshot.paths(at: date(hour: 23), calendar: calendar) == [paths[0], paths[1]])
         precondition(snapshot.paths(at: date(hour: 12), calendar: calendar) == [paths[2]])
+
+        let emptyPeriod = HarborScheduleSnapshot(
+            playlist: playlist, displayID: "display-1", currentPath: paths[0],
+            shuffleSeed: 42, nextChangeAt: date(day: 26, hour: 6),
+            intervalNextChangeAt: nil
+        )
+        let emptyJSON = try JSONSerialization.jsonObject(
+            with: JSONEncoder().encode(emptyPeriod)
+        ) as! [String: Any]
+        precondition(emptyJSON["intervalNextChangeAt"] is NSNull,
+                     "v2 snapshots must encode a nil raw interval explicitly")
+        let emptyDecoded = try JSONDecoder().decode(
+            HarborScheduleSnapshot.self, from: JSONEncoder().encode(emptyPeriod)
+        )
+        precondition(emptyDecoded.intervalNextChangeAt == nil,
+                     "empty day/night periods must retain a nil interval deadline")
+        precondition(emptyDecoded.nextChangeDate(after: date(day: 25, hour: 23), calendar: calendar) == date(day: 26, hour: 6))
+        precondition(HarborPlaylistScheduleResolver.nextChangeDate(
+            for: emptyDecoded, after: date(day: 25, hour: 23), calendar: calendar
+        ) == date(day: 26, hour: 6), "snapshot resolver must use the decoded raw interval directly")
+        var inactive = emptyDecoded
+        inactive.isActive = false
+        precondition(inactive.nextChangeDate(after: date(day: 25, hour: 23), calendar: calendar) == nil)
+        precondition(HarborPlaylistScheduleResolver.nextChangeDate(
+            for: inactive, after: date(day: 25, hour: 23), calendar: calendar
+        ) == nil, "snapshot resolver overload must match the instance inactive contract")
+
+        var versionOneObject = try JSONSerialization.jsonObject(with: data) as! [String: Any]
+        versionOneObject["version"] = 1
+        versionOneObject.removeValue(forKey: "intervalNextChangeAt")
+        let versionOne = try JSONDecoder().decode(
+            HarborScheduleSnapshot.self,
+            from: JSONSerialization.data(withJSONObject: versionOneObject)
+        )
+        precondition(versionOne.intervalNextChangeAt == versionOne.nextChangeAt,
+                     "version 1 snapshots must migrate the old deadline as the raw interval deadline")
 
         // A pre-schedule playlist payload had no rotation mode or boundary
         // keys. It must still decode with the documented ordered/06:00/18:00

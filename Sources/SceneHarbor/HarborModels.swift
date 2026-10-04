@@ -29,16 +29,6 @@ enum HarborCollection: String, CaseIterable, Identifiable {
     }
 }
 
-struct HarborProperty: Identifiable {
-    let id: String
-    let title: String
-    let type: String
-    let initialValue: Any
-    let minimum: Double
-    let maximum: Double
-    let options: [(String, String)]
-}
-
 struct HarborInstalledItem: Identifiable {
     let project: WallpaperEngineProject
     let item: SteamWorkshopItem
@@ -80,18 +70,7 @@ enum HarborManifest {
         let properties = definitions.sorted {
             ($0.value["order"] as? Int ?? 0, $0.key) < ($1.value["order"] as? Int ?? 0, $1.key)
         }.compactMap { key, value -> HarborProperty? in
-            guard let type = value["type"] as? String,
-                  ["bool", "slider", "textinput", "combo", "color"].contains(type) else { return nil }
-            let options = (value["options"] as? [[String: Any]] ?? []).map {
-                (String(describing: $0["value"] ?? ""), HarborLanguage.authorLabel($0["label"] as? String ?? "", localization: localization))
-            }
-            let minimum = (value["min"] as? NSNumber)?.doubleValue ?? 0
-            let rawTitle = value["text"] as? String ?? key
-            let title = HarborLanguage.authorLabel(rawTitle, localization: localization)
-            return HarborProperty(id: key, title: title, type: type,
-                                  initialValue: value["value"] ?? "", minimum: minimum,
-                                  maximum: max(minimum + 0.001, (value["max"] as? NSNumber)?.doubleValue ?? 100),
-                                  options: options)
+            HarborProperty.parse(id: key, definition: value, localization: localization)
         }
         return HarborInstalledItem(project: project, item: SteamWorkshopItem(
             id: project.id, title: project.title, description: json["description"] as? String ?? "",

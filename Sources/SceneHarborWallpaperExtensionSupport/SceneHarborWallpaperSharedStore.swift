@@ -4,17 +4,16 @@ import CryptoKit
 #endif
 
 /// The only file-system boundary used by the sandboxed extension.
-/// HarborLockBridge must mirror the committed configuration and deployment
-/// files into this App Group before publishing the configuration notification.
+/// The main app publishes into this extension-owned directory only after a
+/// user-selected-folder grant. The extension retains its normal sandbox.
 enum SceneHarborWallpaperSharedStore {
     static let appGroupID = "group.org.sceneharbor.SceneHarbor"
     static let configurationName = "dynamic-lock-screen.json"
     static let runtimeDirectoryName = "Runtime"
 
     static func containerURL() -> URL? {
-        FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupID
-        )
+        URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
+            .appendingPathComponent("Documents/SceneHarborLock", isDirectory: true)
     }
 
     static func configurationURL(in container: URL) -> URL {

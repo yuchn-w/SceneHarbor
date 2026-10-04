@@ -8,6 +8,8 @@ import OSLog
 final class HarborSystemAudio: ObservableObject {
     @Published private(set) var status = "系統音訊反應已關閉"
     @Published private(set) var running = false
+    @Published private(set) var canRetry = false
+    @Published private(set) var retryAt: Date?
     var spectrum: (([Float]) -> Void)?
     var level: ((Float) -> Void)?
     private let meterOnly: Bool
@@ -18,24 +20,56 @@ final class HarborSystemAudio: ObservableObject {
     private var io: AudioDeviceIOProcID?
     private var generation = UUID()
     private var failed = false
+    private var retryCount = 0
+    private var retryTask: Task<Void, Never>?
+    private var requestedEnabled = false
+    private var requestedNeeded = false
+    private var hasCaptured = false
     private let logger = Logger(subsystem: "org.sceneharbor.SceneHarbor", category: "system-audio")
     private var lastSignal: Bool?
     private var lastLevelUpdate = Date.distantPast
     private let queue = DispatchQueue(label: "org.sceneharbor.SceneHarbor.spectrum", qos: .userInitiated)
 
-    func resetFailure() { failed = false }
+    func resetFailure() {
+        failed = false; canRetry = false; retryCount = 0
+        retryTask?.cancel(); retryTask = nil; retryAt = nil
+    }
+    /// Explicit retry reuses current preferences and never toggles them off/on.
+    func retry() {
+        guard requestedEnabled, requestedNeeded else { return }
+        resetFailure()
+        update(enabled: requestedEnabled, needed: requestedNeeded, processesToInclude: includedProcesses)
+    }
     func update(enabled: Bool, needed: Bool, processesToInclude: [AudioObjectID]? = nil) {
+        requestedEnabled = enabled; requestedNeeded = needed
         if includedProcesses != processesToInclude {
-            stop(); includedProcesses = processesToInclude
+            stopCapture(); includedProcesses = processesToInclude
         }
         guard enabled, needed else {
-            stop(); status = enabled ? "等待支援音訊反應的桌布播放" : "系統音訊反應已關閉"
+            stopCapture(); resetFailure()
+            status = enabled ? "等待支援音訊反應的桌布播放" : "系統音訊反應已關閉"
             return
         }
         guard !running, !failed else { return }
         guard #available(macOS 14.2, *) else { status = "系統音訊反應需要 macOS 14.2 以上"; return }
-        do { try start() }
-        catch { stop(); failed = true; status = "無法取得系統音訊：\(error.localizedDescription)；請檢查系統音訊錄製權限後重開此開關。" }
+        do {
+            try start(); hasCaptured = true; canRetry = false; retryAt = nil; retryCount = 0
+        } catch {
+            stopCapture(); failed = true; canRetry = true
+            status = "無法取得系統音訊：\(error.localizedDescription)。可重新檢查權限後重試，原設定已保留。"
+            // Do not repeatedly request first-time permission. Only recover an
+            // already-working capture session automatically, with bounded backoff.
+            if hasCaptured, retryCount < 3 {
+                let delay = [5.0, 15.0, 60.0][retryCount]
+                retryCount += 1; retryAt = Date().addingTimeInterval(delay)
+                retryTask = Task { [weak self] in
+                    do { try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000)) } catch { return }
+                    guard let self, !Task.isCancelled, self.requestedEnabled, self.requestedNeeded else { return }
+                    self.failed = false; self.retryAt = nil; self.retryTask = nil
+                    self.update(enabled: self.requestedEnabled, needed: self.requestedNeeded, processesToInclude: self.includedProcesses)
+                }
+            }
+        }
     }
 
     @available(macOS 14.2, *)
@@ -114,6 +148,11 @@ final class HarborSystemAudio: ObservableObject {
         status = "系統音訊反應已啟用（只在本機分析，不錄音）"
     }
     func stop() {
+        requestedEnabled = false; requestedNeeded = false
+        stopCapture(); resetFailure()
+    }
+    private func stopCapture() {
+        retryTask?.cancel(); retryTask = nil; retryAt = nil
         let wasRunning = running
         generation = UUID()
         if device != 0 {

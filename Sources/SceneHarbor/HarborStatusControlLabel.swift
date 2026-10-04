@@ -1,5 +1,19 @@
 import SwiftUI
 
+/// Keep the compact status-panel controls visually consistent. The preview
+/// toolbar uses the same metrics for its regular and wrapped layouts.
+enum HarborStatusControlMetrics {
+    static let controlSpacing: CGFloat = 4
+    static let contentSpacing: CGFloat = 4
+    static let horizontalPadding: CGFloat = 7
+    static let controlHeight: CGFloat = 32
+    static let symbolWidth: CGFloat = 14
+    static let titleFont = Font.system(size: 11, weight: .semibold)
+    static let symbolFont = Font.system(size: 12, weight: .semibold)
+    static let foreground = Color.primary.opacity(0.94)
+    static let selectedForeground = Color(red: 0.43, green: 0.85, blue: 0.80)
+}
+
 /// Shared chrome for buttons and menus in the wallpaper preview toolbar.
 struct HarborStatusControlLabel: View {
     var title: String? = nil
@@ -22,21 +36,20 @@ struct HarborStatusControlContent: View {
     var monospaced = false
 
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: HarborStatusControlMetrics.contentSpacing) {
             if let symbol {
                 Image(systemName: symbol)
-                    .font(.system(size: 12, weight: .semibold))
-                    .frame(width: 14)
+                    .font(HarborStatusControlMetrics.symbolFont)
+                    .frame(width: HarborStatusControlMetrics.symbolWidth)
             }
             if let title {
                 Text(title)
-                    .font(monospaced
-                          ? .system(size: 11, weight: .semibold).monospacedDigit()
-                          : .system(size: 11, weight: .semibold))
+                    .font(monospaced ? HarborStatusControlMetrics.titleFont.monospacedDigit()
+                                     : HarborStatusControlMetrics.titleFont)
                     .lineLimit(1)
             }
         }
-        .foregroundStyle(selected ? Color(red: 0.43, green: 0.85, blue: 0.80) : .white.opacity(0.94))
+        .foregroundStyle(selected ? HarborStatusControlMetrics.selectedForeground : HarborStatusControlMetrics.foreground)
     }
 }
 
@@ -57,15 +70,15 @@ struct HarborStatusControlChrome: ViewModifier {
     @ViewBuilder private func surface(_ content: Content) -> some View {
         let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
         let sized = content
-            .padding(.horizontal, width == nil ? 8 : 0)
-            .frame(width: width, height: 32)
+            .padding(.horizontal, width == nil ? HarborStatusControlMetrics.horizontalPadding : 0)
+            .frame(width: width, height: HarborStatusControlMetrics.controlHeight)
         if #available(macOS 26.0, *) {
             sized.glassEffect(.regular.interactive(isEnabled), in: shape)
         } else {
             sized
                 .background(.ultraThinMaterial, in: shape)
                 .overlay {
-                    shape.strokeBorder(.white.opacity(selected ? 0.36 : hovered && isEnabled ? 0.24 : 0.14), lineWidth: 0.5)
+                    shape.strokeBorder(Color.primary.opacity(selected ? 0.36 : hovered && isEnabled ? 0.24 : 0.14), lineWidth: 0.5)
                 }
         }
     }

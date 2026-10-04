@@ -87,6 +87,7 @@ struct VerifyNativeLockPublisher {
         )
         let defaults = UserDefaults(suiteName: "VerifyNativeLockPublisher-\(UUID().uuidString)")!
         let fakeRunner: HarborNativeLockCommandRunner = { executable, arguments in
+            precondition(arguments.first != "-a", "An already registered extension must not be re-added")
             if executable == "/usr/bin/codesign" {
                 return HarborNativeLockCommandResult(status: 0, stdout: "", stderr: "")
             }
@@ -169,6 +170,43 @@ struct VerifyNativeLockPublisher {
             disabled = try store.loadIfPresent()
         }
         try require(disabled?.enabled == false, "停用沒有寫入 enabled=false fallback")
+        let freshDefaults = UserDefaults(suiteName: "VerifyNativeLockFresh-\(UUID())")!
+        let fresh = HarborNativeLockController(paths: paths, extensionURL: extensionURL,
+            commandRunner: fakeRunner, userDefaults: freshDefaults, enabledByDefault: true)
+        try require(fresh.isEnabled, "新安裝應預設啟用")
+        fresh.setEnabled(false)
+        let preserved = HarborNativeLockController(paths: paths, extensionURL: extensionURL,
+            commandRunner: fakeRunner, userDefaults: freshDefaults, enabledByDefault: true)
+        try require(!preserved.isEnabled, "明確關閉不應被新預設覆蓋")
+        let failed = HarborNativeLockController(paths: paths, extensionURL: extensionURL,
+            commandRunner: { _, _ in HarborNativeLockCommandResult(status: 1, stdout: "", stderr: "fixture failure") },
+            userDefaults: UserDefaults(suiteName: "VerifyNativeLockFailed-\(UUID())")!, enabledByDefault: true)
+        try await Task.sleep(nanoseconds: 2_200_000_000)
+        try require(failed.connectionState == .failed && failed.lastError != nil,
+                    "自動輪詢不應把註冊失敗覆蓋為已準備")
+        failed.setEnabled(false)
+        let unauthorizedPaths = HarborNativeLockPaths(containerURL: root.appending(path: "not-authorized"))
+        let unauthorized = HarborNativeLockController(paths: unauthorizedPaths, extensionURL: extensionURL,
+            commandRunner: { _, _ in fatalError("Must not register before storage authorization") },
+            userDefaults: UserDefaults(suiteName: "VerifyNativeLockUnauthorized-\(UUID())")!,
+            enabledByDefault: true, storageAuthorization: HarborLockStorageAuthorization(restoreExistingGrant: false))
+        unauthorized.remember(project: first, settings: [:], displayID: 42)
+        unauthorized.refreshStatus()
+        try await Task.sleep(nanoseconds: 100_000_000)
+        try require(unauthorized.requiresStorageAuthorization && unauthorized.connectionState == .failed,
+                    "未授權時沒有明確停在授權狀態")
+        try require(!fileManager.fileExists(atPath: unauthorizedPaths.containerURL.path),
+                    "未授權時不應建立部署或設定")
+        unauthorized.setEnabled(false)
+        try require(unauthorized.connectionState == .disabled, "未授權時仍應可取消啟用")
+        try require(HarborLockStorageAuthorization.isExpectedFolder(HarborNativeLockPaths.extensionDocumentsURL),
+                    "授權應接受自己的 extension Documents")
+        try require(!HarborLockStorageAuthorization.isExpectedFolder(FileManager.default.homeDirectoryForCurrentUser),
+                    "不得接受整個使用者家目錄")
+        try require(!HarborLockStorageAuthorization.isExpectedFolder(
+            HarborNativeLockPaths.extensionDocumentsURL.appending(path: "nested")), "不得誤收其他目錄")
+        print("PASS: authorization gate prevents reads, writes and registration; folder scope is exact")
+        print("PASS: first-install default, explicit opt-out, persistent failure status")
         print("PASS: native publisher staging, cancellation, App Group config, runtime probe, disable fallback")
     }
 }

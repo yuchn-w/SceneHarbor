@@ -405,6 +405,15 @@ class Scanner:
             self.add_finding(filename, "banned-private-filename")
 
     def _scan_variants(self, filename: str, data: bytes, reviewed: Set[str]) -> None:
+        # Large binary/archive text views can otherwise retain several times
+        # the input size. Overlapping, even-sized windows cover UTF-8/UTF-16,
+        # escaped strings and contextual matches across every boundary.
+        window = 4 * 1024 * 1024
+        overlap = 8192
+        if len(data) > 2 * window:
+            for start in range(0, len(data), window):
+                self._scan_variants(filename, data[max(0, start - overlap):start + window + overlap], reviewed)
+            return
         matched: DefaultDict[str, Set[str]] = defaultdict(set)
         for variant in _text_variants(data):
             for category, patterns in GENERIC_TOKEN_PATTERNS.items():

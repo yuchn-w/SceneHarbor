@@ -62,6 +62,14 @@ struct SceneHarborWallpaperExtensionConfiguration: AppExtensionConfiguration {
         proxy.setClasses(allowed, for: NSSelectorFromString("updateSettingsViewModels:reply:"), argumentIndex: 0, ofReply: false)
         connection.remoteObjectInterface = proxy
         let handler = SceneHarborWallpaperXPCHandler()
+        handler.invalidateSnapshots = { [weak connection, weak handler] in
+            guard let agent = connection?.remoteObjectProxyWithErrorHandler({ [weak handler] error in
+                handler?.connectionFailed(error)
+            }) as? WallpaperExtensionProxyXPCProtocol else { return }
+            agent.invalidateSnapshots { [weak handler] error in
+                if let error { handler?.connectionFailed(error) }
+            }
+        }
         connection.exportedObject = handler
         connection.invalidationHandler = { [weak handler] in handler?.invalidateAll() }
         connection.interruptionHandler = { [weak handler] in handler?.invalidateAll() }

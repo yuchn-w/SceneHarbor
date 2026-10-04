@@ -3,6 +3,7 @@ import AppKit
 import CoreGraphics
 import Foundation
 import ImageIO
+import OSLog
 
 private final class SceneHarborSceneLibrary {
     typealias Create = @convention(c) (
@@ -43,6 +44,7 @@ private final class SceneHarborSceneLibrary {
 /// pinned Mirage scene runtime replaces it only after its first usable output,
 /// so a slow decoder cannot expose a black context to the lock host.
 final class SceneHarborWallpaperRenderer {
+    private let logger = Logger(subsystem: "org.sceneharbor.SceneHarbor.WallpaperExtension", category: "rendering")
     private static let sceneQueue = DispatchQueue(label: "org.sceneharbor.SceneHarbor.wallpaper-scene-runtime",
                                                     qos: .userInitiated)
     private static var activeSceneKey: String?
@@ -107,13 +109,25 @@ final class SceneHarborWallpaperRenderer {
     }
 
     func setPaused(_ paused: Bool) {
+        let changed = isPaused != paused
         isPaused = paused
+        if changed { logger.notice("display=\(self.display.displayID) paused=\(paused)") }
         player?.pause()
         pendingPlayer?.pause()
         if let sceneEngine { sceneLibrary?.setPaused(sceneEngine, paused ? 1 : 0) }
         if !paused {
             player?.play()
             pendingPlayer?.play()
+            if !didReportReady, scenePollWork == nil, let sceneEngine,
+               let sceneLibrary, let layer = sceneView?.layer {
+                pollForFirstSceneFrame(library: sceneLibrary, engine: sceneEngine,
+                                       layer: layer, deadline: Date().addingTimeInterval(8))
+            }
+        } else {
+            // Waiting on an intentionally paused renderer must not consume the
+            // first-frame timeout. Restart the bounded wait when it resumes.
+            scenePollWork?.cancel()
+            scenePollWork = nil
         }
     }
 
@@ -204,7 +218,7 @@ final class SceneHarborWallpaperRenderer {
                         self.playerLayer?.removeFromSuperlayer()
                         self.player?.pause()
                         self.looper?.disableLooping()
-                        layer.opacity = 1
+                        self.reveal(layer)
                         self.player = pendingPlayer
                         self.looper = pendingLooper
                         self.playerLayer = layer
@@ -213,8 +227,6 @@ final class SceneHarborWallpaperRenderer {
                         self.pendingLayer = nil
                         self.readyObservation?.invalidate()
                         self.readyObservation = nil
-                        self.fallbackLayer?.removeFromSuperlayer()
-                        self.fallbackLayer = nil
                         self.markReady()
                         if !self.isPaused { pendingPlayer.play() }
                     }
@@ -250,7 +262,10 @@ final class SceneHarborWallpaperRenderer {
         sceneView = view
         let generation = loadID
         let acquireDeadline = retryDeadline ?? Date().addingTimeInterval(8)
-        let sceneKey = "\(display.sourceFingerprint)|\(properties)|\(backingWidth)x\(backingHeight)|\(display.fps)"
+        // The native engine fans one scene out to independent Metal hosts;
+        // each host has its own drawable size. Display dimensions do not make
+        // the same scene incompatible on an external and built-in display.
+        let sceneKey = "\(display.sourceFingerprint)|\(properties)|\(display.fps)"
         // Keep the NSView alive until creation or cancellation cleanup has
         // finished: the C ABI receives its unretained pointer.
         Self.sceneQueue.async { [weak self, view] in
@@ -264,7 +279,10 @@ final class SceneHarborWallpaperRenderer {
                     self.sceneView = nil
                     // Another display may still be releasing the previous
                     // shared scene during a coordinated playlist change.
-                    guard Date() < acquireDeadline else { return }
+                    guard Date() < acquireDeadline else {
+                        self.logger.error("display=\(self.display.displayID) incompatible-scene using poster")
+                        return
+                    }
                     let retry = DispatchWorkItem { [weak self] in
                         guard let self, !self.isStopped, self.loadID == generation else { return }
                         self.loadScene(display: display, container: container, retryDeadline: acquireDeadline)
@@ -310,13 +328,16 @@ final class SceneHarborWallpaperRenderer {
                 self.rootLayer.addSublayer(viewLayer)
                 self.sceneLibrary = library
                 self.sceneEngine = engine
-                if self.isPaused { library.setPaused(engine, 1) }
+                // A new lock host may join an engine whose desktop hosts are
+                // all paused. Apply both states after async creation completes.
+                library.setPaused(engine, self.isPaused ? 1 : 0)
                 // The pinned runtime exposes a bounded first-presented probe.
                 // Keep the poster above the hidden Metal surface until that
                 // probe observes a real drawable.
-                let deadline = Date().addingTimeInterval(8)
-                self.pollForFirstSceneFrame(library: library, engine: engine,
-                                            layer: viewLayer, deadline: deadline)
+                if !self.isPaused {
+                    self.pollForFirstSceneFrame(library: library, engine: engine,
+                                                layer: viewLayer, deadline: Date().addingTimeInterval(8))
+                }
             }
         }
     }
@@ -376,7 +397,32 @@ final class SceneHarborWallpaperRenderer {
     private func markReady() {
         guard !didReportReady else { return }
         didReportReady = true
+        logger.notice("display=\(self.display.displayID) first-frame-ready kind=\(self.display.kind.rawValue, privacy: .public)")
         onReady()
+    }
+
+    /// Fade only after an actual frame is ready. Keep the poster underneath
+    /// during the transition and honor the user's Reduce Motion preference.
+    private func reveal(_ layer: CALayer) {
+        let poster = fallbackLayer
+        fallbackLayer = nil
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        layer.opacity = 1
+        CATransaction.commit()
+        guard !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion else {
+            poster?.removeFromSuperlayer()
+            return
+        }
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.fromValue = 0
+        animation.toValue = 1
+        animation.duration = 0.35
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        layer.add(animation, forKey: "SceneHarbor.first-frame")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            poster?.removeFromSuperlayer()
+        }
     }
 
     private func pollForFirstSceneFrame(
@@ -385,11 +431,9 @@ final class SceneHarborWallpaperRenderer {
         layer: CALayer,
         deadline: Date
     ) {
-        guard !isStopped, sceneEngine == engine else { return }
+        guard !isStopped, !isPaused, sceneEngine == engine else { return }
         if library.hasPresented(engine) != 0 {
-            layer.opacity = 1
-            fallbackLayer?.removeFromSuperlayer()
-            fallbackLayer = nil
+            reveal(layer)
             markReady()
             scenePollWork = nil
             return
@@ -398,6 +442,7 @@ final class SceneHarborWallpaperRenderer {
             // Keep the static poster visible on a runtime failure or timeout.
             // A failed scene must never turn the lock context black.
             scenePollWork = nil
+            logger.error("display=\(self.display.displayID) first-frame-timeout while playing")
             return
         }
         let work = DispatchWorkItem { [weak self, weak layer] in

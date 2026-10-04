@@ -13,7 +13,7 @@ final class PlaybackInteractionTests: XCTestCase {
         defaults.set(["1": "/tmp/wallpapers/A"], forKey: "HarborDisplayAssignments")
         defaults.set(["__volume": 0.23, "__flip": true], forKey: "HarborProperties.A")
         defaults.set(["__volume": 0.91, "__audioMuted": true], forKey: "HarborProperties.B")
-        let playback = HarborPlayback(audioDefaults: defaults)
+        let playback = HarborPlayback(audioDefaults: defaults, recoveryDefaults: defaults)
         defer { playback.shutdown() }
         let a = WallpaperEngineProject(id: "A", title: "A", kind: .video, directory: URL(fileURLWithPath: "/tmp/A"), entrypoint: nil)
         let b = WallpaperEngineProject(id: "B", title: "B", kind: .scene, directory: URL(fileURLWithPath: "/tmp/B"), entrypoint: nil)
@@ -31,7 +31,7 @@ final class PlaybackInteractionTests: XCTestCase {
         XCTAssertEqual(playback.settings(local.id)["__speed"] as? Double, 0.75)
         XCTAssertEqual(playback.settings(a.id)["__flip"] as? Bool, true)
         XCTAssertEqual(HarborAudioPolicy.effectiveVolume(playback.settings(b.id), enabled: true, pausedForOtherAudio: false), 0)
-        let reopened = HarborPlayback(audioDefaults: defaults)
+        let reopened = HarborPlayback(audioDefaults: defaults, recoveryDefaults: defaults)
         defer { reopened.shutdown() }
         XCTAssertEqual(reopened.wallpaperVolume, 0.62)
         XCTAssertEqual(HarborAudioPolicy.volume(reopened.settings("never-played")), 0.62)
@@ -75,8 +75,11 @@ final class PlaybackInteractionTests: XCTestCase {
         XCTAssertNil(HarborRenderStatistics(event: [:]))
     }
 
-    @MainActor func testInvalidApplyReportsExactRequestWithoutStartingPlayback() {
-        let playback = HarborPlayback()
+    @MainActor func testInvalidApplyReportsExactRequestWithoutStartingPlayback() throws {
+        let suite = "SceneHarbor.InvalidApplyTest.\(UUID())"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let playback = HarborPlayback(audioDefaults: defaults, recoveryDefaults: defaults)
         defer { playback.shutdown() }
         let missing = URL(fileURLWithPath: "/private/tmp/sceneharbor-missing-\(UUID()).mp4")
         let project = WallpaperEngineProject(id: "selected-test", title: "Selected wallpaper", kind: .video,
@@ -167,13 +170,13 @@ final class PlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(ready)
         let runtime = first.runtime
         let starts = pool.starts
-        XCTAssertEqual(runtime.player?.rate, 0.5, accuracy: 0.05)
+        XCTAssertEqual(try XCTUnwrap(runtime.player?.rate), 0.5, accuracy: 0.05)
 
         let second = pool.acquire(project: project, settings: ["__speed": 1.5])
         XCTAssertTrue(runtime === second.runtime)
         second.setSpeed(1.5)
         try await Task.sleep(for: .milliseconds(50))
-        XCTAssertEqual(runtime.player?.rate, 1.5, accuracy: 0.05)
+        XCTAssertEqual(try XCTUnwrap(runtime.player?.rate), 1.5, accuracy: 0.05)
         XCTAssertEqual(pool.starts, starts)
 
         first.release(); second.release()
@@ -201,8 +204,10 @@ final class PlaybackInteractionTests: XCTestCase {
         let cache = HarborPreviewAssetCache()
         async let firstLoad = cache.load(url)
         async let secondLoad = cache.load(url)
-        let first = try XCTUnwrap(await firstLoad)
-        let second = try XCTUnwrap(await secondLoad)
+        let firstValue = await firstLoad
+        let secondValue = await secondLoad
+        let first = try XCTUnwrap(firstValue)
+        let second = try XCTUnwrap(secondValue)
         XCTAssertTrue(first === second)
         XCTAssertEqual(first.frames, 2)
         XCTAssertTrue(first.animation != nil)
@@ -251,12 +256,15 @@ final class PlaybackInteractionTests: XCTestCase {
         try (data as Data).write(to: author)
         let project = WallpaperEngineProject(id: "actual-catalog", title: "Full wallpaper", kind: .video, directory: directory, entrypoint: file)
         let item = SteamWorkshopItem(id: project.id, title: project.title, description: "", previewURL: author, tags: [], subscriptions: 0, views: 0, fileSize: 1, updatedAt: .distantPast, creatorID: "", type: "video")
-        let loaded = try XCTUnwrap(await HarborCatalogSource.load(item: item, project: project, settings: [:]))
+        let loadedValue = await HarborCatalogSource.load(item: item, project: project, settings: [:])
+        let loaded = try XCTUnwrap(loadedValue)
         XCTAssertEqual(loaded.poster.size.width / loaded.poster.size.height, 16.0 / 9, accuracy: 0.001)
         XCTAssertNil(loaded.animation) // Must not substitute the square author GIF.
-        let cached = try XCTUnwrap(await HarborCatalogSource.load(item: item, project: project, settings: [:], cachedOnly: true))
+        let cachedValue = await HarborCatalogSource.load(item: item, project: project, settings: [:], cachedOnly: true)
+        let cached = try XCTUnwrap(cachedValue)
         XCTAssertTrue(cached.poster === loaded.poster)
-        let remote = try XCTUnwrap(await HarborCatalogSource.load(item: item, project: nil, settings: [:]))
+        let remoteValue = await HarborCatalogSource.load(item: item, project: nil, settings: [:])
+        let remote = try XCTUnwrap(remoteValue)
         XCTAssertEqual(remote.poster.size.width, remote.poster.size.height)
         XCTAssertNil(remote.animation) // Browsing uses a poster; hover requests author motion separately.
     }
@@ -294,14 +302,18 @@ final class PlaybackInteractionTests: XCTestCase {
         try await makeVideo(file)
         let project = WallpaperEngineProject(id: "sample-video", title: "Samples", kind: .video, directory: directory, entrypoint: file)
         let starts = HarborPreviewPool.shared.starts
-        XCTAssertNil(await HarborMotionPoster.asset(for: project, settings: [:], cachedOnly: true))
+        let notCached = await HarborMotionPoster.asset(for: project, settings: [:], cachedOnly: true)
+        XCTAssertNil(notCached)
         XCTAssertEqual(HarborPreviewPool.shared.starts, starts)
-        let loop = try XCTUnwrap(await HarborMotionPoster.asset(for: project, settings: [:]))
+        let loopValue = await HarborMotionPoster.asset(for: project, settings: [:])
+        let loop = try XCTUnwrap(loopValue)
         let sourceVideo = try XCTUnwrap(CGImageSourceCreateWithData(try XCTUnwrap(loop.animation) as CFData, nil))
         let frames = (0..<CGImageSourceGetCount(sourceVideo)).compactMap { CGImageSourceCreateImageAtIndex(sourceVideo, $0, nil) }
         XCTAssertTrue(HarborMotionPoster.hasMotion(frames))
-        XCTAssertTrue(await HarborMotionPoster.asset(for: project, settings: [:], cachedOnly: true) === loop)
-        let poster = try XCTUnwrap(await HarborMotionPoster.asset(for: project, settings: [:], cachedOnly: true, posterOnly: true))
+        let cachedLoop = await HarborMotionPoster.asset(for: project, settings: [:], cachedOnly: true)
+        XCTAssertTrue(cachedLoop === loop)
+        let posterValue = await HarborMotionPoster.asset(for: project, settings: [:], cachedOnly: true, posterOnly: true)
+        let poster = try XCTUnwrap(posterValue)
         XCTAssertNil(poster.animation)
         XCTAssertEqual(poster.frames, 1)
         XCTAssertEqual(poster.poster.size.width / poster.poster.size.height, 16.0 / 9, accuracy: 0.001)
@@ -383,9 +395,20 @@ final class PlaybackInteractionTests: XCTestCase {
         let writer = try AVAssetWriter(outputURL: url, fileType: .mp4)
         let input = AVAssetWriterInput(mediaType: .video, outputSettings: [AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: 160, AVVideoHeightKey: 90])
         let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA, kCVPixelBufferWidthKey as String: 160, kCVPixelBufferHeightKey as String: 90])
-        writer.add(input); writer.startWriting(); writer.startSession(atSourceTime: .zero)
+        writer.add(input)
+        guard writer.startWriting() else {
+            throw writer.error ?? NSError(domain: "SceneHarbor.VideoFixture", code: 1)
+        }
+        writer.startSession(atSourceTime: .zero)
+        let deadline = Date().addingTimeInterval(10)
         for frame in 0..<30 {
-            while !input.isReadyForMoreMediaData { try await Task.sleep(for: .milliseconds(2)) }
+            while !input.isReadyForMoreMediaData {
+                guard writer.status == .writing, Date() < deadline else {
+                    writer.cancelWriting()
+                    throw writer.error ?? NSError(domain: "SceneHarbor.VideoFixture", code: 2)
+                }
+                try await Task.sleep(for: .milliseconds(2))
+            }
             var buffer: CVPixelBuffer?
             CVPixelBufferCreate(nil, 160, 90, kCVPixelFormatType_32BGRA, nil, &buffer)
             let pixels = try XCTUnwrap(buffer)

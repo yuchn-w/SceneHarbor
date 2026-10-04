@@ -16,6 +16,7 @@ struct HarborLocalLibraryView: View {
     @State private var removing = false
     @State private var dropTargeted = false
     @State private var missing = Set<UUID>()
+    @AppStorage("HarborImportDuplicateMode") private var duplicateMode = WallpaperImportDuplicateMode.skip.rawValue
     private var selected: WallpaperItem? { library.items.first { $0.id == selection } }
     private var filtered: [WallpaperItem] {
         library.items.filter { (!onlyFavorites || $0.isFavorite) && (query.isEmpty || $0.title.localizedStandardContains(query)) }
@@ -30,6 +31,20 @@ struct HarborLocalLibraryView: View {
                 Button("匯入影片", action: importVideos)
                 Button("匯入工坊影片", action: importFolder).help("選取含 project.json 的作品或工坊資料夾，只匯入影片類型")
             }.padding(.horizontal).padding(.bottom, 12).disabled(library.isImporting)
+            HStack(spacing: 10) {
+                Picker("來源重複時", selection: $duplicateMode) {
+                    ForEach(WallpaperImportDuplicateMode.allCases) { mode in
+                        Text(mode.title).tag(mode.rawValue)
+                    }
+                }
+                .pickerStyle(.menu)
+                Text((WallpaperImportDuplicateMode(rawValue: duplicateMode) ?? .skip).explanation)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 10)
             HSplitView {
                 List(selection: $selection) {
                     ForEach(filtered) { item in
@@ -121,12 +136,20 @@ struct HarborLocalLibraryView: View {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true; panel.canChooseDirectories = false
         panel.allowedContentTypes = [.mpeg4Movie, .quickTimeMovie, UTType(filenameExtension: "m4v") ?? .movie]
-        panel.begin { result in if result == .OK { library.importVideos(panel.urls) } }
+        panel.begin { result in
+            if result == .OK {
+                library.importVideos(panel.urls, duplicateMode: selectedDuplicateMode)
+            }
+        }
     }
     private func importFolder() {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true; panel.canChooseFiles = false
-        panel.begin { result in if result == .OK, let folder = panel.url { library.importWallpaperEngineFolder(folder) } }
+        panel.begin { result in
+            if result == .OK, let folder = panel.url {
+                library.importWallpaperEngineFolder(folder, duplicateMode: selectedDuplicateMode)
+            }
+        }
     }
     private func handleDrop(_ providers: [NSItemProvider]) -> Bool {
         guard !library.isImporting else { return false }
@@ -142,9 +165,13 @@ struct HarborLocalLibraryView: View {
                 }
                 if let url, ["mp4", "mov", "m4v"].contains(url.pathExtension.lowercased()) { urls.append(url) }
             }
-            library.importVideos(urls)
+            library.importVideos(urls, duplicateMode: selectedDuplicateMode)
         }
         return true
+    }
+
+    private var selectedDuplicateMode: WallpaperImportDuplicateMode {
+        WallpaperImportDuplicateMode(rawValue: duplicateMode) ?? .skip
     }
 }
 
@@ -174,13 +201,13 @@ private struct HarborLocalVideoPlaybackControls: View {
         HarborInspectorSection(title: "播放速度與畫面", symbol: "speedometer") {
             VStack(alignment: .leading, spacing: 10) {
                 Picker("播放速度", selection: speed) {
-                    Text("0.25×").tag(0.25)
-                    Text("0.5×").tag(0.5)
-                    Text("0.75×").tag(0.75)
-                    Text("1×（正常）").tag(1.0)
-                    Text("1.25×").tag(1.25)
-                    Text("1.5×").tag(1.5)
-                    Text("2×").tag(2.0)
+                    Text(HarborControlStyle.speedLabel(0.25)).tag(0.25)
+                    Text(HarborControlStyle.speedLabel(0.5)).tag(0.5)
+                    Text(HarborControlStyle.speedLabel(0.75)).tag(0.75)
+                    Text(HarborControlStyle.speedLabel(1.0)).tag(1.0)
+                    Text(HarborControlStyle.speedLabel(1.25)).tag(1.25)
+                    Text(HarborControlStyle.speedLabel(1.5)).tag(1.5)
+                    Text(HarborControlStyle.speedLabel(2.0)).tag(2.0)
                 }
                 Picker("畫面縮放", selection: fill) {
                     Text("填滿").tag("cover")
@@ -191,6 +218,8 @@ private struct HarborLocalVideoPlaybackControls: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            .font(HarborControlStyle.labelFont)
+            .controlSize(.regular)
         }
     }
 }

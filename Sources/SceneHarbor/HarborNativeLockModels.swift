@@ -1,8 +1,7 @@
 import Foundation
 
-/// Paths shared by the main app and the Wallpaper Extension.  The extension
-/// must only consume this App Group tree; it must never follow a path in the
-/// main app's Application Support directory.
+/// A projection owned by the sandboxed Wallpaper Extension. The main app
+/// accesses it only after the user selects the extension's Documents folder.
 struct HarborNativeLockPaths: Sendable, Equatable {
     static let appGroupIdentifier = "group.org.sceneharbor.SceneHarbor"
     static let extensionBundleIdentifier = "org.sceneharbor.SceneHarbor.WallpaperExtension"
@@ -16,10 +15,14 @@ struct HarborNativeLockPaths: Sendable, Equatable {
     }
 
     static func current(fileManager: FileManager = .default) -> HarborNativeLockPaths? {
-        guard let url = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupIdentifier
-        ) else { return nil }
-        return HarborNativeLockPaths(containerURL: url)
+        HarborNativeLockPaths(containerURL: extensionDocumentsURL
+            .appending(path: "SceneHarborLock", directoryHint: .isDirectory))
+    }
+
+    static var extensionDocumentsURL: URL {
+        FileManager.default.homeDirectoryForCurrentUser.appending(
+            path: "Library/Containers/\(extensionBundleIdentifier)/Data/Documents",
+            directoryHint: .isDirectory)
     }
 
     var lockScreenURL: URL {

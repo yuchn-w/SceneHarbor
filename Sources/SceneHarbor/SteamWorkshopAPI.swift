@@ -202,6 +202,7 @@ enum SteamWorkshopAPIError: LocalizedError {
     case missingAPIKey
     case invalidURL
     case invalidResponse
+    case publicPageUnavailable
     case httpStatus(Int)
     case apiMessage(String)
 
@@ -213,10 +214,28 @@ enum SteamWorkshopAPIError: LocalizedError {
             return "Steam 工坊網址無效。"
         case .invalidResponse:
             return "Steam 工坊回傳了無法辨識的資料。"
+        case .publicPageUnavailable:
+            return "Steam 公開工坊頁格式已變更或暫時無法解析；目前未使用有效 Web API Key。請稍後重試，或設定有效的 32 位 Key。"
         case .httpStatus(let status):
             return "Steam 工坊連線失敗（HTTP \(status)）。"
         case .apiMessage(let message):
             return message
+        }
+    }
+}
+
+enum SteamAPIKeySaveResult: Equatable, Sendable {
+    case saved
+    case cleared
+    case rejected
+
+    var accepted: Bool { self != .rejected }
+
+    var message: String {
+        switch self {
+        case .saved: return "已保存有效的 Steam Web API Key；搜尋方式會依目前篩選條件更新。"
+        case .cleared: return "已清除自訂 Web API Key；搜尋方式已更新。"
+        case .rejected: return "Key 格式不正確，必須是 32 位十六進位字元；原有設定已保留。"
         }
     }
 }
@@ -244,25 +263,58 @@ final class SteamWorkshopAPI {
 
     var hasAPIKey: Bool { !apiKey.isEmpty }
 
+    var searchModeTitle: String {
+        searchModeTitle(period: nil, excludedTags: [])
+    }
+
+    var searchModeKey: String {
+        searchModeKey(period: nil, excludedTags: [])
+    }
+
+    func searchModeTitle(period: SteamWorkshopPeriod?, excludedTags: [String]) -> String {
+        searchModeKey(period: period, excludedTags: excludedTags) == "web-api"
+            ? "目前使用 Steam Web API"
+            : "目前使用 Steam 公開工坊頁"
+    }
+
+    func searchModeKey(period: SteamWorkshopPeriod?, excludedTags: [String]) -> String {
+        if !hasAPIKey || period != nil || !excludedTags.isEmpty { return "public-page" }
+        return "web-api"
+    }
+
+    var savedAPIKey: String {
+        UserDefaults.standard.string(forKey: Self.apiKeyDefaultsKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
     var apiKey: String {
         let custom = UserDefaults.standard.string(forKey: Self.apiKeyDefaultsKey)?
             .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        if custom.range(of: "^[A-Fa-f0-9]{32}$", options: .regularExpression) != nil {
+        if Self.isValidAPIKey(custom) {
             return custom
         }
 
         let builtIn = (Bundle.main.object(forInfoDictionaryKey: "SceneHarborSteamWebAPIKey") as? String)?
             .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return builtIn.range(of: "^[A-Fa-f0-9]{32}$", options: .regularExpression) != nil ? builtIn : ""
+        return Self.isValidAPIKey(builtIn) ? builtIn : ""
     }
 
-    func saveAPIKey(_ value: String) {
+    @discardableResult
+    func saveAPIKey(_ value: String) -> SteamAPIKeySaveResult {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty {
             UserDefaults.standard.removeObject(forKey: Self.apiKeyDefaultsKey)
-        } else {
-            UserDefaults.standard.set(trimmed, forKey: Self.apiKeyDefaultsKey)
+            return .cleared
         }
+        guard Self.isValidAPIKey(trimmed) else {
+            return .rejected
+        }
+        UserDefaults.standard.set(trimmed, forKey: Self.apiKeyDefaultsKey)
+        return .saved
+    }
+
+    static func isValidAPIKey(_ value: String) -> Bool {
+        value.range(of: "^[A-Fa-f0-9]{32}$", options: .regularExpression) != nil
     }
 
     func query(
@@ -367,7 +419,7 @@ final class SteamWorkshopAPI {
             if let cached = await publicPages.read(url) { data = cached }
             else {
                 let (received, response) = try await session.data(from: url)
-                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw SteamWorkshopAPIError.invalidResponse }
+                guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw SteamWorkshopAPIError.publicPageUnavailable }
                 data = received; await publicPages.store(data, for: url)
             }
             try Task.checkCancellation()
@@ -393,7 +445,7 @@ final class SteamWorkshopAPI {
             return (ids, total)
         }
         if html.contains("No matching files were found") || html.contains("workshopBrowseItems") && ids.isEmpty { return ([], 0) }
-        throw SteamWorkshopAPIError.apiMessage("暫時無法讀取作者作品，請重試。")
+        throw SteamWorkshopAPIError.publicPageUnavailable
     }
 
     func publicDetails(_ ids: [String]) async throws -> [SteamWorkshopItem] {
@@ -474,7 +526,7 @@ final class SteamWorkshopAPI {
             with: Data(queryData.utf8)
         ) as? [String: Any],
         let queries = queryObject["queries"] as? [[String: Any]] else {
-            throw SteamWorkshopAPIError.invalidResponse
+            throw SteamWorkshopAPIError.publicPageUnavailable
         }
 
         guard let result = queries.compactMap({ query -> [String: Any]? in
@@ -484,7 +536,7 @@ final class SteamWorkshopAPI {
             return value
         }).first,
         let rawItems = result["results"] as? [[String: Any]] else {
-            throw SteamWorkshopAPIError.apiMessage("Steam 公開工坊頁面沒有回傳作品清單。")
+            throw SteamWorkshopAPIError.publicPageUnavailable
         }
 
         let items = rawItems.dropFirst(selection.lowerBound).prefix(selection.count).compactMap(Self.makePublicItem)
@@ -570,7 +622,7 @@ final class SteamWorkshopAPI {
             ?? ""
         return SteamWorkshopItem(
             id: id,
-            title: stringValue(raw["title"]) ?? "未命名桌布",
+            title: stringValue(raw["title"]) ?? "未命名壁紙",
             description: description,
             previewURL: URL(string: stringValue(raw["preview_url"]) ?? ""),
             tags: tags.filter {
@@ -613,7 +665,7 @@ final class SteamWorkshopAPI {
         let type = wallpaperType(tags: tags)
         return SteamWorkshopItem(
             id: id,
-            title: raw.title?.isEmpty == false ? raw.title! : "未命名桌布",
+            title: raw.title?.isEmpty == false ? raw.title! : "未命名壁紙",
             description: raw.description ?? "",
             previewURL: URL(string: raw.previewURL ?? ""),
             tags: tags.filter { tag in
@@ -743,6 +795,7 @@ final class SteamWorkshopBrowserViewModel: ObservableObject {
     weak var steamService: SteamServiceBridge?
     @Published private(set) var accountItems: [SteamWorkshopItem] = []
     @Published private(set) var loadedAccountCount = 0
+    @Published private(set) var apiKeyNotice: String?
     private var accountChanges: [String: (item: SteamWorkshopItem, included: Bool)] = [:]
     var isAccountLibrary: Bool { accountCategory != nil }
     private let api: SteamWorkshopAPI
@@ -751,7 +804,12 @@ final class SteamWorkshopBrowserViewModel: ObservableObject {
     @Published private(set) var showingCache = false
 
     private var cacheKey: String {
-        "page24-v2|\(authorID ?? "")|\(accountCategory ?? "public")|\(accountCategory == nil ? "" : steamService?.accountName ?? "")|\(searchText)|\(sort.rawValue)|\(requiredTags.sorted().joined(separator: ","))|\(excludedTags.sorted().joined(separator: ","))|\(period.rawValue)"
+        let profileMaterial = HarborMood.allCases.map { mood in
+            "\(mood.rawValue)=\(activeTasteProfile.weights[mood, default: 0])"
+        }.joined(separator: ",") + "|known=" + activeTasteProfile.knownIDs.sorted().joined(separator: ",")
+        let profileHash = SHA256.hash(data: Data(profileMaterial.utf8)).map { String(format: "%02x", $0) }.joined()
+        let queryDay = Int(queryDate.timeIntervalSince1970 / 86_400)
+        return "page24-v3|mode=\(api.searchModeKey(period: period, excludedTags: excludedTags))|\(authorID ?? "")|\(accountCategory ?? "public")|\(accountCategory == nil ? "" : steamService?.accountName ?? "")|\(searchText)|\(sort.rawValue)|\(requiredTags.sorted().joined(separator: ","))|\(excludedTags.sorted().joined(separator: ","))|\(period.rawValue)|day=\(queryDay)|discovery=\(discoveryMode.rawValue)|alt=\(alternativeThemeTags.sorted().joined(separator: ","))|expand=\(expandSearch)|hideKnown=\(hideKnownRecommendations)|taste=\(profileHash)"
     }
 
     private func restoreCache() {
@@ -959,12 +1017,17 @@ final class SteamWorkshopBrowserViewModel: ObservableObject {
     }
 
 
-    func saveAPIKey(_ value: String) {
-        api.saveAPIKey(value)
-        loadInitial()
+    @discardableResult
+    func saveAPIKey(_ value: String) -> SteamAPIKeySaveResult {
+        let result = api.saveAPIKey(value)
+        apiKeyNotice = result.message
+        if result.accepted { loadInitial() }
+        return result
     }
 
     var hasAPIKey: Bool { api.hasAPIKey }
+
+    var searchModeTitle: String { api.searchModeTitle(period: period, excludedTags: excludedTags) }
 
     private func request(page requestedPage: Int, replace: Bool) {
         lastRequestedPage = (requestedPage, replace)
@@ -1030,7 +1093,7 @@ final class SteamWorkshopBrowserViewModel: ObservableObject {
             guard let self else { return }
             var merged: [String: SteamWorkshopItem] = [:]
             var scores: [String: Double] = [:]
-            var pageCount = 1, total = 0, successes = 0, failures = 0
+            var pageCount = 1, successes = 0, failures = 0
             var published = false
             @MainActor func publish() {
                 let ranked = merged.values.sorted { a, b in
@@ -1043,7 +1106,11 @@ final class SteamWorkshopBrowserViewModel: ObservableObject {
                 self.items = published || !replace ? HarborCatalogContinuity.appendingNewResults(existing: self.items, ranked: ranked) : ranked
                 self.page = requestedPage
                 self.blendedPageCount = max(pageCount, requestedPage)
-                self.totalItems = total
+                // Route totals overlap heavily.  Report only the number of
+                // unique merged cards that the user can actually inspect;
+                // never add independent source totals and label the sum as a
+                // unique Workshop count.
+                self.totalItems = self.items.count
                 self.hasMoreRoutes = requestedPage < self.blendedPageCount
                 if !published { if replace { self.resultRevision = UUID() }; published = true }
             }
@@ -1065,7 +1132,6 @@ final class SteamWorkshopBrowserViewModel: ObservableObject {
                     guard let result else { failures += 1; continue }
                     successes += 1
                     pageCount = max(pageCount, Int(ceil(Double(result.total) / Double(max(1, result.perPage)))))
-                    total += result.total
                     if result.page == requestedPage {
                         for (index, item) in result.items.enumerated() {
                             guard HarborSearch.accepts(item, mode: mode), mode != .personal || !hideKnown || !profile.knownIDs.contains(item.id) else { continue }
@@ -1147,21 +1213,193 @@ final class SteamWorkshopBrowserViewModel: ObservableObject {
 
 }
 
-private enum HarborCatalogCache {
+struct HarborCatalogCachePolicyRecord: Sendable {
+    let key: String
+    let fetchedAt: Date
+    let lastAccess: Date
+    let bytes: Int64
+}
+
+enum HarborCatalogCachePolicy {
+    static func isFresh(
+        fetchedAt: Date,
+        now: Date,
+        ttl: TimeInterval = HarborStorageMaintenance.catalogCacheTTL
+    ) -> Bool {
+        now.timeIntervalSince(fetchedAt) <= ttl
+    }
+
+    static func evictionKeys(
+        records: [HarborCatalogCachePolicyRecord],
+        now: Date,
+        ttl: TimeInterval = HarborStorageMaintenance.catalogCacheTTL,
+        limit: Int64 = HarborStorageMaintenance.catalogCacheLimit
+    ) -> Set<String> {
+        var evicted = Set<String>()
+        var fresh = records.filter {
+            if isFresh(fetchedAt: $0.fetchedAt, now: now, ttl: ttl) { return true }
+            evicted.insert($0.key)
+            return false
+        }
+        var total = fresh.reduce(Int64(0)) { $0 + $1.bytes }
+        for record in fresh.sorted(by: { $0.lastAccess < $1.lastAccess }) where total > limit {
+            evicted.insert(record.key)
+            total -= record.bytes
+        }
+        return evicted
+    }
+}
+
+enum HarborCatalogCache {
+    private static let lock = NSLock()
+    private static var mutationGeneration = 0
+
+    private struct Envelope: Codable {
+        let page: SteamWorkshopPage
+        let fetchedAt: Date
+        var lastAccess: Date
+    }
+
+    private struct Metadata {
+        let fetchedAt: Date
+        let lastAccess: Date
+        let bytes: Int64
+    }
+
+    static var directoryURL: URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appending(path: "org.sceneharbor.SceneHarbor/Catalog", directoryHint: .isDirectory)
+    }
+
     static func url(_ key: String) -> URL {
         let hash = SHA256.hash(data: Data(key.utf8)).map { String(format: "%02x", $0) }.joined()
-        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appending(path: "org.sceneharbor.SceneHarbor/Catalog/\(hash).json")
+        return directoryURL.appending(path: "\(hash).json")
     }
+
     static func read(_ key: String) -> SteamWorkshopPage? {
-        guard let data = try? Data(contentsOf: url(key)) else { return nil }
-        return try? JSONDecoder().decode(SteamWorkshopPage.self, from: data)
+        lock.lock()
+        defer { lock.unlock() }
+        let file = url(key)
+        guard let data = try? Data(contentsOf: file) else {
+            try? FileManager.default.removeItem(at: file)
+            return nil
+        }
+
+        let decoder = JSONDecoder()
+        let now = Date()
+        if var envelope = try? decoder.decode(Envelope.self, from: data) {
+            guard HarborCatalogCachePolicy.isFresh(fetchedAt: envelope.fetchedAt, now: now) else {
+                try? FileManager.default.removeItem(at: file)
+                return nil
+            }
+            // Touch only lastAccess. fetchedAt remains the time a successful
+            // network response was stored, so frequent reads cannot extend
+            // freshness indefinitely.
+            envelope.lastAccess = now
+            if let touched = try? JSONEncoder().encode(envelope) {
+                try? touched.write(to: file, options: .atomic)
+            }
+            return envelope.page
+        }
+
+        // Older releases stored the page directly without a trustworthy
+        // fetchedAt. Never infer freshness from file metadata: the raw page
+        // is a cache miss and will be replaced by a successful network write.
+        try? FileManager.default.removeItem(at: file)
+        return nil
     }
+
     static func write(_ page: SteamWorkshopPage, key: String) {
+        let now = Date()
+        guard let data = try? JSONEncoder().encode(
+            Envelope(page: page, fetchedAt: now, lastAccess: now)
+        ) else { return }
+        lock.lock()
+        let generation = mutationGeneration
+        lock.unlock()
         Task.detached(priority: .utility) {
+            lock.lock()
+            defer { lock.unlock() }
+            guard generation == mutationGeneration else { return }
             let file = url(key)
             try? FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
-            if let data = try? JSONEncoder().encode(page) { try? data.write(to: file, options: .atomic) }
+            try? data.write(to: file, options: .atomic)
+            pruneLocked()
+        }
+    }
+
+    @discardableResult
+    static func clear() -> Int {
+        lock.lock()
+        defer { lock.unlock() }
+        mutationGeneration &+= 1
+        let files = cacheFiles()
+        for file in files { try? FileManager.default.removeItem(at: file) }
+        return files.count
+    }
+
+    static func snapshot() -> (fileCount: Int, bytes: Int64) {
+        lock.lock()
+        defer { lock.unlock() }
+        pruneLocked()
+        let files = cacheFiles()
+        let bytes = files.reduce(Int64(0)) { total, file in
+            let values = try? file.resourceValues(forKeys: [.fileSizeKey])
+            return total + Int64(values?.fileSize ?? 0)
+        }
+        return (files.count, bytes)
+    }
+
+    private static func pruneLocked() {
+        let now = Date()
+        var files: [(URL, Metadata)] = []
+        for file in cacheFiles() {
+            guard let metadata = metadata(for: file) else {
+                try? FileManager.default.removeItem(at: file)
+                continue
+            }
+            guard now.timeIntervalSince(metadata.fetchedAt) <= HarborStorageMaintenance.catalogCacheTTL else {
+                try? FileManager.default.removeItem(at: file)
+                continue
+            }
+            files.append((file, metadata))
+        }
+        let records = files.map {
+            HarborCatalogCachePolicyRecord(
+                key: $0.0.path,
+                fetchedAt: $0.1.fetchedAt,
+                lastAccess: $0.1.lastAccess,
+                bytes: $0.1.bytes
+            )
+        }
+        let evicted = HarborCatalogCachePolicy.evictionKeys(records: records, now: now)
+        for entry in files where evicted.contains(entry.0.path) {
+            try? FileManager.default.removeItem(at: entry.0)
+        }
+    }
+
+    private static func metadata(for file: URL) -> Metadata? {
+        let values = try? file.resourceValues(forKeys: [.fileSizeKey])
+        let bytes = Int64(values?.fileSize ?? 0)
+        guard let data = try? Data(contentsOf: file) else { return nil }
+        if let envelope = try? JSONDecoder().decode(Envelope.self, from: data) {
+            return Metadata(fetchedAt: envelope.fetchedAt, lastAccess: envelope.lastAccess, bytes: bytes)
+        }
+        // Raw pages from older releases have no trustworthy fetchedAt and are
+        // intentionally treated as misses. pruneLocked() removes them.
+        return nil
+    }
+
+    private static func cacheFiles() -> [URL] {
+        guard let urls = try? FileManager.default.contentsOfDirectory(
+            at: directoryURL,
+            includingPropertiesForKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey],
+            options: [.skipsHiddenFiles]
+        ) else { return [] }
+        return urls.filter { url in
+            guard url.pathExtension == "json",
+                  let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey]) else { return false }
+            return values.isRegularFile == true && values.isSymbolicLink != true
         }
     }
 }

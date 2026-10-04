@@ -13,22 +13,34 @@ struct HarborAuthorOptions: View {
     @State private var waitingLanguage: String?
     @State private var message: String?
     @State private var busy = false
+    @State private var batchLanguage: String?
+    @State private var failedLanguage: String?
 
     private var target: Locale.Language { Locale.Language(identifier: HarborLanguage.language) }
     private func label(_ original: String) -> String {
         guard let value = translated[original], value != original else { return original }
-        return "\(value) · \(original)"
+        return value
     }
     private func localized(_ property: HarborProperty) -> HarborProperty {
-        HarborProperty(id: property.id, title: label(property.title), type: property.type, initialValue: property.initialValue,
-                       minimum: property.minimum, maximum: property.maximum, options: property.options.map { ($0.0, label($0.1)) })
+        var result = property
+        result.title = label(property.title)
+        result.options = property.options.map { ($0.0, label($0.1)) }
+        result.groupTitle = property.groupTitle.map(label)
+        return result
     }
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text(HarborLanguage.text("保留作者原文，並依系統語言顯示翻譯。", "Original author labels are retained alongside translations."))
+            Text(HarborLanguage.text("開關控制功能，滑桿調整數值。將游標停在選項上可查看作者原文。", "Switches turn features on or off; sliders adjust values. Hover for the author's original label."))
                 .font(.caption).foregroundStyle(.secondary)
             if busy { ProgressView(HarborLanguage.text("翻譯選項…", "Translating controls…")).controlSize(.small) }
             if let message { Text(message).font(.caption).foregroundStyle(.secondary) }
+            if let failedLanguage {
+                Button(HarborLanguage.text("重試翻譯", "Retry translation")) {
+                    busy = true; message = nil; self.failedLanguage = nil
+                    if configuration != nil { configuration?.invalidate() }
+                    else { configuration = .init(source: Locale.Language(identifier: failedLanguage), target: target) }
+                }.buttonStyle(.bordered)
+            }
             if let waitingLanguage {
                 Button(HarborLanguage.text("下載語言並翻譯", "Download language and translate")) {
                     busy = true; message = nil
@@ -36,13 +48,11 @@ struct HarborAuthorOptions: View {
                     self.waitingLanguage = nil
                 }.buttonStyle(.bordered)
             }
-            ForEach(installed.properties) { property in
-                HarborPropertyControl(property: localized(property), value: playback.settings(installed.id)[property.id] ?? property.initialValue,
-                                      changed: { playback.set(property.id, value: $0, for: installed.project) })
-            }
+            HarborAuthorPropertyList(properties: installed.properties.map(localized), values: playback.settings(installed.id),
+                                     changed: { playback.set($0, value: $1, for: installed.project) })
         }.padding(.top, 12)
             .task {
-                let strings = Set(installed.properties.flatMap { [$0.title] + $0.options.map(\.1) })
+                let strings = Set(installed.properties.filter { $0.unsupportedReason == nil }.flatMap { [$0.title] + $0.options.map(\.1) + [$0.groupTitle].compactMap { $0 } })
                 var grouped: [String: [String]] = [:]
                 for text in strings.sorted() where !text.isEmpty {
                     // Already localized/bilingual labels must not be translated a second time.
@@ -62,10 +72,11 @@ struct HarborAuthorOptions: View {
                         try Task.checkCancellation()
                         if let original = response.clientIdentifier { translated[original] = response.targetText }
                     }
-                    busy = false
+                    busy = false; failedLanguage = nil
                     await nextBatch()
                 } catch {
-                    busy = false
+                    guard !Task.isCancelled else { return }
+                    busy = false; failedLanguage = batchLanguage
                     message = HarborLanguage.text("翻譯暫時無法使用，已保留原文。", "Translation unavailable; original labels are shown.")
                 }
             }
@@ -74,6 +85,7 @@ struct HarborAuthorOptions: View {
         guard !Task.isCancelled, !remaining.isEmpty else { return }
         let next = remaining.removeFirst()
         batch = next.1
+        batchLanguage = next.0
         let source = Locale.Language(identifier: next.0)
         let availability = await LanguageAvailability().status(from: source, to: target)
         guard !Task.isCancelled else { return }

@@ -45,6 +45,7 @@ actor HarborNativeLockPublisher {
     /// mutations.  The actor may suspend while a large source is copied, so
     /// every commit checks this value again before touching the config file.
     private var latestOperationEpoch: UInt64 = 0
+    private var didPreserveBaseline = false
 
     init(paths: HarborNativeLockPaths) {
         self.paths = paths
@@ -66,6 +67,7 @@ actor HarborNativeLockPublisher {
         epoch: UInt64
     ) async throws -> [HarborNativeLockPublishResult] {
         guard acceptOperation(epoch) else { throw HarborNativeLockError.stalePublish }
+        try preserveBaseline()
         let uniqueRequests = Dictionary(
             requests.map { ($0.displayID, $0) },
             uniquingKeysWith: { _, newer in newer }
@@ -145,11 +147,32 @@ actor HarborNativeLockPublisher {
     /// completes and its operation epoch is still current.
     func disable(epoch: UInt64) throws {
         guard acceptOperation(epoch) else { throw HarborNativeLockError.stalePublish }
+        try preserveBaseline()
         for id in generations.keys {
             generationCounter &+= 1
             generations[id] = generationCounter
         }
         _ = try HarborNativeLockAppGroupStore(paths: paths).disable()
+    }
+
+    /// Keep the previous app-group configuration and its referenced media before
+    /// a migration or cleanup. This runs with the app's normal container access.
+    private func preserveBaseline() throws {
+        guard !didPreserveBaseline else { return }
+        let fm = FileManager.default
+        let backup = paths.containerURL.appending(path: "Library/LockScreenBackups/pre-0.13.1")
+        if !fm.fileExists(atPath: backup.path), fm.fileExists(atPath: paths.lockScreenURL.path) {
+            try fm.createDirectory(at: backup.deletingLastPathComponent(), withIntermediateDirectories: true)
+            let staging = backup.deletingLastPathComponent().appending(path: UUID().uuidString)
+            do {
+                try fm.copyItem(at: paths.lockScreenURL, to: staging)
+                try fm.moveItem(at: staging, to: backup)
+            } catch {
+                try? fm.removeItem(at: staging)
+                throw error
+            }
+        }
+        didPreserveBaseline = true
     }
 
     private func isCurrent(_ tokens: [UInt32: UInt64]) -> Bool {

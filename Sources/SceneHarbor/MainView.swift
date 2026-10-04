@@ -296,11 +296,11 @@ struct MainView: View {
             }
             Button("取消", role: .cancel) { playlistBeingRenamed = nil }
         }
-        .alert("重新命名桌布", isPresented: Binding(
+        .alert("重新命名壁紙", isPresented: Binding(
             get: { itemBeingRenamed != nil },
             set: { if !$0 { itemBeingRenamed = nil } }
         )) {
-            TextField("桌布名稱", text: $itemRenameText)
+            TextField("壁紙名稱", text: $itemRenameText)
             Button("儲存") {
                 guard let itemBeingRenamed else { return }
                 library.rename(itemBeingRenamed, to: itemRenameText)
@@ -351,7 +351,7 @@ struct MainView: View {
     private var activeQueueTitle: String {
         guard let activePlaylistID,
               let playlist = library.playlists.first(where: { $0.id == activePlaylistID }) else {
-            return "所有桌布"
+            return "所有壁紙"
         }
         return playlist.title
     }
@@ -373,7 +373,7 @@ struct MainView: View {
 
     private func chooseVideos() {
         let panel = NSOpenPanel()
-        panel.title = "加入你的動態桌布"
+        panel.title = "加入你的動態壁紙"
         panel.prompt = "加入媒體庫"
         panel.allowedContentTypes = [.movie, .mpeg4Movie, .quickTimeMovie]
         panel.allowsMultipleSelection = true
@@ -623,7 +623,7 @@ private struct SteamWorkshopBrowserView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if browser.items.isEmpty {
                 ContentUnavailableView(
-                    "尚未找到桌布",
+                    "尚未找到壁紙",
                     systemImage: "magnifyingglass",
                     description: Text("請換一組搜尋字詞，或切換排序方式。")
                 )
@@ -657,7 +657,9 @@ private struct SteamWorkshopBrowserView: View {
             HStack(spacing: 8) {
                 Image(systemName: "info.circle")
                     .foregroundStyle(.secondary)
-                Text("已顯示 \(browser.items.count) / 約 \(browser.totalItems) 部；下載後會放在 SceneHarbor 專用資料夾，完成後可直接播放 Scene／Web 作品。")
+                Text(browser.blendedResults
+                     ? "已合併 \(browser.items.count) 部不重複作品；下載後會放在 SceneHarbor 專用資料夾，完成後可直接播放 Scene／Web 作品。"
+                     : "已顯示 \(browser.items.count) / 約 \(browser.totalItems) 部；下載後會放在 SceneHarbor 專用資料夾，完成後可直接播放 Scene／Web 作品。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -682,25 +684,35 @@ private struct SteamWorkshopBrowserView: View {
     }
 
     private var apiKeySetup: some View {
-        HStack(alignment: .center, spacing: 10) {
-            Image(systemName: "key.fill")
-                .foregroundStyle(.orange)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("未設定 Steam Web API Key，目前使用 Steam 公開工坊頁瀏覽")
-                    .font(.caption.weight(.semibold))
-                Text("填入自己的 Key 可改用官方 Web API，排序與分頁會更穩定；這不是 Steam 密碼。")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .center, spacing: 10) {
+                Image(systemName: "key.fill")
+                    .foregroundStyle(.orange)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("未設定 Steam Web API Key，目前使用 Steam 公開工坊頁瀏覽")
+                        .font(.caption.weight(.semibold))
+                    Text("填入自己的 Key 可改用官方 Web API，排序與分頁會更穩定；這不是 Steam 密碼。")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text(browser.searchModeTitle)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                SecureField("32 位十六進位 Key", text: $apiKey)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 220)
+                Button("使用官方 API") {
+                    _ = browser.saveAPIKey(apiKey)
+                }
+                .buttonStyle(GlassButtonStyle())
+                Link("申請 Key", destination: URL(string: "https://steamcommunity.com/dev/apikey")!)
+                    .font(.caption)
             }
-            SecureField("32 位十六進位 Key", text: $apiKey)
-                .textFieldStyle(.roundedBorder)
-                .frame(width: 220)
-            Button("使用官方 API") {
-                browser.saveAPIKey(apiKey)
+            if let notice = browser.apiKeyNotice {
+                Text(notice)
+                    .font(.caption)
+                    .foregroundStyle(notice.contains("不正確") ? Color.orange : Color.secondary)
             }
-            .buttonStyle(GlassButtonStyle())
-            Link("申請 Key", destination: URL(string: "https://steamcommunity.com/dev/apikey")!)
-                .font(.caption)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
@@ -1264,7 +1276,7 @@ private struct MainViewSearchModifier: ViewModifier {
                 text: $text,
                 isPresented: $isPresented,
                 placement: .toolbar,
-                prompt: "搜尋你的桌布…"
+                prompt: "搜尋你的壁紙…"
             )
         } else {
             content
@@ -1345,7 +1357,7 @@ private struct HomePage: View {
                     addToScheduledPlaylist: addToScheduledPlaylist,
                     renameAction: renameAction,
                     removeAction: removeAction,
-                    emptyText: "按下愛心後，桌布會出現在這裡。"
+                    emptyText: "按下愛心後，壁紙會出現在這裡。"
                 )
 
                 WallpaperShelf(
@@ -1362,7 +1374,7 @@ private struct HomePage: View {
                     emptyText: "加入影片後，會在這裡快速找到。"
                 )
 
-                Button("查看所有桌布  ›", action: showAllAction)
+                Button("查看所有壁紙  ›", action: showAllAction)
                     .buttonStyle(.plain)
                     .font(.headline)
                     .padding(.bottom, 28)
@@ -1431,7 +1443,7 @@ private struct HeroWallpaper: View {
 
                 HStack(spacing: 10) {
                     Button(action: playAction) {
-                        Label("播放桌布", systemImage: "play.fill")
+                        Label("播放壁紙", systemImage: "play.fill")
                             .padding(.horizontal, 18)
                             .frame(height: 42)
                     }
@@ -1471,7 +1483,7 @@ private struct EmptyHero: View {
             Image(systemName: "mountain.2.fill")
                 .font(.system(size: 50, weight: .light))
                 .foregroundStyle(WallperPalette.accent)
-            Text("建立你的第一張動態桌布")
+            Text("建立你的第一張動態壁紙")
                 .font(.system(size: 30, weight: .bold, design: .serif))
             Text("選擇 Mac 裡的 MP4 或 MOV，所有內容都留在本機。")
                 .foregroundStyle(.secondary)
@@ -1593,7 +1605,7 @@ private struct MediaPage: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("我的媒體")
                             .font(.system(size: 40, weight: .bold, design: .serif))
-                        Text("\(totalCount) 張桌布")
+                        Text("\(totalCount) 張壁紙")
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
@@ -1698,7 +1710,7 @@ private struct NewPlaylistSheet: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text("建立播放清單")
                     .font(.system(size: 26, weight: .bold, design: .serif))
-                Text("一般清單可手動播放；日夜清單在同一個資料夾中分別管理白天與夜晚桌布。")
+                Text("一般清單可手動播放；日夜清單在同一個資料夾中分別管理白天與夜晚壁紙。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -1766,13 +1778,13 @@ private struct PlaylistsPage: View {
                         .font(.caption.weight(.semibold))
                     Text("播放清單")
                         .font(.system(size: 40, weight: .bold, design: .serif))
-                    Text("將桌布分組，並使用其中一組作為播放佇列")
+                    Text("將壁紙分組，並使用其中一組作為播放佇列")
                         .foregroundStyle(.secondary)
                 }
 
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 24) {
                     PlaylistCard(
-                        title: "所有桌布",
+                        title: "所有壁紙",
                         count: items.count,
                         dayCount: 0,
                         nightCount: 0,
@@ -1894,7 +1906,7 @@ private struct PlaylistCard: View {
                             .foregroundStyle(WallperPalette.mint)
                     }
                 } else {
-                        Text("\(count) 張桌布")
+                    Text("\(count) 張壁紙")
                 }
             }
             .font(.caption)
@@ -1948,8 +1960,8 @@ private struct PlaylistDetailPage: View {
                     Text(playlist.title)
                         .font(.system(size: 38, weight: .bold, design: .serif))
                     Text(playlist.kind == .dayNight
-                        ? "同一個播放清單內分別管理白天與夜晚桌布"
-                        : "\(playlist.itemIDs.count) 張桌布")
+                        ? "同一個播放清單內分別管理白天與夜晚壁紙"
+                        : "\(playlist.itemIDs.count) 張壁紙")
                         .foregroundStyle(.secondary)
                 }
 
@@ -1985,8 +1997,8 @@ private struct PlaylistDetailPage: View {
                 VStack(spacing: 9) {
                     Image(systemName: period.symbol)
                         .font(.system(size: 28))
-                    Text("尚未加入\(period.rawValue)桌布")
-                    Text("從桌布的 ⋯ 選單加入")
+                    Text("尚未加入\(period.rawValue)壁紙")
+                    Text("從壁紙的 ⋯ 選單加入")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -2015,7 +2027,7 @@ private struct PlaylistDetailPage: View {
     private var standardSection: some View {
         let sectionItems = library.items(in: playlist)
         if sectionItems.isEmpty {
-            Text("這個播放清單尚未加入桌布。請從桌布的 ⋯ 選單加入。")
+            Text("這個播放清單尚未加入壁紙。請從壁紙的 ⋯ 選單加入。")
                 .foregroundStyle(.secondary)
                 .padding(.vertical, 40)
         } else {
@@ -2114,7 +2126,7 @@ private struct WallpaperCard<MenuContent: View>: View {
             HStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(item.title).font(.system(size: 13, weight: .semibold)).lineLimit(1)
-                    Text("本機桌布").font(.caption2).foregroundStyle(.secondary)
+                    Text("本機壁紙").font(.caption2).foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Menu { menuContent() } label: { Image(systemName: "ellipsis") }
@@ -2196,10 +2208,10 @@ private struct PlayerCapsule: View {
                 Button {
                     selectQueue(nil)
                 } label: {
-                    if queueTitle == "所有桌布" {
-                        Label("所有桌布", systemImage: "checkmark")
+                    if queueTitle == "所有壁紙" {
+                        Label("所有壁紙", systemImage: "checkmark")
                     } else {
-                        Text("所有桌布")
+                        Text("所有壁紙")
                     }
                 }
                 if !playlists.isEmpty { Divider() }
@@ -2223,14 +2235,14 @@ private struct PlayerCapsule: View {
 
             Menu {
                 ForEach([Float(0.5), 1, 1.5, 2], id: \.self) { rate in
-                    Button(rate == 1 ? "1×（正常）" : "\(rate.formatted())×") { playbackRate = rate }
+                    Button(HarborControlStyle.speedLabel(Double(rate))) { playbackRate = rate }
                 }
             } label: {
-                Text(playbackRate == 1 ? "1×" : "\(playbackRate.formatted())×")
+                Text(HarborControlStyle.speedLabel(Double(playbackRate)))
                     .font(.caption.weight(.semibold))
             }
             .menuStyle(.borderlessButton)
-            .frame(width: 42)
+            .frame(minWidth: 76)
 
             Menu {
                 Button("停止播放", action: stopAction)
@@ -2261,7 +2273,7 @@ private struct DisplayControl: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("控制中心").font(.headline)
-            Text("每個螢幕可獨立選擇桌布；新接上的螢幕會自動出現在這裡。預設只選取內建螢幕。")
+            Text("每個螢幕可獨立選擇壁紙；新接上的螢幕會自動出現在這裡。預設只選取內建螢幕。")
                 .font(.caption).foregroundStyle(.secondary)
 
             ForEach(playback.displays) { display in
@@ -2310,7 +2322,7 @@ private struct DisplayWallpaperPicker: View {
     let displayID: String
 
     var body: some View {
-        Picker("使用桌布", selection: Binding<WallpaperItem.ID?>(
+        Picker("使用壁紙", selection: Binding<WallpaperItem.ID?>(
             get: { playback.assignedWallpaperID(for: displayID) },
             set: { playback.setAssignedWallpaperID($0, for: displayID) }
         )) {
@@ -2332,7 +2344,7 @@ private struct DisplayPauseRules: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("目前使用中的視窗位於某台螢幕時，要暫停哪些桌布；每台螢幕可獨立設定。")
+            Text("目前使用中的視窗位於某台螢幕時，要暫停哪些壁紙；每台螢幕可獨立設定。")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -2558,7 +2570,7 @@ private struct SettingsPanel: View {
                         }
                         SettingsSection(title: "顯示器視窗自動暫停規則") {
                             DisplayPauseRules(playback: playback)
-                            Text("暫停只會凍結該螢幕目前的桌布畫面，不會取消桌布；事件結束後會自動恢復原本正在播放的螢幕。")
+                            Text("暫停只會凍結該螢幕目前的壁紙畫面，不會取消壁紙；事件結束後會自動恢復原本正在播放的螢幕。")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -2600,7 +2612,7 @@ private struct SettingsPanel: View {
                                 ForEach(PlayerScalingMode.allCases) { Text($0.rawValue).tag($0) }
                             }
                             .pickerStyle(.segmented)
-                        Text("多個顯示器播放相同桌布時，共用一次硬體影片解碼。")
+                            Text("多個顯示器播放相同壁紙時，共用一次硬體影片解碼。")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         SettingsSection(title: "播放行為") {
@@ -2612,13 +2624,13 @@ private struct SettingsPanel: View {
                             }
                             Toggle("播放影片聲音", isOn: $playback.soundEnabled)
                             Picker("播放速度", selection: $playback.playbackRate) {
-                                Text("0.5×").tag(Float(0.5))
-                                Text("1×").tag(Float(1))
-                                Text("1.5×").tag(Float(1.5))
-                                Text("2×").tag(Float(2))
+                                Text(HarborControlStyle.speedLabel(0.5)).tag(Float(0.5))
+                                Text(HarborControlStyle.speedLabel(1)).tag(Float(1))
+                                Text(HarborControlStyle.speedLabel(1.5)).tag(Float(1.5))
+                                Text(HarborControlStyle.speedLabel(2)).tag(Float(2))
                             }
                             HStack {
-                                Text("桌布轉場")
+                                Text("壁紙轉場")
                                 Slider(value: $playback.transitionDuration, in: 0...1.5, step: 0.05)
                                 Text(playback.transitionDuration == 0 ? "關閉" : "\(playback.transitionDuration, specifier: "%.2f") 秒")
                                     .font(.caption.monospacedDigit())
@@ -2674,7 +2686,7 @@ private struct SettingsPanel: View {
                         }
                     case .storage:
                         SettingsSection(title: "媒體庫") {
-                            SettingLine(symbol: "film.stack.fill", title: "\(library.items.count) 張本機桌布", subtitle: "影片與縮圖保存在 Application Support／SceneHarbor。")
+                            SettingLine(symbol: "film.stack.fill", title: "\(library.items.count) 張本機壁紙", subtitle: "影片與縮圖保存在 Application Support／SceneHarbor。")
                             Button("在 Finder 顯示") {
                                 let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
                                 NSWorkspace.shared.activateFileViewerSelecting([support.appendingPathComponent("SceneHarbor")])
@@ -2682,7 +2694,7 @@ private struct SettingsPanel: View {
                             .buttonStyle(GlassButtonStyle())
                         }
                     case .displays:
-                        SettingsSection(title: "每個顯示器的桌布") {
+                        SettingsSection(title: "每個顯示器的壁紙") {
                             ForEach(playback.displays) { display in
                                 VStack(alignment: .leading, spacing: 8) {
                                     HStack(alignment: .top, spacing: 10) {
@@ -2781,7 +2793,7 @@ private struct EmptyGrid: View {
     var body: some View {
         VStack(spacing: 14) {
             Image(systemName: "film.stack").font(.system(size: 40)).foregroundStyle(WallperPalette.accent)
-            Text("這裡還沒有桌布").font(.headline)
+            Text("這裡還沒有壁紙").font(.headline)
             Button("加入影片", action: importAction).buttonStyle(HeroButtonStyle())
         }
         .frame(maxWidth: .infinity)
@@ -2882,7 +2894,7 @@ private struct DropTargetOverlay: View {
                 Image(systemName: "arrow.down.doc.fill")
                     .font(.system(size: 38, weight: .light))
                     .foregroundStyle(WallperPalette.accent)
-                Text("放開即可加入動態桌布")
+                Text("放開即可加入動態壁紙")
                     .font(.system(size: 20, weight: .bold, design: .serif))
                 Text("支援 MP4、MOV 與 M4V")
                     .font(.caption)

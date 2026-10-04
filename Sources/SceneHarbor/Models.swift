@@ -46,6 +46,76 @@ struct WallpaperItem: Identifiable, Codable, Hashable, Sendable {
     var fileSizeBytes: Int64?
     var isFavorite: Bool
     let dateAdded: Date
+    /// Provenance is optional so older library JSON remains readable.  It is
+    /// used only to detect importing the same source again; playback always
+    /// uses the managed `videoPath` copy above.
+    var sourcePath: String? = nil
+    var sourceFingerprint: String? = nil
+
+    init(
+        id: UUID,
+        title: String,
+        videoPath: String,
+        thumbnailPath: String?,
+        duration: Double,
+        width: Int,
+        height: Int,
+        fileSizeBytes: Int64? = nil,
+        isFavorite: Bool,
+        dateAdded: Date,
+        sourcePath: String? = nil,
+        sourceFingerprint: String? = nil
+    ) {
+        self.id = id
+        self.title = title
+        self.videoPath = videoPath
+        self.thumbnailPath = thumbnailPath
+        self.duration = duration
+        self.width = width
+        self.height = height
+        self.fileSizeBytes = fileSizeBytes
+        self.isFavorite = isFavorite
+        self.dateAdded = dateAdded
+        self.sourcePath = sourcePath
+        self.sourceFingerprint = sourceFingerprint
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, videoPath, thumbnailPath, duration, width, height,
+             fileSizeBytes, isFavorite, dateAdded, sourcePath, sourceFingerprint
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        videoPath = try container.decode(String.self, forKey: .videoPath)
+        thumbnailPath = try container.decodeIfPresent(String.self, forKey: .thumbnailPath)
+        duration = try container.decode(Double.self, forKey: .duration)
+        width = try container.decode(Int.self, forKey: .width)
+        height = try container.decode(Int.self, forKey: .height)
+        fileSizeBytes = try container.decodeIfPresent(Int64.self, forKey: .fileSizeBytes)
+        isFavorite = try container.decode(Bool.self, forKey: .isFavorite)
+        dateAdded = try container.decode(Date.self, forKey: .dateAdded)
+        sourcePath = try container.decodeIfPresent(String.self, forKey: .sourcePath)
+        sourceFingerprint = try container.decodeIfPresent(String.self, forKey: .sourceFingerprint)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encode(videoPath, forKey: .videoPath)
+        try container.encodeIfPresent(thumbnailPath, forKey: .thumbnailPath)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(width, forKey: .width)
+        try container.encode(height, forKey: .height)
+        try container.encodeIfPresent(fileSizeBytes, forKey: .fileSizeBytes)
+        try container.encode(isFavorite, forKey: .isFavorite)
+        try container.encode(dateAdded, forKey: .dateAdded)
+        try container.encodeIfPresent(sourcePath, forKey: .sourcePath)
+        try container.encodeIfPresent(sourceFingerprint, forKey: .sourceFingerprint)
+    }
 
     var resolutionText: String {
         guard width > 0, height > 0 else { return "未知解析度" }

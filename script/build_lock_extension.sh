@@ -71,7 +71,8 @@ cat > "$bundle/Contents/Resources/registration-probe.json" <<'EOF'
 {
   "bundleIdentifier": "org.sceneharbor.SceneHarbor.WallpaperExtension",
   "extensionPoint": "com.apple.wallpaper",
-  "appGroupID": "group.org.sceneharbor.SceneHarbor",
+  "storage": "extension-owned Documents/SceneHarborLock",
+  "hostAccess": "user-selected-folder security-scoped bookmark",
   "configurationName": "Library/LockScreen/dynamic-lock-screen.json",
   "runtimeABI": "MirageSceneSaverCreate + MirageSceneSaverHasPresented",
   "providerRegistration": "host-app DynamicLockScreenManager",
@@ -176,16 +177,19 @@ swiftc_args=(
     -target arm64-apple-macosx26.0
     -swift-version 5
     -parse-as-library
+    -application-extension
     -emit-executable
     -module-cache-path "$swift_module_cache"
     -import-objc-header "$repo_root/Sources/SceneHarborWallpaperExtension/SceneHarborWallpaperExtension-Bridging-Header.h"
     -framework AppKit -framework AVFoundation -framework CoreGraphics -framework CoreMedia
     -framework CoreVideo -framework Foundation -framework ImageIO -framework IOSurface
     -framework QuartzCore -framework ExtensionFoundation
+    -Xlinker -e -Xlinker _EXExtensionMain
     -Xlinker -rpath -Xlinker '@loader_path/../Frameworks'
     -o "$bundle/Contents/MacOS/SceneHarborWallpaperExtension"
     "$repo_root/Sources/SceneHarbor/HarborLockModels.swift"
     "$repo_root/Sources/SceneHarborWallpaperExtensionSupport/SceneHarborWallpaperSharedStore.swift"
+    "$repo_root/Sources/SceneHarborWallpaperExtensionSupport/SceneHarborWallpaperPlaybackPolicy.swift"
     "$repo_root/Sources/SceneHarborWallpaperExtension/SceneHarborWallpaperSettings.swift"
     "$repo_root/Sources/SceneHarborWallpaperExtension/SceneHarborWallpaperRenderer.swift"
     "$repo_root/Sources/SceneHarborWallpaperExtension/SceneHarborWallpaperXPCHandler.swift"
