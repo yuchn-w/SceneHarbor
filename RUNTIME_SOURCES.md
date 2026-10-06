@@ -1,13 +1,13 @@
 # Runtime 來源與重建
 
-公開附件 `SceneHarbor-runtime-0.12.8-public.1.tar.gz` 解壓到專案根目錄後，會補齊被 Git 忽略的大型 runtime 與對應來源。
+公開附件 `SceneHarbor-runtime-0.13.6-public.1.tar.gz` 解壓到專案根目錄後，會補齊被 Git 忽略的大型 runtime 與對應來源。
 
 ## MirageWallpaper
 
 - 固定來源與 commit：`runtime-lock.json`。
 - 原始碼封存：`Vendor/MirageBaseline/source.tar.gz`。
 - Scene／Web 修改：`Vendor/MirageBaseline/local.patch`。
-- Screen saver readiness 修改：`Vendor/LockScreenRuntime/first-presented.patch`。
+- Screen saver 與多螢幕取景的累積修改：`Vendor/LockScreenRuntime/framing.patch`，已包含 first-presented.patch。
 
 例如，在獨立工作目錄準備 Scene／Web 來源：
 

@@ -144,6 +144,7 @@ mkdir -p "$APP_BUNDLE/Contents/Resources/ThirdParty/SceneHarborScreenSaver"
 cp "$TASK_DIR/Vendor/LockScreenRuntime/LICENSE-Mirage" \
    "$TASK_DIR/Vendor/LockScreenRuntime/LICENSE-MoltenVK" \
    "$TASK_DIR/Vendor/LockScreenRuntime/first-presented.patch" \
+   "$TASK_DIR/Vendor/LockScreenRuntime/framing.patch" \
    "$TASK_DIR/Vendor/LockScreenRuntime/README.md" \
    "$TASK_DIR/Vendor/LockScreenRuntime/runtime.json" \
    "$APP_BUNDLE/Contents/Resources/ThirdParty/SceneHarborScreenSaver/"

@@ -47,9 +47,6 @@ final class SceneHarborWallpaperRenderer {
     private let logger = Logger(subsystem: "org.sceneharbor.SceneHarbor.WallpaperExtension", category: "rendering")
     private static let sceneQueue = DispatchQueue(label: "org.sceneharbor.SceneHarbor.wallpaper-scene-runtime",
                                                     qos: .userInitiated)
-    private static var activeSceneKey: String?
-    private static var activeSceneClients = 0
-    private static let sceneStateLock = NSLock()
     private let rootLayer: CALayer
     private let size: CGSize
     private let scale: CGFloat
@@ -68,7 +65,6 @@ final class SceneHarborWallpaperRenderer {
     private var sceneView: NSView?
     private var sceneRevealWork: DispatchWorkItem?
     private var scenePollWork: DispatchWorkItem?
-    private var sceneRetryWork: DispatchWorkItem?
     private var fallbackLayer: CALayer?
     private var loadID = UUID()
     private var isPaused = false
@@ -121,7 +117,7 @@ final class SceneHarborWallpaperRenderer {
             if !didReportReady, scenePollWork == nil, let sceneEngine,
                let sceneLibrary, let layer = sceneView?.layer {
                 pollForFirstSceneFrame(library: sceneLibrary, engine: sceneEngine,
-                                       layer: layer, deadline: Date().addingTimeInterval(8))
+                                       layer: layer, deadline: Date().addingTimeInterval(30))
             }
         } else {
             // Waiting on an intentionally paused renderer must not consume the
@@ -138,7 +134,6 @@ final class SceneHarborWallpaperRenderer {
         readyObservation?.invalidate()
         sceneRevealWork?.cancel()
         scenePollWork?.cancel()
-        sceneRetryWork?.cancel()
         player?.pause()
         pendingPlayer?.pause()
         looper?.disableLooping()
@@ -236,7 +231,7 @@ final class SceneHarborWallpaperRenderer {
         }
     }
 
-    private func loadScene(display: HarborLockDisplayConfiguration, container: URL, retryDeadline: Date? = nil) {
+    private func loadScene(display: HarborLockDisplayConfiguration, container: URL) {
         guard let root = Bundle.main.resourceURL,
               let assetsURL = root.appendingPathComponent("assets", isDirectory: true) as URL?,
               let libraryURL = Bundle.main.privateFrameworksURL?.appendingPathComponent("libMirageSceneSaver.dylib"),
@@ -261,37 +256,10 @@ final class SceneHarborWallpaperRenderer {
         let pointer = Unmanaged.passUnretained(view).toOpaque()
         sceneView = view
         let generation = loadID
-        let acquireDeadline = retryDeadline ?? Date().addingTimeInterval(8)
-        // The native engine fans one scene out to independent Metal hosts;
-        // each host has its own drawable size. Display dimensions do not make
-        // the same scene incompatible on an external and built-in display.
-        let sceneKey = "\(display.sourceFingerprint)|\(properties)|\(display.fps)"
-        // Keep the NSView alive until creation or cancellation cleanup has
-        // finished: the C ABI receives its unretained pointer.
+        // Each display renders with its own camera/extent, matching desktop
+        // framing even when the built-in and external aspect ratios differ.
+        // Retain the NSView until native creation/cancellation has completed.
         Self.sceneQueue.async { [weak self, view] in
-            Self.sceneStateLock.lock()
-            let compatible = Self.activeSceneKey == nil || Self.activeSceneKey == sceneKey
-            if compatible { Self.activeSceneKey = sceneKey }
-            Self.sceneStateLock.unlock()
-            guard compatible else {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self, self.loadID == generation else { return }
-                    self.sceneView = nil
-                    // Another display may still be releasing the previous
-                    // shared scene during a coordinated playlist change.
-                    guard Date() < acquireDeadline else {
-                        self.logger.error("display=\(self.display.displayID) incompatible-scene using poster")
-                        return
-                    }
-                    let retry = DispatchWorkItem { [weak self] in
-                        guard let self, !self.isStopped, self.loadID == generation else { return }
-                        self.loadScene(display: display, container: container, retryDeadline: acquireDeadline)
-                    }
-                    self.sceneRetryWork = retry
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: retry)
-                }
-                return
-            }
             let engine = assetsURL.path.withCString { assetsPath in
                 sceneURL.path.withCString { scenePath in
                     properties.withCString { propertiesJSON in
@@ -301,10 +269,6 @@ final class SceneHarborWallpaperRenderer {
                     }
                 }
             }
-            Self.sceneStateLock.lock()
-            if engine != nil { Self.activeSceneClients += 1 }
-            else if Self.activeSceneClients == 0 { Self.activeSceneKey = nil }
-            Self.sceneStateLock.unlock()
             DispatchQueue.main.async {
                 guard let self, !self.isStopped, self.loadID == generation else {
                     if let engine { Self.sceneQueue.async { Self.destroyScene(library: library, engine: engine, retaining: view) } }
@@ -328,15 +292,14 @@ final class SceneHarborWallpaperRenderer {
                 self.rootLayer.addSublayer(viewLayer)
                 self.sceneLibrary = library
                 self.sceneEngine = engine
-                // A new lock host may join an engine whose desktop hosts are
-                // all paused. Apply both states after async creation completes.
+                // Apply the latest lock state after asynchronous creation.
                 library.setPaused(engine, self.isPaused ? 1 : 0)
                 // The pinned runtime exposes a bounded first-presented probe.
                 // Keep the poster above the hidden Metal surface until that
                 // probe observes a real drawable.
                 if !self.isPaused {
                     self.pollForFirstSceneFrame(library: library, engine: engine,
-                                                layer: viewLayer, deadline: Date().addingTimeInterval(8))
+                                                layer: viewLayer, deadline: Date().addingTimeInterval(30))
                 }
             }
         }
@@ -352,8 +315,6 @@ final class SceneHarborWallpaperRenderer {
         sceneRevealWork = nil
         scenePollWork?.cancel()
         scenePollWork = nil
-        sceneRetryWork?.cancel()
-        sceneRetryWork = nil
         player?.pause()
         pendingPlayer?.pause()
         looper?.disableLooping()
@@ -388,10 +349,6 @@ final class SceneHarborWallpaperRenderer {
         library.destroy(engine)
         // Finish the last AppKit ownership release on its main thread.
         DispatchQueue.main.async { withExtendedLifetime(view) {} }
-        sceneStateLock.lock()
-        activeSceneClients = max(0, activeSceneClients - 1)
-        if activeSceneClients == 0 { activeSceneKey = nil }
-        sceneStateLock.unlock()
     }
 
     private func markReady() {

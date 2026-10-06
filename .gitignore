@@ -34,3 +34,7 @@ Vendor/MirageBaseline/assets/
 Vendor/LockScreenRuntime/*.dylib
 Vendor/HDR/yt-dlp_macos
 Vendor/PortableRuntime/
+
+# Private rollback artifacts must never enter public Git history.
+backups/
+public-releases/

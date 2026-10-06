@@ -14,6 +14,10 @@
 - macOS 26 使用原生液態玻璃控制列。
 - YouTube／IINA 的選用 HDR 整合及本機系統背景聲音整合。
 
+## 空間管理
+
+建置與安裝工具改為有上限的還原點、相同 App 內容去重，以及成功驗證後才輪替。私人備份與編譯產物不進入公開 Git 歷史。操作與保留規則見 [STORAGE_POLICY.md](STORAGE_POLICY.md)。
+
 ## 下載與狀態
 
 公開版本是 **預覽版**，面向 macOS 26 以上的 Apple Silicon Mac。請參閱 GitHub Releases 的系統需求與已知限制。

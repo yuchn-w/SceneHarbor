@@ -231,6 +231,8 @@ if [[ -n "${APP_RESOURCES_DIR:-}" ]]; then
     fi
     ditto "$output_url" "$target"
     print "embedded saver: $target"
+    python3 "$repo_root/script/storage_policy.py" prune-previous "$target"
 fi
 
+python3 "$repo_root/script/storage_policy.py" prune-previous "$output_url"
 print "PASS: built and validated $output_url"

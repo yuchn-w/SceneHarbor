@@ -23,8 +23,7 @@ if [[ "$MODE" == "--install" || "$MODE" == "--install-built" ]]; then
     /usr/bin/codesign --verify --deep --strict "$APP_BUNDLE"
     INSTALL_APP="/Applications/SceneHarbor.app"
     if [[ -e "$INSTALL_APP" ]]; then
-        ditto -c -k --sequesterRsrc --keepParent "$INSTALL_APP" \
-            "$ROOT_DIR/build/SceneHarbor-installed-$(date +%Y%m%d-%H%M%S).zip"
+        python3 "$ROOT_DIR/script/storage_policy.py" archive-app "$INSTALL_APP" "$ROOT_DIR/build"
     fi
     INSTALL_STAGE="$(mktemp -d /Applications/.SceneHarbor-install.XXXXXX)"
     trap 'rm -rf "$INSTALL_STAGE"' EXIT
@@ -58,6 +57,10 @@ case "$MODE" in
         launch_app
         sleep 2
         /usr/bin/pgrep -x "$APP_NAME" >/dev/null
+        if [[ "$MODE" == "--install" || "$MODE" == "--install-built" ]]; then
+            # Rotate only after a successful install and launch, never before rollback is safe.
+            python3 "$ROOT_DIR/script/storage_policy.py" prune-installed "$ROOT_DIR/build"
+        fi
         echo "SceneHarbor 已成功啟動"
         ;;
     --debug|debug)

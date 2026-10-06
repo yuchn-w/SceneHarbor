@@ -1,0 +1,546 @@
+--- a/SceneRenderer/Sources/SceneRenderer/AppRuntime/Controller/WallpaperEngineRuntime.cpp
++++ b/SceneRenderer/Sources/SceneRenderer/AppRuntime/Controller/WallpaperEngineRuntime.cpp
+@@ -1742,7 +1742,7 @@
+         // been inited earlier by set_muted(false), so gating on the init
+         // branch above would skip start and silence all BGM. start() is a
+         // no-op if the device isn't inited (e.g. muted) or already running.
+-        if (! m_config.muted) m_sound_manager->play();
++        m_sound_manager->play();
+         // Apply initial bindings while the parsed Scene is still private to
+         // this preparation loop. The VFS must be attached first for shader
+         // combo and text asset resolution. Doing this before RenderSetScene
+--- a/SceneRenderer/Sources/SceneRenderer/Gpu/Vulkan/Device.cpp
++++ b/SceneRenderer/Sources/SceneRenderer/Gpu/Vulkan/Device.cpp
+@@ -330,6 +330,12 @@
+         allocatorInfo.physicalDevice         = *device.m_gpu;
+         allocatorInfo.device                 = *device.m_device;
+         allocatorInfo.instance               = *inst.inst();
++#ifdef __APPLE__
++        // Apple GPUs share system RAM. Avoid retaining VMA's default 256 MiB
++        // blocks for a small wallpaper; larger individual images still get
++        // appropriately sized allocations instead of being capped.
++        allocatorInfo.preferredLargeHeapBlockSize = 32ull * 1024 * 1024;
++#endif
+         VVK_CHECK_BOOL_RE(vvk::CreateVmaAllocator(allocatorInfo, device.m_allocator));
+     }
+     device.m_tex_cache  = std::make_unique<TextureCache>(device);
+--- a/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.h
++++ b/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.h
+@@ -45,6 +45,7 @@
+ void  SceneRendererMacDesktopWake(void* handle);
+ void  SceneRendererMacDesktopActivate(void* handle);
+ void  SceneRendererMacDesktopDeactivate(void* handle);
++void  SceneRendererMacDesktopSetHorizontalFlip(void* handle, bool enabled);
+ bool  SceneRendererMacDesktopPrepareMetalFX(void* handle);
+ void  SceneRendererMacDesktopPresentMetalFrame(void* handle, void* texture,
+                                                void* command_queue,
+--- a/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.mm
++++ b/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacDesktopHost.mm
+@@ -21,6 +21,18 @@
+ // not own the wallpaper instance; app-level code that observes macOS
+ // now-playing state should construct `sr::MediaStatus` and call that runtime
+ // entry point directly.
++
++// The wallpaper host is display-only. AppKit can finish launching again
++// inside run(), so preserve the no-activation policy on every launch pass.
++@interface SRBackgroundApplication : NSApplication
++@end
++@implementation SRBackgroundApplication
++- (void)finishLaunching {
++    [self setActivationPolicy:NSApplicationActivationPolicyProhibited];
++    [super finishLaunching];
++    [self setActivationPolicy:NSApplicationActivationPolicyProhibited];
++}
++@end
+ 
+ @interface SceneRendererWallpaperWindow : NSWindow
+ @end
+@@ -69,6 +81,7 @@
+     std::atomic<bool>                deactivation_requested { false };
+     std::atomic<bool>                deactivation_confirmed { false };
+     std::atomic<bool>                metal_presenter_enabled { false };
++    std::atomic<bool>                horizontal_flip { false };
+     std::mutex                       present_mutex;
+     id<MTLDevice>                    presenter_device { nil };
+     id<MTLCommandQueue>              fallback_queue { nil };
+@@ -92,6 +105,7 @@
+     return @"#include <metal_stdlib>\n"
+             "using namespace metal;\n"
+             "struct VSOut { float4 position [[position]]; float2 uv; };\n"
++            "struct PresenterOptions { uint horizontal_flip; };\n"
+             "vertex VSOut vs_main(uint vid [[vertex_id]]) {\n"
+             "    float2 pos[3] = { float2(-1.0, -1.0), float2(3.0, -1.0), float2(-1.0, 3.0) };\n"
+             "    float2 uv[3] = { float2(0.0, 1.0), float2(2.0, 1.0), float2(0.0, -1.0) };\n"
+@@ -100,8 +114,10 @@
+             "    value.uv = uv[vid];\n"
+             "    return value;\n"
+             "}\n"
+-            "fragment float4 fs_main(VSOut value [[stage_in]], texture2d<float> texture [[texture(0)]], sampler texture_sampler [[sampler(0)]]) {\n"
+-            "    return texture.sample(texture_sampler, value.uv);\n"
++            "fragment float4 fs_main(VSOut value [[stage_in]], texture2d<float> texture [[texture(0)]], sampler texture_sampler [[sampler(0)]], constant PresenterOptions& options [[buffer(0)]]) {\n"
++            "    float2 uv = value.uv;\n"
++            "    if (options.horizontal_flip != 0) uv.x = 1.0 - uv.x;\n"
++            "    return texture.sample(texture_sampler, uv);\n"
+             "}\n";
+ }
+ 
+@@ -273,6 +289,10 @@
+     [encoder setRenderPipelineState:host->present_pipeline];
+     [encoder setFragmentTexture:source atIndex:0];
+     [encoder setFragmentSamplerState:host->present_sampler atIndex:0];
++    struct PresenterOptions {
++        std::uint32_t horizontal_flip;
++    } options { host->horizontal_flip.load(std::memory_order_relaxed) ? 1u : 0u };
++    [encoder setFragmentBytes:&options length:sizeof(options) atIndex:0];
+     [encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+     [encoder endEncoding];
+ }
+@@ -549,7 +569,10 @@
+     EmitMouseEnter(host, inside);
+ 
+     if (inside && host->callbacks.mouse_move != nullptr) {
+-        const double x = Clamp01((mouse.x - NSMinX(frame)) / NSWidth(frame));
++        double x = Clamp01((mouse.x - NSMinX(frame)) / NSWidth(frame));
++        if (host->horizontal_flip.load(std::memory_order_relaxed)) {
++            x = 1.0 - x;
++        }
+         const double y = Clamp01(1.0 - ((mouse.y - NSMinY(frame)) / NSHeight(frame)));
+         host->callbacks.mouse_move(x, y, host->callbacks.userdata);
+     }
+@@ -588,8 +611,11 @@
+ extern "C" void* SceneRendererMacDesktopCreate(const SceneRendererMacDesktopConfig* config,
+                                                SceneRendererMacDesktopCallbacks callbacks) {
+     @autoreleasepool {
+-        NSApplication* app = NSApplication.sharedApplication;
+-        [app setActivationPolicy:NSApplicationActivationPolicyAccessory];
++        NSApplication* app = [SRBackgroundApplication sharedApplication];
++        // This process only renders desktop/preview surfaces and must never
++        // become the active application. Accessory helpers deactivate an active
++        // accessory host during AppKit startup, sending its catalog behind apps.
++        [app setActivationPolicy:NSApplicationActivationPolicyProhibited];
+         [app finishLaunching];
+ 
+         NSScreen* screen = nil;
+@@ -795,6 +821,21 @@
+     }
+ }
+ 
++extern "C" void SceneRendererMacDesktopSetHorizontalFlip(void* handle, bool enabled) {
++    auto* host = static_cast<MacDesktopHost*>(handle);
++    if (host == nullptr) return;
++    auto apply = ^{
++      if (host->surface_layer == nil) return;
++      host->horizontal_flip.store(enabled, std::memory_order_relaxed);
++      [CATransaction flush];
++    };
++    if (NSThread.isMainThread) {
++        apply();
++    } else {
++        dispatch_sync(dispatch_get_main_queue(), apply);
++    }
++}
++
+ extern "C" bool SceneRendererMacDesktopPrepareMetalFX(void* handle) {
+     auto* host = static_cast<MacDesktopHost*>(handle);
+     if (host == nullptr || host->surface_layer == nil || host->surface_layer.device == nil)
+@@ -839,15 +880,19 @@
+         const NSUInteger content_height =
+             std::min<NSUInteger>(source_height == 0 ? source.height : source_height, source.height);
+         bool used_metalfx = false;
++        // Keep the presenter (including live horizontal flip), but do not
++        // allocate an upscaler and its textures for a native-size frame.
+         if (content_width > 0 && content_height > 0 &&
+             drawable.texture.width >= content_width &&
+             drawable.texture.height >= content_height &&
++            (drawable.texture.width > content_width || drawable.texture.height > content_height) &&
+             EnsureSpatialScaler(host, source, drawable.texture)) {
+             const MTLTextureUsage input_usage = host->spatial_scaler.colorTextureUsage;
+             const MTLTextureUsage output_usage = host->spatial_scaler.outputTextureUsage;
+             const bool valid_input = (source.usage & input_usage) == input_usage;
+             id<MTLTexture> output = nil;
+-            if ((drawable.texture.usage & output_usage) == output_usage &&
++            if (!host->horizontal_flip.load(std::memory_order_relaxed) &&
++                (drawable.texture.usage & output_usage) == output_usage &&
+                 drawable.texture.storageMode == MTLStorageModePrivate) {
+                 output = drawable.texture;
+             } else {
+@@ -878,7 +923,7 @@
+                   drawable.texture.height);
+         } else if (! used_metalfx && ! host->logged_linear) {
+             host->logged_linear = true;
+-            NSLog(@"SceneRenderer MetalFX Spatial unavailable for this frame; using linear fallback");
++            NSLog(@"SceneRenderer direct presentation (native size or spatial scaling unavailable)");
+         }
+ 
+         SRHostRef* ref = host->hostRef;
+--- a/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacMetalDisplay.mm
++++ b/SceneRenderer/Sources/SceneRenderer/Host/macOS/MacMetalDisplay.mm
+@@ -115,7 +115,7 @@
+ 
+     const bool has_fixed_drawable = display->fixed_drawable_size.width > 0.0 &&
+                                     display->fixed_drawable_size.height > 0.0;
+-    if (has_fixed_drawable) {
++    if (has_fixed_drawable && view.window != nil) {
+         // On macOS 26 the legacy screen-saver ViewBridge can replace a full-screen
+         // view's logical (point) bounds with the display's physical pixel size
+         // after initialization. That makes the hosted layer two times too large
+--- a/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverEngine.cpp
++++ b/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverEngine.cpp
+@@ -11,39 +11,27 @@
+ import sr.scene_wallpaper;
+ import sr.utils;
+ 
+-extern "C" void SceneRendererSetLiveMetalFrameCallback(
+-    void (*cb)(void*, std::uint32_t, std::uint32_t, void*), void* userdata);
+ extern "C" void* MirageSceneSaverHostCreate(void* ns_view, std::uint32_t drawable_width,
+                                                std::uint32_t drawable_height);
+ extern "C" void MirageSceneSaverHostDestroy(void* host);
++extern "C" int MirageSceneSaverHostHasPresented(void* host);
+ extern "C" void MirageSceneSaverHostPresent(void* host, void* texture, std::uint32_t width,
+                                                std::uint32_t height);
+ 
+ namespace {
+ 
+-struct SaverEngine {
+-    sr::SceneWallpaper wallpaper;
+-    std::vector<void*> hosts;
++// Each output owns its camera and render extent, just like the desktop.
++// Sharing a rendered texture across aspect ratios stretches an already-cropped
++// image; sharing the global callback also routes frames to the wrong host.
++struct SaverInstance {
++    std::unique_ptr<sr::SceneWallpaper> wallpaper;
++    void* host { nullptr };
++    ~SaverInstance() {
++        // Join the render callbacks before invalidating the presentation host.
++        wallpaper.reset();
++        if (host != nullptr) MirageSceneSaverHostDestroy(host);
++    }
+ };
+-
+-struct SaverInstance {
+-    SaverEngine* engine { nullptr };
+-    void* host { nullptr };
+-    bool paused { false };
+-};
+-
+-std::mutex g_engine_mutex;
+-SaverEngine* g_engine { nullptr };
+-std::vector<SaverInstance*> g_instances;
+-
+-void Present(void* texture, std::uint32_t width, std::uint32_t height, void* userdata) {
+-    auto* engine = static_cast<SaverEngine*>(userdata);
+-    std::scoped_lock lock(g_engine_mutex);
+-    if (engine == nullptr || engine != g_engine) return;
+-    for (void* host : engine->hosts) {
+-        MirageSceneSaverHostPresent(host, texture, width, height);
+-    }
+-}
+ 
+ bool LoadProperties(const char* json, sr::SceneWallpaperConfig& config) {
+     if (json == nullptr || json[0] == '\0') return true;
+@@ -69,30 +57,17 @@
+                                           std::uint32_t fps) {
+     if (ns_view == nullptr || assets_dir == nullptr || scene_pkg == nullptr) return nullptr;
+     static rstd::log::EnvLogger logger;
+-    static bool logger_set = false;
+-    if (!logger_set) {
++    static std::once_flag logger_once;
++    std::call_once(logger_once, [] {
+         rstd::log::set_logger(logger);
+         rstd::log::set_max_level(logger.filter());
+-        logger_set = true;
+-    }
++    });
+ 
+-    void* host = MirageSceneSaverHostCreate(ns_view, drawable_width, drawable_height);
+-    if (host == nullptr) return nullptr;
+-    std::unique_lock lock(g_engine_mutex);
+-    if (g_engine != nullptr) {
+-        auto* instance = new SaverInstance { g_engine, host, false };
+-        g_engine->hosts.push_back(host);
+-        g_instances.push_back(instance);
+-        return instance;
+-    }
+-    lock.unlock();
+-
+-    auto engine = std::make_unique<SaverEngine>();
+-    engine->hosts.push_back(host);
+-    if (!engine->wallpaper.init()) {
+-        MirageSceneSaverHostDestroy(host);
+-        return nullptr;
+-    }
++    auto instance = std::make_unique<SaverInstance>();
++    instance->host = MirageSceneSaverHostCreate(ns_view, drawable_width, drawable_height);
++    if (instance->host == nullptr) return nullptr;
++    instance->wallpaper = std::make_unique<sr::SceneWallpaper>();
++    if (!instance->wallpaper->init()) return nullptr;
+ 
+     sr::SceneWallpaperConfig config;
+     config.assets_dir = assets_dir;
+@@ -100,58 +75,35 @@
+     config.cache_dir = sr::platform::GetCachePath("MirageScreenSaver");
+     config.fps = std::clamp<std::uint32_t>(fps, 10u, 60u);
+     config.muted = true;
+-    if (!LoadProperties(properties_json, config)) {
+-        MirageSceneSaverHostDestroy(host);
+-        return nullptr;
+-    }
++    if (!LoadProperties(properties_json, config)) return nullptr;
+ 
+-    SceneRendererSetLiveMetalFrameCallback(Present, engine.get());
+     sr::RenderInitInfo info;
+     info.offscreen = true;
+     info.width = std::clamp<std::uint32_t>(width, 500u, 8192u);
+     info.height = std::clamp<std::uint32_t>(height, 500u, 8192u);
+     info.msaa_samples = 1;
+-    engine->wallpaper.configure(std::move(config));
+-    engine->wallpaper.initVulkan(std::move(info));
+-    if (!engine->wallpaper.waitVulkanInited(5000)) {
+-        SceneRendererSetLiveMetalFrameCallback(nullptr, nullptr);
+-        MirageSceneSaverHostDestroy(host);
+-        return nullptr;
+-    }
+-    lock.lock();
+-    g_engine = engine.release();
+-    auto* instance = new SaverInstance { g_engine, host, false };
+-    g_instances.push_back(instance);
+-    return instance;
++    info.metal_frame_callback = [host = instance->host](void* texture, void*,
++                                                      std::uint32_t w, std::uint32_t h) {
++        MirageSceneSaverHostPresent(host, texture, w, h);
++    };
++    instance->wallpaper->configure(std::move(config));
++    instance->wallpaper->initVulkan(std::move(info));
++    if (!instance->wallpaper->waitVulkanInited(30000)) return nullptr;
++    return instance.release();
++}
++
++extern "C" int MirageSceneSaverHasPresented(void* handle) {
++    auto* instance = static_cast<SaverInstance*>(handle);
++    return instance != nullptr ? MirageSceneSaverHostHasPresented(instance->host) : 0;
+ }
+ 
+ extern "C" void MirageSceneSaverSetPaused(void* handle, int paused) {
+     auto* instance = static_cast<SaverInstance*>(handle);
+-    std::scoped_lock lock(g_engine_mutex);
+-    if (instance == nullptr || instance->engine != g_engine) return;
+-    instance->paused = paused != 0;
+-    const bool all_paused = std::all_of(g_instances.begin(), g_instances.end(), [](auto* item) {
+-        return item->paused;
+-    });
+-    if (all_paused) g_engine->wallpaper.pause();
+-    else g_engine->wallpaper.play();
++    if (instance == nullptr) return;
++    if (paused) instance->wallpaper->pause();
++    else instance->wallpaper->play();
+ }
+ 
+ extern "C" void MirageSceneSaverDestroy(void* handle) {
+-    auto* instance = static_cast<SaverInstance*>(handle);
+-    if (instance == nullptr) return;
+-    std::unique_lock lock(g_engine_mutex);
+-    void* host = instance->host;
+-    auto* engine = instance->engine;
+-    std::erase(g_instances, instance);
+-    if (engine != nullptr) std::erase(engine->hosts, host);
+-    delete instance;
+-    const bool last = g_instances.empty() && engine == g_engine;
+-    if (last) {
+-        SceneRendererSetLiveMetalFrameCallback(nullptr, nullptr);
+-        g_engine = nullptr;
+-    }
+-    lock.unlock();
+-    if (last) delete engine;
+-    MirageSceneSaverHostDestroy(host);
++    delete static_cast<SaverInstance*>(handle);
+ }
+--- a/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverHost.mm
++++ b/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverHost.mm
+@@ -24,6 +24,7 @@
+     std::atomic<std::uint32_t> width { 0 };
+     std::atomic<std::uint32_t> height { 0 };
+     std::atomic<bool> scheduled { false };
++    std::atomic<bool> presented { false };
+     MirageSaverHostReference* reference { nil };
+ };
+ }
+@@ -50,6 +51,19 @@
+     return result;
+ }
+ 
++static void SceneHarborFirstPresented(void* userdata) {
++    MirageSaverHostReference* reference = (__bridge MirageSaverHostReference*)userdata;
++    dispatch_async(dispatch_get_main_queue(), ^{
++        auto* host = static_cast<SaverHost*>(reference.host);
++        if (host != nullptr) host->presented.store(true);
++    });
++}
++
++extern "C" int MirageSceneSaverHostHasPresented(void* handle) {
++    auto* host = static_cast<SaverHost*>(handle);
++    return host != nullptr && host->presented.load() ? 1 : 0;
++}
++
+ extern "C" void MirageSceneSaverHostPresent(void* handle, void* texture,
+                                               std::uint32_t width, std::uint32_t height) {
+     auto* host = static_cast<SaverHost*>(handle);
+@@ -64,8 +78,8 @@
+         if (current == nullptr) return;
+         current->scheduled.store(false);
+         SceneRendererMacMetalDisplayDraw(current->display, current->texture.load(),
+-                                         current->width.load(), current->height.load(), nullptr,
+-                                         nullptr);
++                                         current->width.load(), current->height.load(),
++                                         SceneHarborFirstPresented, (__bridge void*)reference);
+     });
+ }
+ 
+--- a/SceneRenderer/Tools/SceneWallpaper/ControlChannel.cpp
++++ b/SceneRenderer/Tools/SceneWallpaper/ControlChannel.cpp
+@@ -171,6 +171,11 @@
+         m_wallpaper.setMuted(true);
+         m_wallpaper.pause();
+         if (m_on_deactivate) m_on_deactivate();
++    } else if (cmd == "flip") {
++        auto value = msg.get("value");
++        if (value.is_some() && (*value)->is_boolean() && m_on_flip) {
++            m_on_flip(*(*value)->as_bool());
++        }
+     } else if (cmd == "quit") {
+         m_running.store(false);
+         if (m_on_quit) m_on_quit();
+--- a/SceneRenderer/Tools/SceneWallpaper/ControlChannel.h
++++ b/SceneRenderer/Tools/SceneWallpaper/ControlChannel.h
+@@ -14,6 +14,7 @@
+ //   {"cmd":"fillmode","value":"cover"|"contain"|"stretch"}
+ //   {"cmd":"speed","value":1.0}
+ //   {"cmd":"activate"}              // reveal a deferred-show window
++//   {"cmd":"flip","value":true}    // mirror the desktop surface horizontally
+ //   {"cmd":"snapshot","path":"…","token":"…"}  // still frame for the desktop picture
+ //   {"cmd":"quit"}
+ //
+@@ -48,6 +49,9 @@
+     // on_quit is invoked (from the reader thread) when a {"cmd":"quit"} arrives
+     // or stdin hits EOF. It should stop the desktop run loop.
+     //
++    // on_flip receives the requested horizontal mirror state for {"cmd":"flip"}.
++    // The host applies it to the desktop surface without restarting the scene.
++    //
+     // on_snapshot receives (path, token) for {"cmd":"snapshot"} and is expected
+     // to write a still of the live frame and report the outcome back on stdout.
+     // It runs on the reader thread and blocks it while waiting for a frame,
+@@ -55,12 +59,14 @@
+     SceneControlChannel(sr::SceneWallpaper& wallpaper, std::function<void()> on_quit,
+                         std::function<void()> on_activate = {},
+                         std::function<void()> on_deactivate = {},
++                        std::function<void(bool)> on_flip = {},
+                         std::function<void(const std::string&, const std::string&)>
+                             on_snapshot = {})
+         : m_wallpaper(wallpaper),
+           m_on_quit(std::move(on_quit)),
+           m_on_activate(std::move(on_activate)),
+           m_on_deactivate(std::move(on_deactivate)),
++          m_on_flip(std::move(on_flip)),
+           m_on_snapshot(std::move(on_snapshot)) {}
+ 
+     ~SceneControlChannel() { stop(); }
+@@ -91,6 +97,7 @@
+     std::function<void()> m_on_quit;
+     std::function<void()> m_on_activate;
+     std::function<void()> m_on_deactivate;
++    std::function<void(bool)> m_on_flip;
+     std::function<void(const std::string&, const std::string&)> m_on_snapshot;
+     std::atomic<bool>     m_running { false };
+     std::thread           m_thread;
+--- a/SceneRenderer/Tools/SceneWallpaper/WallpaperApp.cpp
++++ b/SceneRenderer/Tools/SceneWallpaper/WallpaperApp.cpp
+@@ -158,6 +158,9 @@
+ struct AppState {
+     sr::SceneWallpaper* wallpaper { nullptr };
+     void*               desktop { nullptr };
++    std::chrono::steady_clock::time_point stats_started_at {};
++    std::chrono::steady_clock::time_point last_frame_at {};
++    unsigned stats_frames { 0 };
+     std::chrono::steady_clock::time_point started_at { std::chrono::steady_clock::now() };
+ };
+ 
+@@ -175,6 +178,27 @@
+     std::lock_guard lock(LifecycleOutputMutex());
+     std::cout << "{\"event\":\"" << event << "\",\"elapsed_ms\":" << elapsed << "}\n"
+               << std::flush;
++}
++
++// Called once per completed offscreen frame, never from UI redraw notifications.
++void EmitRenderStatistics(AppState* state, std::uint32_t width, std::uint32_t height) {
++    const auto now = std::chrono::steady_clock::now();
++    if (state->last_frame_at.time_since_epoch().count() == 0 ||
++        std::chrono::duration<double>(now - state->last_frame_at).count() > 3.0) {
++        state->stats_started_at = now;
++        state->stats_frames = 0;
++    }
++    state->last_frame_at = now;
++    const double elapsed = std::chrono::duration<double>(now - state->stats_started_at).count();
++    if (elapsed <= 0) return;
++    ++state->stats_frames;
++    if (elapsed < 1.0) return;
++    const double fps = state->stats_frames / elapsed;
++    state->stats_started_at = now;
++    state->stats_frames = 0;
++    std::lock_guard lock(LifecycleOutputMutex());
++    std::cout << "{\"event\":\"render-stats\",\"fps\":" << fps
++              << ",\"width\":" << width << ",\"height\":" << height << "}\n" << std::flush;
+ }
+ 
+ void EmitAudioDemand(bool needed) {
+@@ -562,6 +586,7 @@
+                                              std::uint32_t height) {
+             SceneRendererMacDesktopPresentMetalFrame(state.desktop, texture, command_queue,
+                                                       width, height);
++            EmitRenderStatistics(&state, width, height);
+         };
+     } else {
+         void* metal_layer = SceneRendererMacDesktopMetalLayer(state.desktop);
+@@ -646,6 +671,7 @@
+             [desktop]() { SceneRendererMacDesktopStop(desktop); },
+             [desktop]() { SceneRendererMacDesktopActivate(desktop); },
+             [desktop]() { SceneRendererMacDesktopDeactivate(desktop); },
++            [desktop](bool enabled) { SceneRendererMacDesktopSetHorizontalFlip(desktop, enabled); },
+             [](const std::string& path, const std::string& token) {
+                 const bool ok = ! path.empty() && mirage::WriteSceneSnapshot(path);
+                 EmitSnapshotDone(token, ok);
+--- a/SceneRenderer/Vendor/wavsen/src/audio/sound_manager.cpp
++++ b/SceneRenderer/Vendor/wavsen/src/audio/sound_manager.cpp
+@@ -32,6 +32,7 @@
+ class SoundManager::Impl {
+ public:
+     AudioDevice device;
++    bool playback_requested { false };
+ };
+ 
+ SoundManager::SoundManager() : impl_(std::make_unique<Impl>()) {}
+@@ -54,8 +55,14 @@
+ 
+ bool SoundManager::is_inited() const { return impl_->device.is_inited(); }
+ 
+-void SoundManager::play()  { impl_->device.start(); }
+-void SoundManager::pause() { impl_->device.stop(); }
++void SoundManager::play() {
++    impl_->playback_requested = true;
++    if (!muted()) impl_->device.start();
++}
++void SoundManager::pause() {
++    impl_->playback_requested = false;
++    impl_->device.stop();
++}
+ 
+ float SoundManager::volume() const     { return impl_->device.volume(); }
+ bool  SoundManager::muted() const      { return impl_->device.muted(); }
+@@ -70,7 +77,7 @@
+     impl_->device.set_muted(m);
+     if (!m) {
+         // re-init the device if previously muted-uninited
+-        impl_->device.init();
++        if (impl_->device.init() && impl_->playback_requested) impl_->device.start();
+     } else {
+         impl_->device.uninit();
+     }
