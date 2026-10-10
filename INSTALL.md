@@ -16,6 +16,12 @@
 
 更新 App 不會重新下載桌布。開發者仍需編譯每個版本一次；使用者不需要編譯。
 
+## 實驗性鎖定桌布
+
+在「設定 → 桌布與鎖定」啟用。首次使用或從私人版遷移時，需授權公開版延伸功能自己的 Documents 資料夾。若選取視窗沒有開到正確位置，按 Command–Shift–G，貼上 `~/Library/Containers/org.sceneharbor.SceneHarbor.WallpaperExtension/Data/Documents`，再選擇「授權」。請勿改選整個個人 Documents。
+
+若顯示系統未能自動連接，按「系統設定…」，在背景圖片中選取 SceneHarbor，再回 App 按「重試連接」。此功能仍屬實驗性，系統版本、舊版提供者及多螢幕可能影響連線；桌面播放不需要這項授權。
+
 ## 檔案校驗
 
 Release 附有 SHA256SUMS.txt，可用於檢查下載是否完整。SHA-256 不是 Apple 公證，也不代表程式沒有漏洞。
