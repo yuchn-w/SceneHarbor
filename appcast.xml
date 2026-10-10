@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="yes"?><!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+--><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>SceneHarbor</title>
+        <item>
+            <title>0.14.0</title>
+            <pubDate>Sat, 10 Oct 2026 08:14:52 +0800</pubDate>
+            <link>https://github.com/yuchn-w/SceneHarbor</link>
+            <sparkle:channel>preview</sparkle:channel>
+            <sparkle:version>59</sparkle:version>
+            <sparkle:shortVersionString>0.14.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+            <enclosure url="https://github.com/yuchn-w/SceneHarbor/releases/download/v0.14.0-public.1/SceneHarbor-0.14.0-macOS-arm64.zip" length="266881722" type="application/octet-stream" sparkle:edSignature="j3GJh+B34V+FLnbmKXDOTZGHf1/0FU01Lce4avmR2uNIdfceLq6jOoRVVnA/O/eNKHOrtFBqZtJ7vI2OJqMrAg=="></enclosure>
+        </item>
+    </channel>
+</rss><!-- sparkle-signatures:
+edSignature: H+pyvodj+8MDMIBxdGaVEBJfuLcJ/lUypReECtOMrybJfn2C/BsvHLeyoy56Sfgnq7tg7vLFDAtCTA+ZBKZ/Bw==
+length: 1275
+-->
