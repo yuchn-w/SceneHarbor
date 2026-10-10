@@ -166,6 +166,21 @@ struct CatalogTests {
         let governor = HarborPerformanceGovernor()
         let normal = HarborGovernorInput(profile: .balanced)
         precondition(governor.policy(for: normal) == .run(fps: 30, renderScale: 1))
+        var minimal = HarborGovernorInput(profile: .minimal)
+        precondition(governor.policy(for: minimal) == .run(fps: 15, renderScale: 0.5))
+        minimal.lowPower = true
+        precondition(governor.policy(for: minimal) == .throttle(fps: 15, renderScale: 0.5), "power pressure must never increase render scale")
+        var pressure = normal; pressure.memoryPressureStopped = true
+        precondition(governor.policy(for: pressure) == .stop)
+        pressure.manualPause = true
+        precondition(governor.policy(for: pressure) == .stop, "critical memory must release rather than retain paused renderer")
+        precondition(governor.displaysReadyToRestore(stopped: ["internal"], policies: ["internal": .stop]).isEmpty)
+        var inactive = normal; inactive.sessionInactive = true
+        precondition(governor.policy(for: inactive) == .pause)
+        inactive.sessionInactive = false
+        precondition(governor.policy(for: inactive) == .run(fps: 30, renderScale: 1))
+        inactive.sessionInactive = true; inactive.memoryPressureStopped = true
+        precondition(governor.policy(for: inactive) == .stop)
         var lowPower = normal; lowPower.lowPower = true
         precondition(governor.policy(for: lowPower) == .throttle(fps: 24, renderScale: 0.75))
         var fullscreen = normal; fullscreen.fullscreen = true

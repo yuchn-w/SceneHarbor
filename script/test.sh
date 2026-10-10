@@ -10,7 +10,7 @@ export SWIFTPM_MODULECACHE_OVERRIDE="${SWIFTPM_MODULECACHE_OVERRIDE:-$SCENE_HARB
 mkdir -p "$CLANG_MODULE_CACHE_PATH" "$SWIFT_MODULE_CACHE_PATH" "$SWIFTPM_MODULECACHE_OVERRIDE"
 mkdir -p work
 swiftc -parse-as-library -swift-version 5 -sdk "$SDKROOT" -module-cache-path "$SWIFT_MODULE_CACHE_PATH" \
-    Sources/SceneHarbor/SteamWorkshopAPI.swift \
+    Sources/SceneHarbor/SteamWorkshopAPI.swift Sources/SceneHarbor/HarborWorkshopPageParser.swift \
     Sources/SceneHarbor/HarborDiscovery.swift Sources/SceneHarbor/HarborCatalogContinuity.swift \
     Sources/SceneHarbor/HarborCatalogPaging.swift \
     Sources/SceneHarbor/SteamServiceBridge.swift Sources/SceneHarbor/HarborPreviewTransfers.swift \

@@ -26,6 +26,7 @@ enum HarborSchedulePauseReason: String, Codable, Sendable {
     case manual
     case systemSleep
     case screenSleep
+    case sessionInactive
     case battery
     case lowPower
     case thermal
@@ -44,6 +45,7 @@ enum HarborSchedulePauseReason: String, Codable, Sendable {
         case .manual: return "已手動暫停"
         case .systemSleep: return "系統睡眠中"
         case .screenSleep: return "螢幕睡眠中"
+        case .sessionInactive: return "鎖定、螢幕保護或已切換使用者"
         case .battery: return "使用電池"
         case .lowPower: return "低耗電模式"
         case .thermal: return "系統溫度偏高"

@@ -1,60 +1,69 @@
 # SceneHarbor
 
-原生 macOS 動態桌布播放器，支援本機影片、Steam 工坊桌布、Scene／Web 場景、多螢幕及播放清單。
+**讓 Mac 桌布跟著你的螢幕、時段與播放清單切換。**
 
-## 功能
+免費開源的 macOS 動態桌布 App，支援影片、Wallpaper Engine 格式的 Scene／Web 桌布、多螢幕獨立播放與週間排程。Steam 公開工坊可以先瀏覽、搜尋，再決定是否登入下載。
 
-- 七大設定分類以大型按鈕呈現；主視窗在切換 App 時保持開啟。
-- 動態桌布延伸至鎖定畫面，提供一次性資料夾授權與真實連線狀態。
+**[下載 SceneHarbor 0.14.0 安裝包](https://github.com/yuchn-w/SceneHarbor/releases/tag/v0.14.0-public.1)** · [安裝說明](INSTALL.md) · [問題回報](https://github.com/yuchn-w/SceneHarbor/issues) · [English](#english)
 
-- 本機匯入與工坊下載共用桌布預覽，支援搜尋及來源篩選。
-- 影片與 Scene 桌布可調整播放速度；選單列提供速度、翻轉、聲音及套用快捷操作。
-- 一般、隨機、定時與日夜播放清單，可依名稱及標籤協助分類。
-- 個別顯示器控制，並有電池、休眠及其他媒體播放時的暫停規則。
-- macOS 26 使用原生液態玻璃控制列。
-- YouTube／IINA 的選用 HDR 整合及本機系統背景聲音整合。
+> 公開預覽版：需要 **Apple Silicon（M 系列）與 macOS 26 以上**。尚未經 Apple 公證；首次開啟可能需要在系統設定確認。Intel Mac 與較舊 macOS 目前不支援。
 
-## 空間管理
+## 三步開始
 
-建置與安裝工具改為有上限的還原點、相同 App 內容去重，以及成功驗證後才輪替。私人備份與編譯產物不進入公開 Git 歷史。操作與保留規則見 [STORAGE_POLICY.md](STORAGE_POLICY.md)。
+1. 下載 `SceneHarbor-0.14.0-macOS-arm64.dmg`，將 App 拖到「Applications」。一般使用者不需要下載 source 或 runtime。
+2. 從「應用程式」開啟 SceneHarbor。若被 macOS 擋下，依 [首次開啟說明](INSTALL.md) 確認來源後操作。
+3. 匯入自己的 MP4／MOV，或按「免登入瀏覽工坊」。下載工坊內容才需要登入 Steam，以及該內容所要求的使用權。
 
-## 下載與狀態
+## 可以做什麼
 
-公開版本是 **預覽版**，面向 macOS 26 以上的 Apple Silicon Mac。請參閱 GitHub Releases 的系統需求與已知限制。
+- **每個螢幕各播各的**：獨立選桌布、音量、清單與輪播進度。
+- **依時間自動換桌布**：日夜、週間時段、日出日落與智慧清單，支援捷徑。
+- **先看再登入**：公開工坊搜尋與封面不需要 Steam 帳號或共享 API Key；完整場景動態預覽可能仍需先下載素材。
+- **自己決定效能與畫質**：極省資源 15 FPS／50%、省電 24 FPS／75%、平衡 30 FPS、高畫質 60 FPS。Scene 桌布的實際負載也取決於作者素材與螢幕數量。
+- **減少背景負擔**：電池、全螢幕、睡眠與溫度策略；嚴重記憶體壓力時停止桌布，等待手動恢復。
+- **App 內更新**：手動檢查、每日自動檢查，或選擇自動下載並在結束時安裝。更新資訊與套件使用 Ed25519 簽章。
+- **實驗性鎖定畫面整合**：保留目前桌布與設定；依 macOS 授權與作品相容性而異。
 
-發佈檔使用匿名 ad-hoc 簽章，沒有包含開發者的個人憑證，也尚未經 Apple 公證。簽章完整性驗證不代表 Apple 的開發者身分驗證或公證；這不是正式 Developer ID 發行版本。
+## 安全與隱私
 
-本機建置、靜態隱私掃描及 helper 協定檢查會記錄於 `RELEASE_CHECKS.md`。尚未執行全新 Mac 的完整播放／登入驗收，請勿將這些檢查視為所有機型或所有桌布的相容性保證。
+App 不內建使用者帳密，不回傳使用統計、桌布或播放清單。瀏覽與下載會連線 Steam；啟用更新檢查會連線 GitHub，其服務可見一般連線資訊（例如 IP）。Steam 密碼不寫入檔案；選用的工作階段保存使用 macOS 鑰匙圈。Web 桌布的外部網路預設封鎖。
 
-## 隱私與帳號
+更新簽章用來確認更新來自同一發行者且未被竄改，**不代表 Apple 公證、惡意軟體完整審查或零漏洞保證**。請從本儲存庫的 Releases 下載，勿使用來路不明的重包版本。檢查範圍與尚未完成項目見 [RELEASE_CHECKS.md](RELEASE_CHECKS.md)、[安全說明](SECURITY.md)。
 
-- 此儲存庫及發佈包不包含開發者的 API Key、Steam 工作階段、個人桌布、播放清單、偏好或 Keychain 匯出。
-- 公開原始碼延續已清理的公開 Git 歷史；本機工作紀錄、截圖、備份和建置快取不在公開範圍內。
-- 工坊瀏覽使用 Steam 公開資料；下載需要使用者自行登入。帳密不會預先填入。
-- 執行時的 Steam refresh token／Guard 資料由使用者自己的 macOS Keychain 管理，密碼不寫入檔案。
-- 桌布與使用者設定保存在該使用者的 Mac；安裝包不會攜帶開發者資料。
-- 公開版識別名稱為 `org.sceneharbor.SceneHarbor`，與原本的私人開發版本分開。
+代表性量測與限制見 [效能觀察](docs/PERFORMANCE.md)。
 
-## 建置
+## 已知限制
 
-需要 Apple Silicon Mac、支援 macOS 26 API 的 Swift 6／macOS SDK、Python 3，以及建置 renderer 時所需的相依工具。Steam helper 的來源建置需要 .NET 10 SDK。
+- 未公證，因此首次安裝需要額外確認；不要求關閉 Gatekeeper 或執行解除安全防護的指令。
+- 第三方 Scene／Web 作品不保證完全相容；高解析材質、粒子與多螢幕可能增加 RAM／GPU 用量。
+- Steam 公開頁格式可能改變，服務或所在地網路限制可能影響瀏覽；不承諾永久可用的第三方鏡像。
+- 目前仍是預覽版。請參考版本檢查紀錄，勿把某部 Mac 的測試當成所有機型保證。
+
+## 建置與貢獻
+
+需要 Apple Silicon、macOS 26 SDK／Swift 6、Python 3；重建 Steam helper 另需 .NET 10。
 
 ```sh
-# 取得 Releases 中對應版本的固定 runtime 與第三方原始碼
 ./script/fetch_public_runtime.sh
-# 建置匿名簽章的公開版，不使用個人簽署憑證
 SCENE_HARBOR_PUBLIC_BUILD=1 ./build_app.sh
-# 打包（不安裝或改動目前執行中的 SceneHarbor）
-SCENE_HARBOR_PUBLIC_BUILD=1 ./script/package_release.sh
+# 封裝同一份已測試 App，不再編譯或安裝
+./script/package_release.sh --built
 ```
 
-完整 runtime 發佈附件較大，因此不直接放進 Git 歷史；下載腳本依 manifest 驗證 SHA-256。`Vendor/MirageBaseline/local.patch` 及鎖定資訊記錄本地修改；對應第三方原始碼與 notices 一併提供，詳見 [RUNTIME_SOURCES.md](RUNTIME_SOURCES.md)。
+更新發佈流程見 [UPDATES.md](UPDATES.md)。第三方固定 runtime 與對應來源放在 Release 附件，下載時核對 SHA-256；SwiftPM 固定 Sparkle 版本並驗證二進位 checksum。
 
-## 原始碼與授權
+回報問題時請提供 App/macOS 版本、晶片、螢幕數量、桌布類型、重現步驟及是否持續增加資源用量。不要貼 Steam 密碼、token、個人路徑或完整設定檔。
 
-- 原生 Swift 核心：見 [LICENSE.md](LICENSE.md)。
-- 第三方來源與授權：見 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-- Scene／Web renderer 及獨立 Steam helper 的 GPL／LGPL 條款仍適用；公開發佈不移除原作者聲明。
-- 桌布、工坊作品與系統背景聲音不隨本專案提供；請自行取得使用權。
+## 授權與來源
 
-此公開副本只清理產品文案中的舊 app 品牌名稱，保留必要的技術整合名稱、來源註記及授權。
+各元件的授權以 [LICENSE.md](LICENSE.md)、[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 與 [RUNTIME_SOURCES.md](RUNTIME_SOURCES.md) 為準。保留第三方著作權、修改 patch 與相應來源。桌布作品、Steam 與 Wallpaper Engine 的名稱及素材權利屬其權利人；本專案不是 Valve 或 Wallpaper Engine 的官方產品。
+
+## English
+
+SceneHarbor is a free, open-source live wallpaper app for **Apple Silicon Macs running macOS 26 or newer**. Play local videos and compatible Scene/Web wallpapers, control each display independently, and schedule playlists by time or day.
+
+**[Download the preview](https://github.com/yuchn-w/SceneHarbor/releases/tag/v0.14.0-public.1)**. Open the DMG and drag SceneHarbor to Applications. This preview is **not Apple-notarized**; see [installation instructions](INSTALL.md) before first launch. No developer tools are needed to use the packaged app.
+
+Browse the public Steam Workshop without signing in or supplying an API key. Downloads and personal subscriptions require your own Steam account and the necessary content rights. Updates are verified with signed feeds and Ed25519 archive signatures. Telemetry is not collected by the app; Steam and GitHub still receive ordinary network requests.
+
+Compatibility and performance depend on the wallpaper, display setup and system version. See [release checks](RELEASE_CHECKS.md) for what was actually tested. Contributions and reproducible bug reports are welcome.

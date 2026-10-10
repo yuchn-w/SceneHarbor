@@ -238,7 +238,7 @@ final class HarborPlayback: ObservableObject {
     }
 
     private func scheduleWarmNext() {
-        guard preloadNextWallpaper, mayPrewarm, previewVisible, !paused, !sleeping, !screenSleeping, !lowPowerMode,
+        guard preloadNextWallpaper, performanceProfile.allowsPreloading, mayPrewarm, previewVisible, !paused, !sleeping, !screenSleeping, !lowPowerMode,
               thermalState == .nominal, pending.isEmpty,
               let current = active[selectedDisplay], !current.isPaused,
               let projects = library?.wallpaperEngineProjects.filter({ [.video, .scene, .web].contains($0.kind) && $0.entrypoint != nil }),
@@ -377,7 +377,7 @@ final class HarborPlayback: ObservableObject {
     }
     @Published var performanceProfile = HarborPerformanceProfile(
         rawValue: UserDefaults.standard.string(forKey: "HarborPerformanceProfile") ?? ""
-    ) ?? .balanced {
+    ) ?? .efficient {
         didSet {
             UserDefaults.standard.set(performanceProfile.rawValue, forKey: "HarborPerformanceProfile")
             guard oldValue != performanceProfile else { return }
@@ -412,6 +412,30 @@ final class HarborPlayback: ObservableObject {
     }
     @Published private(set) var lowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
     @Published private(set) var thermalState = ProcessInfo.processInfo.thermalState
+    @Published private(set) var memoryPressureStopped = false
+    private var memoryPressure: DispatchSourceMemoryPressure?
+    private var memoryIsCritical = false
+    private(set) var memoryIsConstrained = false
+
+    func handleMemoryPressure(_ event: DispatchSource.MemoryPressureEvent) {
+        guard !event.isEmpty else { return }
+        memoryIsCritical = event.contains(.critical)
+        memoryIsConstrained = memoryIsCritical || event.contains(.warning)
+        if memoryIsConstrained { discardWarm() }
+        if memoryIsCritical {
+            // Keep this latch until explicit retry; automatic recovery can loop.
+            memoryPressureStopped = true
+            for runtime in pending.values { runtime.stop() }
+            pending.removeAll()
+            updatePower()
+        }
+    }
+
+    func resumeAfterMemoryPressure() {
+        guard !memoryIsCritical else { return }
+        memoryPressureStopped = false
+        updatePower()
+    }
     private let spaceResolver = SpaceContextResolver()
     private let governor = HarborPerformanceGovernor()
     @Published private(set) var propertyRevision = 0
@@ -599,6 +623,7 @@ final class HarborPlayback: ObservableObject {
         }
         if sleeping { return .systemSleep }
         if screenSleeping { return .screenSleep }
+        if sessionAudio.isInactive { return .sessionInactive }
         return nil
     }
 
@@ -673,7 +698,7 @@ final class HarborPlayback: ObservableObject {
                 isScheduleEnabled: scheduleEnabled
             )
         }
-        scheduleReadouts = result
+        if scheduleReadouts != result { scheduleReadouts = result }
     }
 
     func scheduleReadout(for displayID: String) -> HarborScheduleReadout? {
@@ -1092,7 +1117,9 @@ final class HarborPlayback: ObservableObject {
             self?.applyAudioState()
         }
         sessionAudioSubscription = sessionAudio.$isInactive.receive(on: DispatchQueue.main).sink { [weak self] _ in
-            self?.applyAudioState()
+            // The lock-screen extension owns its own renderer. Hidden desktop
+            // renderers must pause while it is visible, then resume in place.
+            self?.updatePower()
         }
         migrateLegacyPlaybackStateIfNeeded()
         refreshDisplays()
@@ -1131,6 +1158,13 @@ final class HarborPlayback: ObservableObject {
         timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.updatePower(); self?.advancePlaylist() }
         }
+        let pressure = DispatchSource.makeMemoryPressureSource(eventMask: [.normal, .warning, .critical], queue: .main)
+        pressure.setEventHandler { [weak self] in
+            guard let self else { return }
+            self.handleMemoryPressure(self.memoryPressure?.data ?? [])
+        }
+        memoryPressure = pressure
+        pressure.resume()
         if let timer { RunLoop.main.add(timer, forMode: .common) }
     }
 
@@ -1140,6 +1174,7 @@ final class HarborPlayback: ObservableObject {
             NSWorkspace.shared.notificationCenter.removeObserver($0)
         }
         timer?.invalidate()
+        memoryPressure?.cancel()
     }
 
     func configureLibrary(_ library: WallpaperLibrary) {
@@ -1432,6 +1467,10 @@ final class HarborPlayback: ObservableObject {
 
     func apply(_ project: WallpaperEngineProject, display: String? = nil, fromPlaylist: Bool = false,
                source: HarborPlaybackCommandSource = .user) {
+        guard !memoryPressureStopped else {
+            status = "記憶體保護已停止桌布，請先在效能設定恢復播放。"
+            return
+        }
         if display == nil && linkedDisplays && !fromPlaylist { applyToAll(project); return }
         let target = display ?? selectedDisplay
         if !fromPlaylist {
@@ -2854,6 +2893,7 @@ final class HarborPlayback: ObservableObject {
     }
 
     func shutdown() {
+        memoryPressure?.cancel()
         playlistStoreSubscription?.cancel()
         scheduleStoreSubscription?.cancel()
         profileStoreSubscription?.cancel()
@@ -3005,6 +3045,7 @@ final class HarborPlayback: ObservableObject {
         if paused { return .manual }
         if sleeping { return .systemSleep }
         if screenSleeping { return .screenSleep }
+        if sessionAudio.isInactive { return .sessionInactive }
         if fullscreen { return .fullscreen }
         if pauseOnBattery && onBattery { return .battery }
         if pauseOnLowPower && lowPowerMode { return .lowPower }
@@ -3013,14 +3054,18 @@ final class HarborPlayback: ObservableObject {
     }
 
     private func updatePower() {
-        lowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
-        thermalState = ProcessInfo.processInfo.thermalState
+        // @Published emits even for equal assignments. The one-second policy
+        // timer must not invalidate the entire catalog when nothing changed.
+        let currentLowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
+        let currentThermal = ProcessInfo.processInfo.thermalState
+        if lowPowerMode != currentLowPower { lowPowerMode = currentLowPower }
+        if thermalState != currentThermal { thermalState = currentThermal }
         var onBattery = false
         if let info = IOPSCopyPowerSourcesInfo()?.takeRetainedValue(),
            let source = IOPSGetProvidingPowerSourceType(info)?.takeUnretainedValue() {
             onBattery = source as String == kIOPSBatteryPowerValue
         }
-        let shouldInspectFullscreen = pauseOnFullscreen
+        let shouldInspectFullscreen = pauseOnFullscreen && !sessionAudio.isInactive && !sleeping && !screenSleeping
         let windows = shouldInspectFullscreen
             ? (CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? [])
             : []
@@ -3049,8 +3094,10 @@ final class HarborPlayback: ObservableObject {
             let id = display.id
             let fullscreen = fullscreenDisplays.contains(id)
             let policy = governor.policy(for: HarborGovernorInput(
+                memoryPressureStopped: memoryPressureStopped,
                 manualPause: paused,
                 sleeping: sleeping || screenSleeping,
+                sessionInactive: sessionAudio.isInactive,
                 fullscreen: fullscreen,
                 onBattery: onBattery,
                 lowPower: lowPowerMode,
@@ -3123,9 +3170,11 @@ final class HarborPlayback: ObservableObject {
         updateAudioReaction()
         let hasSessions = !active.isEmpty || !governorStoppedDisplays.isEmpty
         let reason: String? = !hasSessions ? nil
+            : memoryPressureStopped ? "系統記憶體吃緊，已停止桌布並釋放資源；請在效能設定恢復"
             : paused ? "桌布已暫停"
             : sleeping ? "睡眠中，桌布已暫停"
             : screenSleeping ? "螢幕睡眠中，桌布已暫停"
+            : sessionAudio.isInactive ? "畫面已鎖定或離開目前使用者，桌面桌布已暫停"
             : (pauseOnBattery && onBattery) ? "使用電池，桌布已自動暫停"
             : (pauseOnLowPower && lowPowerMode) ? "低耗電模式，桌布已自動暫停"
             : governorStoppedDisplays.contains(selectedDisplay) ? "環境條件解除後將恢復桌布（已釋放記憶體）"
@@ -3137,7 +3186,7 @@ final class HarborPlayback: ObservableObject {
             pauseReason = reason
         }
         if fullscreenPausedDisplays != fullscreenDisplays { fullscreenPausedDisplays = fullscreenDisplays }
-        mayPrewarm = !paused && !sleeping && !screenSleeping && !onBattery && !lowPowerMode && thermalState == .nominal &&
+        mayPrewarm = performanceProfile.allowsPreloading && !memoryIsConstrained && !memoryPressureStopped && !paused && !sleeping && !screenSleeping && !sessionAudio.isInactive && !onBattery && !lowPowerMode && thermalState == .nominal &&
             active[selectedDisplay]?.isPaused == false
         if !previewVisible || !mayPrewarm {
             discardWarm()

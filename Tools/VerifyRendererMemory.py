@@ -5,6 +5,7 @@ snapshot is required before vmmap is collected. Never activates the wallpaper.
 """
 import argparse
 import json
+import os
 import pathlib
 import select
 import subprocess
@@ -16,21 +17,29 @@ parser.add_argument('--bundle', type=pathlib.Path, default=pathlib.Path('/Applic
 parser.add_argument('--display', default='1')
 parser.add_argument('--renderer', type=pathlib.Path)
 parser.add_argument('--scale', default='1.000')
+parser.add_argument('--fps', type=int, choices=range(1, 61), default=30)
 parser.add_argument('--mode', choices=['both', 'metalfx', 'native'], default='both')
 parser.add_argument('--output', type=pathlib.Path, required=True)
 args = parser.parse_args()
 args.output.mkdir(parents=True, exist_ok=True)
-contents = args.bundle / 'Contents'
+contents = args.bundle.resolve() / 'Contents'
+environment = os.environ.copy()
+frameworks = contents / 'Helpers/Frameworks'
+icd = contents / 'Resources/vulkan/icd.d/MoltenVK_icd.json'
+if frameworks.is_dir() and icd.is_file():
+    environment['VK_DRIVER_FILES'] = str(icd)
+    environment['VK_ICD_FILENAMES'] = str(icd)
 for name, flags in [('metalfx', ['--metalfx']), ('native', [])]:
     if args.mode != 'both' and args.mode != name:
         continue
     with (args.output / (name + '.log')).open('w') as log:
         child = subprocess.Popen([
             str(args.renderer.resolve() if args.renderer else contents / 'Helpers/SceneHarborSceneRenderer'), str(contents / 'Resources/assets'),
-            str(args.scene.resolve()), '--fps', '30', '--render-scale', args.scale,
+            str(args.scene.resolve()), '--fps', str(args.fps), '--render-scale', args.scale,
             '--display-id', args.display, '--control-stdin', '--no-spectrum',
             '--muted', '--deferred-show', *flags,
-        ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=log, text=True)
+        ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=log, text=True, env=environment,
+           cwd=str(frameworks) if frameworks.is_dir() else None)
         try:
             started = time.monotonic()
             ready = False

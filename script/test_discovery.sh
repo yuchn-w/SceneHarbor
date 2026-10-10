@@ -9,7 +9,7 @@ export SWIFT_MODULE_CACHE_PATH="${SWIFT_MODULE_CACHE_PATH:-$SCENE_HARBOR_CACHE_R
 mkdir -p "$CLANG_MODULE_CACHE_PATH" "$SWIFT_MODULE_CACHE_PATH"
 mkdir -p work
 swiftc -parse-as-library -swift-version 5 -sdk "$SDKROOT" -module-cache-path "$SWIFT_MODULE_CACHE_PATH" \
-    Sources/SceneHarbor/SteamWorkshopAPI.swift Sources/SceneHarbor/HarborDiscovery.swift \
+    Sources/SceneHarbor/SteamWorkshopAPI.swift Sources/SceneHarbor/HarborWorkshopPageParser.swift Sources/SceneHarbor/HarborDiscovery.swift \
     Sources/SceneHarbor/SteamServiceBridge.swift Sources/SceneHarbor/HarborPreviewTransfers.swift \
     Sources/SceneHarbor/HarborModels.swift Sources/SceneHarbor/HarborLanguage.swift \
     Sources/SceneHarbor/WallpaperEngineScanner.swift Sources/SceneHarbor/HarborCatalogPaging.swift \

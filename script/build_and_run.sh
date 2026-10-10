@@ -9,7 +9,7 @@ APP_BINARY="$APP_BUNDLE/Contents/MacOS/$APP_NAME"
 
 stop_app() {
     env SDKROOT="${SDKROOT:-/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk}" \
-        swift -module-cache-path /private/tmp/scene-harbor-swift-cache "$ROOT_DIR/Tools/StopForUpdate.swift"
+        swift -module-cache-path /private/tmp/scene-harbor-swift-cache "$ROOT_DIR/Tools/StopForUpdate.swift" "$APP_BUNDLE"
 }
 
 if [[ "$MODE" != "--install-built" ]]; then

@@ -21,6 +21,18 @@ def archive(directory, name, date):
     return p
 
 class StorageSafety(unittest.TestCase):
+    def test_legacy_identity_can_be_preserved_but_unrelated_app_is_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / 'legacy.zip'
+            for identity, accepted in [('org.example.SceneHarbor', True), ('org.example.OtherApp', False)]:
+                with zipfile.ZipFile(path, 'w') as z:
+                    z.writestr('SceneHarbor.app/Contents/Info.plist', plistlib.dumps({'CFBundleIdentifier': identity}))
+                if accepted:
+                    policy.validate_zip(path)
+                else:
+                    with self.assertRaises(ValueError):
+                        policy.validate_zip(path)
+
     def test_keeps_two_newest_and_unrelated_files(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
@@ -55,7 +67,9 @@ class StorageSafety(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             names = ['Sources/App.swift', 'Vendor/native.dylib', 'work/native/source.cpp',
-                     'backups/managed/old.tar.gz', 'checkpoints/old/source.swift', 'dist/release.zip', 'evidence/private.log', 'build/old.zip', '.build/cache', 'work/native/build/huge.o', '.git/objects/blob']
+                     'build/old.zip', '.build/cache', 'work/native/build/huge.o', '.git/objects/blob',
+                     'backups/managed/old.zip', 'work/checkpoints/old.zip', 'dist/release.zip',
+                     'outputs/movie.mp4', 'evidence/screenshot.png', 'public-releases/source.zip']
             for name in names:
                 p = root / name; p.parent.mkdir(parents=True, exist_ok=True); p.write_text('test')
             self.assertEqual({str(p.relative_to(root)) for p in policy.source_files(root)},

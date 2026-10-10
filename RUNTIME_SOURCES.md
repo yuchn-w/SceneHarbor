@@ -1,6 +1,6 @@
 # Runtime 來源與重建
 
-公開附件 `SceneHarbor-runtime-0.13.6-public.1.tar.gz` 解壓到專案根目錄後，會補齊被 Git 忽略的大型 runtime 與對應來源。
+公開附件 `SceneHarbor-runtime-0.14.0-public.1.tar.gz` 解壓到專案根目錄後，會補齊被 Git 忽略的大型 runtime 與對應來源。
 
 ## MirageWallpaper
 

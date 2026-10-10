@@ -46,7 +46,7 @@ mkdir -p /private/tmp/scene-harbor-swiftpm-cache
 
 # The sandboxed local build can compile the release binary while dSYM output
 # is unavailable. Keep normal debug symbols unless the caller opts out.
-SWIFT_BUILD_ARGS=(--disable-sandbox -c release --arch arm64)
+SWIFT_BUILD_ARGS=(--disable-sandbox -c release --arch arm64 -j "${SCENE_HARBOR_BUILD_JOBS:-4}")
 if [[ "$PUBLIC_BUILD" == "1" ]]; then
     SWIFT_BUILD_ARGS+=(-debug-info-format "${SCENE_HARBOR_DEBUG_INFO_FORMAT:-none}")
 elif [[ -n "${SCENE_HARBOR_DEBUG_INFO_FORMAT:-}" ]]; then
@@ -134,6 +134,8 @@ if [[ "$SIGN_IDENTITY" != "-" ]] &&
     echo "ERROR: requested signing identity unavailable; working app preserved." >&2
     exit 1
 fi
+
+/bin/zsh "$TASK_DIR/script/embed_sparkle.sh" "$APP_BUNDLE" "$SIGN_IDENTITY"
 
 # The saver has its own system-managed lifetime and always stays muted.
 env SDKROOT="$SDK_PATH" SIGNING_IDENTITY="$SIGN_IDENTITY" \

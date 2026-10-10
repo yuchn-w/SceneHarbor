@@ -36,7 +36,10 @@ def validate_zip(path):
         if z.testzip() is not None:
             raise ValueError('Invalid archive: ' + str(path))
         info = plistlib.loads(z.read('SceneHarbor.app/Contents/Info.plist'))
-        if info.get('CFBundleIdentifier') != 'org.sceneharbor.SceneHarbor':
+        # Rollback may contain an older development namespace during migration.
+        # This validates archive identity shape, not permission to execute it.
+        identity = info.get('CFBundleIdentifier', '')
+        if not isinstance(identity, str) or not re.fullmatch(r'(?:[A-Za-z0-9-]+\.)+SceneHarbor', identity):
             raise ValueError('Unexpected app identity')
 
 def archive_app(app, destination):

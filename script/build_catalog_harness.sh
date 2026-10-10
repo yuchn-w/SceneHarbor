@@ -15,7 +15,7 @@ cat > "$APP_PATH/Contents/Info.plist" <<'PLIST'
 </dict></plist>
 PLIST
 swiftc -parse-as-library -swift-version 5 -module-cache-path /private/tmp/scene-harbor-swift-cache \
-    Sources/SceneHarbor/SteamWorkshopAPI.swift Sources/SceneHarbor/HarborDiscovery.swift \
+    Sources/SceneHarbor/SteamWorkshopAPI.swift Sources/SceneHarbor/HarborWorkshopPageParser.swift Sources/SceneHarbor/HarborDiscovery.swift \
     Sources/SceneHarbor/SteamServiceBridge.swift Sources/SceneHarbor/HarborModels.swift Sources/SceneHarbor/HarborLanguage.swift \
     Sources/SceneHarbor/WallpaperEngineScanner.swift Sources/SceneHarbor/HarborCatalogContinuity.swift \
     Sources/SceneHarbor/HarborMemoryCache.swift Sources/SceneHarbor/HarborWallpaperCard.swift Sources/SceneHarbor/HarborCatalogGrid.swift \

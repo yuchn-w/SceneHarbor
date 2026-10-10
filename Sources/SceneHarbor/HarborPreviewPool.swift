@@ -36,6 +36,12 @@ final class HarborPreviewPool {
             Task { @MainActor in
                 self?.memoryConstrained = constrained
                 if constrained { self?.discardIdle() }
+                if self?.pressure?.data.contains(.critical) == true, let self {
+                    for entry in Array(self.entries.values) {
+                        for client in Array(entry.clients.values) { client.onFailure?("系統記憶體吃緊，已停止動態預覽。") }
+                        self.remove(entry)
+                    }
+                }
             }
         }
         pressure.resume(); self.pressure = pressure
@@ -87,6 +93,10 @@ final class HarborPreviewPool {
     private func makeEntry(_ project: WallpaperEngineProject, settings: [String: Any], key: String) -> Entry {
         let entry = Entry(key: key, runtime: HarborRuntime(project: project))
         entries[key] = entry
+        guard !memoryConstrained else {
+            entry.error = "系統記憶體吃緊，請稍後再開啟動態預覽。"
+            return entry
+        }
         starts += 1
         entry.runtime.ready = { [weak self, weak entry] in
             guard let self, let entry, self.entries[key] === entry else { return }

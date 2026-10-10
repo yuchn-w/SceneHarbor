@@ -184,9 +184,40 @@
          // On macOS 26 the legacy screen-saver ViewBridge can replace a full-screen
          // view's logical (point) bounds with the display's physical pixel size
          // after initialization. That makes the hosted layer two times too large
+@@ -251,6 +251,19 @@
+ }
+ #endif
+ 
++extern "C" void SceneRendererMacMetalDisplayDrain(void* handle) {
++    auto* display = static_cast<MacMetalDisplay*>(handle);
++    if (display == nullptr) return;
++    if (display->warmup_group != nil) {
++        dispatch_group_wait(display->warmup_group, DISPATCH_TIME_FOREVER);
++        display->warmup_group = nil;
++    }
++    if (display->queue == nil) return;
++    id<MTLCommandBuffer> barrier = [display->queue commandBuffer];
++    [barrier commit];
++    [barrier waitUntilCompleted];
++}
++
+ extern "C" void SceneRendererMacMetalDisplayDestroy(void* handle) {
+     auto* display = static_cast<MacMetalDisplay*>(handle);
+     if (display == nullptr) return;
+--- a/SceneRenderer/Tools/SceneScreenSaver/CMakeLists.txt
++++ b/SceneRenderer/Tools/SceneScreenSaver/CMakeLists.txt
+@@ -22,7 +22,7 @@
+ 
+ target_compile_features(MirageSceneSaver PRIVATE cxx_std_20)
+ target_compile_options(MirageSceneSaver PRIVATE
+-    $<$<COMPILE_LANGUAGE:OBJCXX>:-Wno-deprecated-declarations>)
++    $<$<COMPILE_LANGUAGE:OBJCXX>:-Wno-deprecated-declarations;-fobjc-arc>)
+ set_target_properties(MirageSceneSaver PROPERTIES
+     CXX_SCAN_FOR_MODULES ON
+     OUTPUT_NAME MirageSceneSaver)
 --- a/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverEngine.cpp
 +++ b/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverEngine.cpp
-@@ -11,39 +11,27 @@
+@@ -11,39 +11,30 @@
  import sr.scene_wallpaper;
  import sr.utils;
  
@@ -194,6 +225,7 @@
 -    void (*cb)(void*, std::uint32_t, std::uint32_t, void*), void* userdata);
  extern "C" void* MirageSceneSaverHostCreate(void* ns_view, std::uint32_t drawable_width,
                                                 std::uint32_t drawable_height);
++extern "C" void MirageSceneSaverHostStop(void* host);
  extern "C" void MirageSceneSaverHostDestroy(void* host);
 +extern "C" int MirageSceneSaverHostHasPresented(void* host);
  extern "C" void MirageSceneSaverHostPresent(void* host, void* texture, std::uint32_t width,
@@ -211,7 +243,9 @@
 +    std::unique_ptr<sr::SceneWallpaper> wallpaper;
 +    void* host { nullptr };
 +    ~SaverInstance() {
-+        // Join the render callbacks before invalidating the presentation host.
++        // Stop queued presentation and finish GPU reads before releasing the
++        // producer textures. Then join callbacks before deleting the host.
++        if (host != nullptr) MirageSceneSaverHostStop(host);
 +        wallpaper.reset();
 +        if (host != nullptr) MirageSceneSaverHostDestroy(host);
 +    }
@@ -238,7 +272,7 @@
  
  bool LoadProperties(const char* json, sr::SceneWallpaperConfig& config) {
      if (json == nullptr || json[0] == '\0') return true;
-@@ -69,30 +57,17 @@
+@@ -69,30 +60,17 @@
                                            std::uint32_t fps) {
      if (ns_view == nullptr || assets_dir == nullptr || scene_pkg == nullptr) return nullptr;
      static rstd::log::EnvLogger logger;
@@ -277,7 +311,7 @@
  
      sr::SceneWallpaperConfig config;
      config.assets_dir = assets_dir;
-@@ -100,58 +75,35 @@
+@@ -100,58 +78,35 @@
      config.cache_dir = sr::platform::GetCachePath("MirageScreenSaver");
      config.fps = std::clamp<std::uint32_t>(fps, 10u, 60u);
      config.muted = true;
@@ -356,15 +390,41 @@
  }
 --- a/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverHost.mm
 +++ b/SceneRenderer/Tools/SceneScreenSaver/SceneScreenSaverHost.mm
-@@ -24,6 +24,7 @@
-     std::atomic<std::uint32_t> width { 0 };
-     std::atomic<std::uint32_t> height { 0 };
-     std::atomic<bool> scheduled { false };
+@@ -2,11 +2,13 @@
+ 
+ #include <atomic>
+ #include <cstdint>
++#include <mutex>
+ 
+ extern "C" void* SceneRendererMacMetalDisplayCreateForNSView(void* ns_view);
+ extern "C" void* SceneRendererMacMetalDisplayCreateForNSViewWithDrawableSize(
+     void* ns_view, std::uint32_t width, std::uint32_t height);
+ extern "C" void SceneRendererMacMetalDisplayDestroy(void* handle);
++extern "C" void SceneRendererMacMetalDisplayDrain(void* handle);
+ extern "C" void SceneRendererMacMetalDisplayDraw(void* handle, void* texture,
+                                                  std::uint32_t width, std::uint32_t height,
+                                                  void (*presented)(void*), void* userdata);
+@@ -20,10 +22,15 @@
+ namespace {
+ struct SaverHost {
+     void* display { nullptr };
+-    std::atomic<void*> texture { nullptr };
+-    std::atomic<std::uint32_t> width { 0 };
+-    std::atomic<std::uint32_t> height { 0 };
+-    std::atomic<bool> scheduled { false };
++    // The exported texture is borrowed only for the producer callback. Keep
++    // one strong pending frame, with its matching dimensions, until main draws.
++    std::mutex frame_mutex;
++    id texture { nil };
++    std::uint32_t width { 0 };
++    std::uint32_t height { 0 };
++    bool scheduled { false };
++    bool stopped { false };
 +    std::atomic<bool> presented { false };
      MirageSaverHostReference* reference { nil };
  };
  }
-@@ -50,6 +51,19 @@
+@@ -50,29 +57,73 @@
      return result;
  }
  
@@ -384,17 +444,69 @@
  extern "C" void MirageSceneSaverHostPresent(void* handle, void* texture,
                                                std::uint32_t width, std::uint32_t height) {
      auto* host = static_cast<SaverHost*>(handle);
-@@ -64,8 +78,8 @@
+     if (host == nullptr || texture == nullptr) return;
+-    host->texture.store(texture);
+-    host->width.store(width);
+-    host->height.store(height);
+-    if (host->scheduled.exchange(true)) return;
++    std::lock_guard lock(host->frame_mutex);
++    if (host->stopped) return;
++    host->texture = (__bridge id)texture;
++    host->width = width;
++    host->height = height;
++    if (host->scheduled) return;
++    host->scheduled = true;
+     MirageSaverHostReference* reference = host->reference;
+     dispatch_async(dispatch_get_main_queue(), ^{
+         auto* current = static_cast<SaverHost*>(reference.host);
          if (current == nullptr) return;
-         current->scheduled.store(false);
-         SceneRendererMacMetalDisplayDraw(current->display, current->texture.load(),
+-        current->scheduled.store(false);
+-        SceneRendererMacMetalDisplayDraw(current->display, current->texture.load(),
 -                                         current->width.load(), current->height.load(), nullptr,
 -                                         nullptr);
-+                                         current->width.load(), current->height.load(),
++        id frame = nil;
++        std::uint32_t frame_width = 0, frame_height = 0;
++        {
++            std::lock_guard lock(current->frame_mutex);
++            current->scheduled = false;
++            if (current->stopped) return;
++            frame = current->texture;
++            current->texture = nil;
++            frame_width = current->width;
++            frame_height = current->height;
++        }
++        SceneRendererMacMetalDisplayDraw(current->display, (__bridge void*)frame,
++                                         frame_width, frame_height,
 +                                         SceneHarborFirstPresented, (__bridge void*)reference);
      });
++}
++
++extern "C" void MirageSceneSaverHostStop(void* handle) {
++    auto* host = static_cast<SaverHost*>(handle);
++    if (host == nullptr) return;
++    {
++        std::lock_guard lock(host->frame_mutex);
++        host->stopped = true;
++        host->texture = nil;
++    }
++    // Invalidate on the same queue that dereferences reference.host. Drain
++    // GPU reads before the producer destroys its Vulkan-backed texture memory.
++    auto stop = ^{
++        host->reference.host = nullptr;
++        SceneRendererMacMetalDisplayDrain(host->display);
++    };
++    if (NSThread.isMainThread) stop();
++    else dispatch_sync(dispatch_get_main_queue(), stop);
  }
  
+ extern "C" void MirageSceneSaverHostDestroy(void* handle) {
+     auto* host = static_cast<SaverHost*>(handle);
+     if (host == nullptr) return;
+-    host->reference.host = nullptr;
++    MirageSceneSaverHostStop(host);
+     auto destroy = ^{
+         SceneRendererMacMetalDisplayDestroy(host->display);
+         host->display = nullptr;
 --- a/SceneRenderer/Tools/SceneWallpaper/ControlChannel.cpp
 +++ b/SceneRenderer/Tools/SceneWallpaper/ControlChannel.cpp
 @@ -171,6 +171,11 @@

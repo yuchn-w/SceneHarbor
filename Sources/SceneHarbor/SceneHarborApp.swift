@@ -12,6 +12,7 @@ struct SceneHarborApp: App {
     @StateObject private var steamService = SteamServiceBridge()
     @StateObject private var playlists = HarborPlaylistStore()
     @StateObject private var smartPlaylists = HarborSmartPlaylistCoordinator()
+    @StateObject private var updater = HarborUpdater.shared
     @State private var hasRestored = false
     @State private var showSettings = false
     @State private var showPlaylists = false
@@ -85,6 +86,9 @@ struct SceneHarborApp: App {
         .windowStyle(.titleBar)
         .defaultSize(width: 1280, height: 760)
         .commands {
+            CommandGroup(after: .appInfo) {
+                Button("檢查更新…") { updater.check() }.disabled(!updater.canCheck)
+            }
             CommandGroup(replacing: .newItem) { }
             CommandGroup(replacing: .appSettings) {
                 Button("設定…") {

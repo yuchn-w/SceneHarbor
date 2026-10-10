@@ -480,6 +480,10 @@ struct HarborWorkspaceView: View {
             .help(catalogExplanation)
             .padding(.horizontal, 18).padding(.vertical, 10)
             .accessibilityIdentifier("harbor-catalog-summary")
+            if !local && collection == .all && !steam.isLoggedIn {
+                Text("公開工坊可免登入瀏覽與搜尋；下載作品及同步個人收藏時才需要登入 Steam。")
+                    .font(.caption).foregroundStyle(.secondary).padding(.horizontal, 18).padding(.bottom, 8)
+            }
             HarborCatalogGrid(items: visibleItems, selectedID: selection?.id,
                               installedIDs: installedIDs, downloads: steam.downloadByWorkshopID,
                               columnCount: catalogColumns, loading: !local && browser.isLoading,
@@ -514,6 +518,10 @@ struct HarborWorkspaceView: View {
                             Label(local && installed.items.isEmpty ? "尚未安裝桌布" : "沒有符合條件的作品", systemImage: "photo.on.rectangle.angled")
                         } description: { Text("調整搜尋或篩選條件，探索更多桌布。") }
                         actions: {
+                            if local && installed.items.isEmpty {
+                                Button("免登入瀏覽工坊") { collection = .all; tab = .workshop }
+                                Button("匯入自己的影片") { showLocalLibrary = true }
+                            }
                             Button("清除篩選", action: clearFilters)
                             if !local && browser.canLoadNextPage { Button("繼續搜尋") { browser.loadNextPage() } }
                         }

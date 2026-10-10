@@ -4,9 +4,9 @@
   "sdk": "MacOSX26.5.sdk",
   "sha256": {
     "libMoltenVK.dylib": "0cf5d42a6490beef62417799dfb0ea977d10ad084cb70349a13ce522543abfb8",
-    "libMirageSceneSaver.dylib": "b264745d5671761c49ba113b7a510f2aeddb38acd491d3a9c9d2464e95a13484",
+    "libMirageSceneSaver.dylib": "b3144bc4e9f45cd6ffb3c42683b33722232d006eb433288687ae12ac3bfb414e",
     "first-presented.patch": "f4db20b8fdfcf28e7123f8212a6cb0015bba5948423dd97980d3892a0248cccc",
-    "framing.patch": "067b0eaf04812c4b12bc67d882535b5dd3035c30ef070143f583044171f22570"
+    "framing.patch": "769a1eebfaccc89c260ae1c8ba3877ea8b2fb9f2639d0f4f19e3ac95e2cd33a0"
   },
   "buildHost": "macOS 27.0 arm64",
   "minimumRuntimeOS": "26.0",

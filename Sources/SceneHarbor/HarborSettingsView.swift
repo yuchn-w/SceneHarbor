@@ -119,6 +119,7 @@ struct HarborSettingsView: View {
 
     private var generalSettings: some View {
         Form {
+            HarborUpdateSettings()
             Section("啟動") {
                 Toggle("登入 Mac 後自動啟動", isOn: Binding(
                     get: { loginItem.isEnabled }, set: { loginItem.setEnabled($0) }))
@@ -231,9 +232,16 @@ struct HarborSettingsView: View {
 
     private var performanceSettings: some View {
         Form {
+            if playback.memoryPressureStopped {
+                Section("記憶體保護") {
+                    Text("macOS 回報嚴重記憶體壓力，已停止桌布並釋放資源。請先關閉其他大型 App，或改用極省資源模式，再恢復播放。")
+                    Button("恢復桌布播放") { playback.resumeAfterMemoryPressure() }
+                }
+            }
             Section("能源與效能") {
                 Toggle("預先載入下一張桌布", isOn: $playback.preloadNextWallpaper)
-                Text("開啟控制列時預載下一張，減少切換等待；使用電池或系統忙碌時不預載。")
+                    .disabled(!playback.performanceProfile.allowsPreloading)
+                Text("平衡與高畫質模式可預載下一張以減少等待；極省資源、省電、使用電池或記憶體吃緊時不預載。")
                     .font(.caption).foregroundStyle(.secondary)
                 Toggle("使用電池時暫停桌布", isOn: $playback.pauseOnBattery)
                 Toggle("低耗電模式時暫停桌布", isOn: $playback.pauseOnLowPower)

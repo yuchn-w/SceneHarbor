@@ -43,6 +43,12 @@ The following shared libraries are copied byte-for-byte from the pinned lock and
 
 The FFmpeg package is built under its GPL-enabled formula and ships the corresponding GPL/LGPL COPYING files. Consumers must follow the terms applicable to the selected FFmpeg components. The portable directory also retains the exact formula and install receipt used for this build.
 
+## Sparkle updater
+
+- Sparkle 2.10.0: MIT, source [sparkle-project/Sparkle](https://github.com/sparkle-project/Sparkle/tree/2.10.0).
+- The app ships its license at `Contents/Resources/ThirdParty/Sparkle/LICENSE`.
+- SwiftPM pins the release and its binary artifact checksum. Update signing keys are generated independently and are not part of Sparkle or this repository.
+
 ## Steam service
 
 - SteamKit2 3.4.0: LGPL-2.1, [`SteamKit2-NOTICE.txt`](SteamService/Licenses/SteamKit2-NOTICE.txt); source [SteamRE/SteamKit](https://github.com/SteamRE/SteamKit).

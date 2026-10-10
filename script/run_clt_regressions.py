@@ -85,6 +85,11 @@ with tempfile.TemporaryDirectory(prefix='sceneharbor-regressions-', dir='/privat
                str(root / 'Tools/RegressionAssertions.swift'), str(runner)]
     command += sources
     command += [str(p) for p in sorted(objects.glob('*.o')) if p.name != 'SceneHarborApp.o']
+    sparkle_frameworks = root / '.build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64'
+    if not (sparkle_frameworks / 'Sparkle.framework').is_dir():
+        raise RuntimeError('Resolve the pinned Sparkle artifact before testing')
+    command += ['-F', str(sparkle_frameworks), '-framework', 'Sparkle',
+                '-Xlinker', '-rpath', '-Xlinker', str(sparkle_frameworks)]
     command += [str(bridge), '-o', str(binary)]
     compile_result = subprocess.run(command, cwd=root)
     if compile_result.returncode:

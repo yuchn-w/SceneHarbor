@@ -255,6 +255,9 @@ final class SteamWorkshopAPI {
             self.session = session
         } else {
             let configuration = URLSessionConfiguration.ephemeral
+            configuration.httpShouldSetCookies = false
+            configuration.httpCookieStorage = nil
+            configuration.urlCredentialStorage = nil
             configuration.timeoutIntervalForRequest = 20
             configuration.timeoutIntervalForResource = 40
             self.session = URLSession(configuration: configuration)
@@ -514,18 +517,7 @@ final class SteamWorkshopAPI {
         }
 
         let html = String(decoding: data, as: UTF8.self)
-        guard let renderContext = extractJSONString(
-            after: "window.SSR.renderContext=JSON.parse(",
-            from: html
-        ),
-        let renderObject = try JSONSerialization.jsonObject(
-            with: Data(renderContext.utf8)
-        ) as? [String: Any],
-        let queryData = renderObject["queryData"] as? String,
-        let queryObject = try JSONSerialization.jsonObject(
-            with: Data(queryData.utf8)
-        ) as? [String: Any],
-        let queries = queryObject["queries"] as? [[String: Any]] else {
+        guard let queries = HarborWorkshopPageParser.queries(in: html) else {
             throw SteamWorkshopAPIError.publicPageUnavailable
         }
 
@@ -580,33 +572,6 @@ final class SteamWorkshopAPI {
         case .recentlyReleased: return "mostrecent"
         case .relevance: return "textsearch"
         }
-    }
-
-    private func extractJSONString(after marker: String, from html: String) -> String? {
-        guard let markerRange = html.range(of: marker) else { return nil }
-        var index = markerRange.upperBound
-        guard index < html.endIndex, html[index] == "\"" else { return nil }
-        let start = index
-        index = html.index(after: index)
-        var escaped = false
-        while index < html.endIndex {
-            let character = html[index]
-            if escaped {
-                escaped = false
-            } else if character == "\\" {
-                escaped = true
-            } else if character == "\"" {
-                let literal = String(html[start...index])
-                guard let data = literal.data(using: .utf8),
-                      let value = try? JSONSerialization.jsonObject(
-                          with: data,
-                          options: [.fragmentsAllowed]
-                      ) as? String else { return nil }
-                return value
-            }
-            index = html.index(after: index)
-        }
-        return nil
     }
 
     static func makePublicItem(_ raw: [String: Any]) -> SteamWorkshopItem? {
